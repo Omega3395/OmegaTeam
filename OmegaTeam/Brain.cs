@@ -14,9 +14,8 @@ namespace OmegaTeam
 		//################################################################################
 
 		private const sbyte CORRECTION = (sbyte)1;
-		private static sbyte[] BLACK = { 30, 25 }; // Valore per cui viene attivato "nero"
-		private static sbyte[] WHITE = { 80, 60 }; // Valore per cui viene attivato "bianco"
-		private static sbyte BB = 0; // Quante volte ho visto nero nero?
+		private static sbyte[] BLACK = { 20, 20 }; // Valore per cui viene attivato "nero"
+		private static sbyte[] WHITE = { 60, 60 }; // Valore per cui viene attivato "bianco"
 
 		//################################################################################
 		//################################################################################
@@ -47,13 +46,13 @@ namespace OmegaTeam
 
 			}
 
-			return true; // Sono a metà, non mi correggo
+			return false; // Sono a metà, non mi correggo
 
 		}
 
 		public static sbyte correction(sbyte sensor) {
 
-			return (sbyte)(Math.Abs ((WHITE [sensor]) - Sensors.getColors () [sensor]) * 0.05); // Formula per calcolare la correzione di posizione
+			return (sbyte)(Math.Abs (WHITE [sensor] - Sensors.getColors () [sensor]) * 0.05); // Formula per calcolare la correzione di posizione
 
 		}
 
@@ -63,19 +62,21 @@ namespace OmegaTeam
 
 		}
 
-		public static sbyte[][] verify() {
+		public static bool[][] verify() {
+			
+			Motors.setSpeed (-10, 10, 0.5);
 
-			Motors.setSpeed (10, -10, 0.1);
+			bool[] photoLeft = { state (0), state (1) };
 
-			sbyte[] photoLeft = Sensors.getColors ();
+			Motors.setSpeed (10, -10, 1);
 
-			Motors.setSpeed (-10, 10, 0.2);
+			bool[] photoRight = { state (0), state (1) };
 
-			sbyte[] photoRight = Sensors.getColors ();
+			Motors.setSpeed (-10, 10, 0.5);
 
-			Motors.setSpeed (10, -10, 0.1);
+			Motors.Brake ();
 
-			sbyte[][] values = { photoLeft, photoRight };
+			bool[][] values = { photoLeft, photoRight };
 
 			return values;
 
@@ -89,7 +90,6 @@ namespace OmegaTeam
 
 			if (!CL && !CR) { // Bianco Bianco
 
-				BB = 0;
 				print ("Bianco Bianco");
 				Motors.goStraight ();
 
@@ -143,20 +143,14 @@ namespace OmegaTeam
 
 				if (!GL && !GR) { // Nero nero
 
-					BB++;
-					print ("Nero Nero");
-					if (BB > 3) {
+					Motors.Brake ();
+					Motors.goStraight (-10, 0.2);
 
-						if (Sensors.getMaxColor ()) {
-							Motors.turnLeft ();
-						} else {
-							Motors.turnRight ();
-						}
-
+					if (Sensors.getMaxColor ()) { // Quale sensore è più sul bianco? 0 (sinistra) o 1 (destra)
+						Motors.turnLeft (); // Il sensore destra è più sul bianco
 					} else {
-						Motors.goStraight (-10); // Forse sono troppo avanti e non vedo il verde...
+						Motors.turnRight (); // Il sensore sinistra è più sul bianco
 					}
-
 
 				}
 			}

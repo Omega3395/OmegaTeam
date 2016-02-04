@@ -1,0 +1,16 @@
+﻿<Properties StartupItem="OmegaTeam\OmegaTeam.csproj">
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" ActiveRuntime="Mono 4.2.1 (Visual)" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="OmegaTeam\Brain.cs">
+    <Files>
+      <File FileName="OmegaTeam\Main.cs" Line="1" Column="1" />
+      <File FileName="OmegaTeam\Motors.cs" Line="19" Column="85" />
+      <File FileName="OmegaTeam\Sensors.cs" Line="53" Column="69" />
+      <File FileName="OmegaTeam\Brain.cs" Line="147" Column="35" />
+      <File FileName="OmegaTeam\Salvataggio.cs" Line="1" Column="1" />
+    </Files>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+</Properties>
