@@ -13,8 +13,7 @@ namespace OmegaTeam
 		//################################################################################
 		//################################################################################
 
-		private const sbyte CORRECTION = (sbyte)1;
-		private static sbyte[] BLACK = { 20, 20 }; // Valore per cui viene attivato "nero"
+		private static sbyte[] BLACK = { 25, 25 }; // Valore per cui viene attivato "nero"
 		private static sbyte[] WHITE = { 60, 60 }; // Valore per cui viene attivato "bianco"
 
 		//################################################################################
@@ -144,12 +143,11 @@ namespace OmegaTeam
 				if (!GL && !GR) { // Nero nero
 
 					Motors.Brake ();
-					Motors.goStraight (-10, 0.2);
 
 					if (Sensors.getMaxColor ()) { // Quale sensore è più sul bianco? 0 (sinistra) o 1 (destra)
-						Motors.turnLeft (); // Il sensore destra è più sul bianco
+						Motors.turnLeft (0.2); // Il sensore destra è più sul bianco
 					} else {
-						Motors.turnRight (); // Il sensore sinistra è più sul bianco
+						Motors.turnRight (0.2); // Il sensore sinistra è più sul bianco
 					}
 
 				}

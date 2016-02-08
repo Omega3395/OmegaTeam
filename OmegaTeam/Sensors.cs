@@ -69,7 +69,7 @@ namespace OmegaTeam
 
 		public static bool[] isGreen() {
 
-			Thread.Sleep (500); // Prenditi un pò di tempo per analizzare il colore... Abbondiamo con gli sleep
+			Thread.Sleep (200); // Prenditi un pò di tempo per analizzare il colore... Abbondiamo con gli sleep
 
 			colL.Mode = ColorMode.Color;
 			colR.Mode = ColorMode.Color;
@@ -77,10 +77,10 @@ namespace OmegaTeam
 			bool greenL = colL.ReadColor () == Color.Green;
 			bool greenR = colR.ReadColor () == Color.Green;
 
+			Thread.Sleep (200);
+
 			colL.Mode = ColorMode.Reflection;
 			colR.Mode = ColorMode.Reflection;
-
-			Thread.Sleep (400);
 
 			bool[] green = { greenL, greenR };
 

@@ -13,7 +13,6 @@ namespace OmegaTeam
 		//################################################################################
 
 		private const sbyte SPEED = 10;
-		private const double REVERSESPEED = -0.5;
 
 		//################################################################################
 		//################################################################################
@@ -63,27 +62,43 @@ namespace OmegaTeam
 
 		}
 
-		public static void turnLeft() {
+		public static void turnLeft(double timeout=0) {
 			
 			sbyte correction = Brain.correction (0);
 
-			motL.SetSpeed ((sbyte)(10 * correction * REVERSESPEED));
-			motR.SetSpeed ((sbyte)(10 * correction));
+			if (correction > 2) {
+				
+				motL.SetSpeed ((sbyte)(-15 * correction));
+				motR.SetSpeed ((sbyte)(10 * correction));
 
-			//Motors.setSpeed ((sbyte)(SPEED * REVERSESPEED), SPEED); // Gira a sinistra di 45°
-			Thread.Sleep(20);
+			} else {
+				
+				motL.SetSpeed ((sbyte)(-10 * correction * 0.5));
+				motR.SetSpeed ((sbyte)(10 * correction));
+
+			}
+
+			Thread.Sleep ((int)(timeout * 1000));
 
 		}
 
-		public static void turnRight() {
+		public static void turnRight(double timeout=0) {
 
 			sbyte correction = Brain.correction (1);
 
-			motL.SetSpeed ((sbyte)(10 * correction));
-			motR.SetSpeed ((sbyte)(10 * correction * REVERSESPEED));
+			if (correction > 2) {
 
-			//Motors.setSpeed (SPEED, (sbyte)(SPEED * REVERSESPEED)); // Gira a destra di 45°
-			Thread.Sleep(20);
+				motL.SetSpeed ((sbyte)(10 * correction));
+				motR.SetSpeed ((sbyte)(-15 * correction));
+
+			} else {
+
+				motL.SetSpeed ((sbyte)(10 * correction));
+				motR.SetSpeed ((sbyte)(-10 * correction * 0.5));
+
+			}
+
+			Thread.Sleep ((int)(timeout * 1000));
 
 		}
 
