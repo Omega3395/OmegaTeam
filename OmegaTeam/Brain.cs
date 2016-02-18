@@ -13,7 +13,7 @@ namespace OmegaTeam
 		//################################################################################
 		//################################################################################
 
-		private static sbyte[] BLACK = { 25, 25 }; // Valore per cui viene attivato "nero"
+		private static sbyte[] BLACK = { 20, 20 }; // Valore per cui viene attivato "nero"
 		private static sbyte[] WHITE = { 60, 60 }; // Valore per cui viene attivato "bianco"
 
 		//################################################################################
@@ -21,7 +21,7 @@ namespace OmegaTeam
 
 		public static bool stop = false;
 
-		ButtonEvents buts = new ButtonEvents();
+		public ButtonEvents Buttons = new ButtonEvents();
 
 		public Brain () {
 		}
@@ -45,7 +45,7 @@ namespace OmegaTeam
 
 			}
 
-			return false; // Sono a metà, non mi correggo
+			return false; // Sono a metà, risulto bianco
 
 		}
 
@@ -55,8 +55,14 @@ namespace OmegaTeam
 
 		}
 
-		public void print(string a) {
+		/*public static sbyte reverseCorrection(sbyte sensor) {
 
+			return (sbyte)(-20 / Sensors.getColors () [sensor]); // Formula per calcolare la correzione di posizione del motore invertito
+
+		}*/
+
+		public void print(string a) {
+			 
 			LcdConsole.WriteLine (a);
 
 		}
@@ -77,12 +83,12 @@ namespace OmegaTeam
 
 			bool[][] values = { photoLeft, photoRight };
 
-			return values;
+			return values; 
 
 
 		}
 
-		public void lineFollower() {
+		public static void lineFollower() {
 
 			bool CL = state (0); // Bianco o nero?
 			bool CR = state (1);
@@ -90,7 +96,7 @@ namespace OmegaTeam
 			if (!CL && !CR) { // Bianco Bianco
 
 				print ("Bianco Bianco");
-				Motors.goStraight ();
+				Motors.goStraight (15);
 
 			}
 
@@ -128,15 +134,15 @@ namespace OmegaTeam
 
 					print ("Verde sinistra");
 					Motors.goStraight (10, 0.2);
-					Motors.setSpeed (-2, 20, 0.5);
+					Motors.setSpeed (-2, 20, 0.8);
 
 				}
 
 				if (GR) { // Verde a destra
 
-					print ("Verde sinistra");
+					print ("Verde destra");
 					Motors.goStraight (10, 0.2);
-					Motors.setSpeed (20, -2, 0.5);
+					Motors.setSpeed (20, -2, 0.8);
 
 				}
 
@@ -154,16 +160,19 @@ namespace OmegaTeam
 			}
 
 
-			buts.EscapePressed += () => {
-				
-				LcdConsole.WriteLine ("FINE");
+			Buttons.EscapePressed += () => {
+
+				ManualResetEvent Terminate = new ManualResetEvent(false);
+				Terminate.Set();
+				LcdConsole.WriteLine ("Fine seguilinea");
 				stop = true;
-				Motors.Off ();
 
 			};
 
 		}
-			
+
+		public static void rescue () {
+		}
 
 	}
 }

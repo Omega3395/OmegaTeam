@@ -22,7 +22,6 @@ namespace OmegaTeam
 		public static Motor motP;
 
 		public static Vehicle V = new Vehicle (MotorPort.OutB, MotorPort.OutD);
-		public static WaitHandle waitHandle;
 
 		public Motors () {
 
@@ -34,7 +33,7 @@ namespace OmegaTeam
 
 		public static void Brake() {
 
-			motL.Brake (); // Frena i due motori
+			motL.Brake ();
 			motR.Brake ();
 
 		}
@@ -43,6 +42,14 @@ namespace OmegaTeam
 
 			motL.Off ();
 			motR.Off ();
+			//motP.Off ();
+
+		}
+
+		public static void setSpeedPinza(sbyte speed, double timeout=1.5) {
+			
+			motP.SetSpeed (speed);
+			Thread.Sleep ((int)(timeout * 1000));
 
 		}
 
@@ -68,13 +75,13 @@ namespace OmegaTeam
 
 			if (correction > 2) {
 				
-				motL.SetSpeed ((sbyte)(-15 * correction));
-				motR.SetSpeed ((sbyte)(10 * correction));
+				motL.SetSpeed ((sbyte)(-SPEED * correction * 1.5));
+				motR.SetSpeed ((sbyte)(SPEED * correction));
 
 			} else {
 				
-				motL.SetSpeed ((sbyte)(-10 * correction * 0.5));
-				motR.SetSpeed ((sbyte)(10 * correction));
+				motL.SetSpeed ((sbyte)(-SPEED * correction * 0.5));
+				motR.SetSpeed ((sbyte)(SPEED * correction));
 
 			}
 
@@ -88,13 +95,13 @@ namespace OmegaTeam
 
 			if (correction > 2) {
 
-				motL.SetSpeed ((sbyte)(10 * correction));
-				motR.SetSpeed ((sbyte)(-15 * correction));
+				motL.SetSpeed ((sbyte)(SPEED * correction));
+				motR.SetSpeed ((sbyte)(-SPEED * correction * 1.5));
 
 			} else {
 
-				motL.SetSpeed ((sbyte)(10 * correction));
-				motR.SetSpeed ((sbyte)(-10 * correction * 0.5));
+				motL.SetSpeed ((sbyte)(SPEED * correction));
+				motR.SetSpeed ((sbyte)(-SPEED * correction * 0.5));
 
 			}
 
@@ -104,25 +111,30 @@ namespace OmegaTeam
 
 		public static void avoidObstacle() {
 
-			Motors.setSpeed (10, -10, 1);
+			// Aspettare Federico
+
+			Motors.setSpeed (7, -7, 0.5);
 			Motors.Brake ();
 
-			Motors.setSpeed (10, 10, 3);
+			Motors.setSpeed (15, 15, 3);
 			Motors.Brake ();
 
-			Motors.setSpeed (-10, 10, 1);
+			Motors.setSpeed (-7, 7, 0.5);
 			Motors.Brake ();
 
-			Motors.setSpeed (10, 10, 3);
+			Motors.setSpeed (15, 15, 3);
 			Motors.Brake ();
 
-			Motors.setSpeed (-10, 10, 1);
+			Motors.setSpeed (-7, 7, 0.5);
 			Motors.Brake ();
 
-			Motors.setSpeed (10, 10, 3);
+			Motors.setSpeed (15, 15, 3);
 			Motors.Brake ();
 
-			Motors.setSpeed (10, -10, 1);
+			Motors.setSpeed (7, -7, 0.5);
+			Motors.Brake ();
+
+			Motors.setSpeed (-10, -10, 2);
 			Motors.Brake ();
 
 		}

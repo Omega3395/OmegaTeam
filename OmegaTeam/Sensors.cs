@@ -20,20 +20,22 @@ namespace OmegaTeam
 
 		public static EV3ColorSensor colL;
 		public static EV3UltrasonicSensor sonic;
+		public static EV3IRSensor IR;
 		public static EV3ColorSensor colR;
-		public static EV3TouchSensor touch;
 
 		public Sensors() {
 
 			colL = new EV3ColorSensor (SensorPort.In1, ColorMode.Reflection);
 			sonic = new EV3UltrasonicSensor (SensorPort.In2, UltraSonicMode.Centimeter);
-			touch = new EV3TouchSensor (SensorPort.In3);
+			IR = new EV3IRSensor (SensorPort.In3, IRMode.Proximity);
 			colR = new EV3ColorSensor (SensorPort.In4, ColorMode.Reflection);
 
 		}
 
-		public static int getDist() {
+		public static int getDist(bool infrared=false) {
 
+			if (infrared)
+				return IR.ReadDistance ();
 			return sonic.Read ();
 
 		}
@@ -60,7 +62,7 @@ namespace OmegaTeam
 
 		}
 
-		public static sbyte[] getColors(bool getMaxValue=false) {
+		public static sbyte[] getColors() {
 
 			sbyte[] colors = new sbyte[] { (sbyte)colL.Read (), (sbyte)colR.Read () }; // Invia i rilevamenti dei due sensori
 			return colors;

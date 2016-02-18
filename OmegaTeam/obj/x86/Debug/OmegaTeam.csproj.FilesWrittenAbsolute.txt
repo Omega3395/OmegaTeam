@@ -1,0 +1,6 @@
+C:\Users\a.giacalone\Desktop\OmegaTeam\OmegaTeam\obj\x86\Debug\.NETFramework,Version=v4.5.AssemblyAttribute.cs
+C:\Users\a.giacalone\Desktop\OmegaTeam\OmegaTeam\bin\Debug\OmegaTeam.exe.mdb
+C:\Users\a.giacalone\Desktop\OmegaTeam\OmegaTeam\bin\Debug\OmegaTeam.exe
+C:\Users\a.giacalone\Desktop\OmegaTeam\OmegaTeam\obj\x86\Debug\OmegaTeam.exe
+C:\Users\a.giacalone\Desktop\OmegaTeam\OmegaTeam\obj\x86\Debug\OmegaTeam.exe.mdb
+C:\Users\a.giacalone\Desktop\OmegaTeam\OmegaTeam\bin\Debug\MonoBrickFirmware.dll

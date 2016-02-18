@@ -12,20 +12,22 @@ namespace OmegaTeam
 
 		public static Motors M = new Motors();
 		public static Sensors S = new Sensors();
-		public static Brain B = new Brain();
 
 		public static void Main (string[] args)
 		{
 
 			while (!Brain.stop) { // Quando il sensore di tatto non è premuto, esegui il programma
 
-				B.lineFollower ();
+				Brain.lineFollower ();
 
 			}
 
+
+			//Salvataggio.Salva ();
+
 			Thread.Sleep (2000);
 
-			Motors.Brake ();
+			Motors.Off ();
 
 		}
 	}
