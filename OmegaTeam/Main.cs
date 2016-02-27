@@ -9,25 +9,24 @@ namespace OmegaTeam
 {
 	class MainClass
 	{
+		
+		public static Sensors S = new Sensors ();
+		public static Motors M = new Motors ();
+		//public static Pinza P = new Pinza ();
 
-		public static Motors M = new Motors();
-		public static Sensors S = new Sensors();
 
 		public static void Main (string[] args)
 		{
 
-			while (!Brain.stop) { // Quando il sensore di tatto non è premuto, esegui il programma
-
+			while (!Brain.stop) {
+				
 				Brain.lineFollower ();
 
 			}
 
+			//Brain.rescue ();
 
-			//Salvataggio.Salva ();
-
-			Thread.Sleep (2000);
-
-			Motors.Off ();
+			M.Off ();
 
 		}
 	}

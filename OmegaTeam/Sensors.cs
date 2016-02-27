@@ -13,7 +13,7 @@ namespace OmegaTeam
 		//################################################################################
 		//################################################################################
 
-		public const short OBSTACLE_DISTANCE = 5; // Distanza a cui si riconosce un ostacolo, in cm
+		private const short OBSTACLE_DISTANCE = 5; // Distanza a cui si riconosce un ostacolo, in cm
 
 		//################################################################################
 		//################################################################################
@@ -32,7 +32,7 @@ namespace OmegaTeam
 
 		}
 
-		public static int getDist(bool infrared=false) {
+		public int getDist(bool infrared=false) {
 
 			if (infrared)
 				return IR.ReadDistance ();
@@ -40,7 +40,7 @@ namespace OmegaTeam
 
 		}
 
-		public static bool obstacle() {
+		public bool obstacle() {
 
 			if (getDist() < OBSTACLE_DISTANCE * 10)
 				return true;
@@ -50,7 +50,7 @@ namespace OmegaTeam
 
 		}
 
-		public static bool getMaxColor() { // Restituisci il sensore più sul bianco
+		public bool getMaxColor() { // Restituisci il sensore più sul bianco
 
 			int value = getColors ().ToList ().IndexOf (getColors ().Max ());
 
@@ -62,14 +62,14 @@ namespace OmegaTeam
 
 		}
 
-		public static sbyte[] getColors() {
+		public sbyte[] getColors() {
 
 			sbyte[] colors = new sbyte[] { (sbyte)colL.Read (), (sbyte)colR.Read () }; // Invia i rilevamenti dei due sensori
 			return colors;
 
 		}
 
-		public static bool[] isGreen() {
+		public bool[] isGreen() {
 
 			Thread.Sleep (200); // Prenditi un pò di tempo per analizzare il colore... Abbondiamo con gli sleep
 
@@ -84,7 +84,10 @@ namespace OmegaTeam
 			colL.Mode = ColorMode.Reflection;
 			colR.Mode = ColorMode.Reflection;
 
-			bool[] green = { greenL, greenR };
+			bool silverL = colL.Read () >= 90;
+			bool silverR = colR.Read () >= 90;
+
+			bool[] green = { greenL, greenR, silverL && silverR };
 
 			return green;
 

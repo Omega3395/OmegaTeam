@@ -15,13 +15,18 @@ namespace OmegaTeam
 
 		private static sbyte[] BLACK = { 20, 20 }; // Valore per cui viene attivato "nero"
 		private static sbyte[] WHITE = { 60, 60 }; // Valore per cui viene attivato "bianco"
-
-		//################################################################################
-		//################################################################################
-
 		public static bool stop = false;
 
-		public ButtonEvents Buttons = new ButtonEvents();
+		//################################################################################
+		//################################################################################
+
+		private static Sensors S = new Sensors ();
+		private static Motors M = new Motors ();
+		private static Pinza P = new Pinza ();
+		private static Salvataggio Salvataggio = new Salvataggio ();
+
+		private static ButtonEvents Buttons = new ButtonEvents();
+		private static ManualResetEvent Terminate = new ManualResetEvent(false);
 
 		public Brain () {
 		}
@@ -30,8 +35,8 @@ namespace OmegaTeam
 
 			sbyte white = BLACK [sensor];
 			sbyte black = WHITE [sensor];
-
-			sbyte colorValue = Sensors.getColors () [sensor];
+			
+			sbyte colorValue = S.getColors () [sensor];
 
 			if (colorValue >= white) {
 			
@@ -51,40 +56,13 @@ namespace OmegaTeam
 
 		public static sbyte correction(sbyte sensor) {
 
-			return (sbyte)(Math.Abs (WHITE [sensor] - Sensors.getColors () [sensor]) * 0.05); // Formula per calcolare la correzione di posizione
+			return (sbyte)(Math.Abs (WHITE [sensor] - S.getColors () [sensor]) * 0.05); // Formula per calcolare la correzione di posizione
 
 		}
 
-		/*public static sbyte reverseCorrection(sbyte sensor) {
-
-			return (sbyte)(-20 / Sensors.getColors () [sensor]); // Formula per calcolare la correzione di posizione del motore invertito
-
-		}*/
-
-		public void print(string a) {
+		public static void print(string a) {
 			 
 			LcdConsole.WriteLine (a);
-
-		}
-
-		public static bool[][] verify() {
-			
-			Motors.setSpeed (-10, 10, 0.5);
-
-			bool[] photoLeft = { state (0), state (1) };
-
-			Motors.setSpeed (10, -10, 1);
-
-			bool[] photoRight = { state (0), state (1) };
-
-			Motors.setSpeed (-10, 10, 0.5);
-
-			Motors.Brake ();
-
-			bool[][] values = { photoLeft, photoRight };
-
-			return values; 
-
 
 		}
 
@@ -96,82 +74,99 @@ namespace OmegaTeam
 			if (!CL && !CR) { // Bianco Bianco
 
 				print ("Bianco Bianco");
-				Motors.goStraight (15);
+				M.goStraight (15);
 
 			}
 
 			if (CL && !CR) { //Nero Bianco
 
 				print ("Nero Bianco");
-				Motors.turnLeft ();
+				M.turnLeft ();
 
 			}
 
 			if (!CL && CR) { //Bianco Nero
 
 				print ("Bianco Nero");
-				Motors.turnRight ();
+				M.turnRight ();
 
 			}
 
-			if (Sensors.obstacle ()) { // Attenzione... Ostacolo rilevato!
+			if (S.obstacle ()) { // Attenzione... Ostacolo rilevato!
 
 				print ("Ostacolo!");
-				Motors.avoidObstacle ();
+				M.avoidObstacle ();
 
 			}
 
 			if (CL && CR) { // Nero Nero, forse Verde?
 
-				Motors.Brake ();
+				M.Brake ();
 
-				bool[] green = Sensors.isGreen ();
+				bool[] green = S.isGreen ();
 
 				bool GL = green [0];
 				bool GR = green [1];
+				bool SILVER = green [2];
 
 				if (GL) { // Verde a sinistra
 
 					print ("Verde sinistra");
-					Motors.goStraight (10, 0.2);
-					Motors.setSpeed (-2, 20, 0.8);
+					M.goStraight (10, 0, 0.2);
+					M.setSpeed (-2, 20, 0.8);
 
 				}
 
 				if (GR) { // Verde a destra
 
 					print ("Verde destra");
-					Motors.goStraight (10, 0.2);
-					Motors.setSpeed (20, -2, 0.8);
+					M.goStraight (10, 0, 0.2);
+					M.setSpeed (20, -2, 0.8);
 
 				}
 
 				if (!GL && !GR) { // Nero nero
 
-					Motors.Brake ();
+					M.Brake ();
 
-					if (Sensors.getMaxColor ()) { // Quale sensore è più sul bianco? 0 (sinistra) o 1 (destra)
-						Motors.turnLeft (0.2); // Il sensore destra è più sul bianco
+					if (S.getMaxColor ()) { // Quale sensore è più sul bianco? 0 (sinistra) o 1 (destra)
+						M.turnLeft (0.2); // Il sensore destra è più sul bianco
 					} else {
-						Motors.turnRight (0.2); // Il sensore sinistra è più sul bianco
+						M.turnRight (0.2); // Il sensore sinistra è più sul bianco
 					}
 
 				}
+
+				if (SILVER) {
+
+					stop = true;
+					Terminate.Set ();
+
+				}
+
 			}
 
 
 			Buttons.EscapePressed += () => {
 
-				ManualResetEvent Terminate = new ManualResetEvent(false);
+				stop=true;
 				Terminate.Set();
 				LcdConsole.WriteLine ("Fine seguilinea");
-				stop = true;
 
 			};
 
 		}
 
 		public static void rescue () {
+
+			Salvataggio.CaricaPallina ();
+			P.afferra ();
+
+			// WallFollower
+
+			P.rilascia ();
+
+
 		}
 
 	}
