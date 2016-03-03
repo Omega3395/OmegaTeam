@@ -14,15 +14,15 @@ namespace OmegaTeam
 		private static Motors M = new Motors();
 		private static ButtonEvents Buttons = new ButtonEvents();
 
-		private static int Number;
+		private static int Number,min,Diminuzione,Diminuzione2;
 		private static bool  fine;
 		private static int[] distanza;	
 		private static int[] tacho;
-		private static int Diminuzione;
 
 		public Salvataggio () {
 
 			Number = 100;
+			min = 100;
 			fine = false;
 			distanza = new int[1000000];
 			tacho = new int[1000000];
@@ -34,6 +34,7 @@ namespace OmegaTeam
 			PosizionaRobot ();
 			Radar ();
 			AnalisiDati ();
+			AnalisiDati2 ();
 			Allineamento ();
 			Rotazione ();
 			Avvicinamento ();
@@ -93,6 +94,15 @@ namespace OmegaTeam
 
 		}
 
+		public static void AnalisiDati2() {
+			for (int i = Diminuzione; i < Diminuzione + 5; i++) {
+				if (distanza [i] < min) {
+					min = distanza [i];
+					Diminuzione2 = i;
+				}
+			}
+		}
+
 		public void Allineamento() {
 			
 			LcdConsole.WriteLine ("ALLINEANDO CON L'OGGETTO...");
@@ -105,14 +115,14 @@ namespace OmegaTeam
 
 		}
 
-		public void Rotazione () {
+		public static void Rotazione () {
 			
 			LcdConsole.WriteLine ("RUOTANDO IL ROBOT...");
 
+			Thread.Sleep (200);
+			M.V.SpinRight (45, 438, true);
 			Thread.Sleep (2000);
-			M.V.SpinRight (45, 500, true);
-			Thread.Sleep (2000);
-
+		
 		}
 
 		public static void Avvicinamento() {

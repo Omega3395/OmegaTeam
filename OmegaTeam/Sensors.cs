@@ -52,20 +52,23 @@ namespace OmegaTeam
 
 		public bool getMaxColor() { // Restituisci il sensore più sul bianco
 
-			int value = getColors ().ToList ().IndexOf (getColors ().Max ());
-
-			if (value == 0) {
-				return false;
-			} else {
+			if (getColor(0)) {
 				return true;
+			} else {
+				return false;
 			}
 
 		}
 
-		public sbyte[] getColors() {
+		public sbyte[] getColor(sbyte sensor) {
 
-			sbyte[] colors = new sbyte[] { (sbyte)colL.Read (), (sbyte)colR.Read () }; // Invia i rilevamenti dei due sensori
-			return colors;
+			if (sensor == 0) {
+				return colL.Read ();
+			}
+
+			if (sensor == 1) {
+				return colR.Read ();
+			}
 
 		}
 
@@ -84,10 +87,7 @@ namespace OmegaTeam
 			colL.Mode = ColorMode.Reflection;
 			colR.Mode = ColorMode.Reflection;
 
-			bool silverL = colL.Read () >= 90;
-			bool silverR = colR.Read () >= 90;
-
-			bool[] green = { greenL, greenR, silverL && silverR };
+			bool[] green = { greenL, greenR };
 
 			return green;
 

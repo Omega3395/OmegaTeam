@@ -36,7 +36,7 @@ namespace OmegaTeam
 			sbyte white = BLACK [sensor];
 			sbyte black = WHITE [sensor];
 			
-			sbyte colorValue = S.getColors () [sensor];
+			sbyte colorValue = S.getColor (sensor);
 
 			if (colorValue >= white) {
 			
@@ -70,24 +70,22 @@ namespace OmegaTeam
 
 			bool CL = state (0); // Bianco o nero?
 			bool CR = state (1);
+			bool SILVER = (S.getColor (0) >= 90 && S.getColor (1));
 
 			if (!CL && !CR) { // Bianco Bianco
 
-				print ("Bianco Bianco");
 				M.goStraight (15);
 
 			}
 
 			if (CL && !CR) { //Nero Bianco
 
-				print ("Nero Bianco");
 				M.turnLeft ();
 
 			}
 
 			if (!CL && CR) { //Bianco Nero
 
-				print ("Bianco Nero");
 				M.turnRight ();
 
 			}
@@ -99,6 +97,12 @@ namespace OmegaTeam
 
 			}
 
+			if (SILVER) {
+
+				stop = true;
+
+			}
+
 			if (CL && CR) { // Nero Nero, forse Verde?
 
 				M.Brake ();
@@ -107,7 +111,6 @@ namespace OmegaTeam
 
 				bool GL = green [0];
 				bool GR = green [1];
-				bool SILVER = green [2];
 
 				if (GL) { // Verde a sinistra
 
@@ -137,20 +140,12 @@ namespace OmegaTeam
 
 				}
 
-				if (SILVER) {
-
-					stop = true;
-					Terminate.Set ();
-
-				}
-
 			}
 
 
 			Buttons.EscapePressed += () => {
 
 				stop=true;
-				Terminate.Set();
 				LcdConsole.WriteLine ("Fine seguilinea");
 
 			};

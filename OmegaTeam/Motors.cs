@@ -169,13 +169,13 @@ namespace OmegaTeam
 
 			turn (90, 0.1);
 
-			V.TurnLeftForward (10, 60, 1300, true).WaitOne ();
+			V.TurnLeftForward (10, 60, 1000, true).WaitOne (); //1300
 
 			turn (90, 0.1);
 
 		}
 
-		public void turn (int degrees, double timeout=1) {
+		public void turn (int degrees, double timeout=0.1) {
 			
 			double k = 2.1;
 			bool l = true, r = true;
