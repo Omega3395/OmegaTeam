@@ -26,7 +26,6 @@ namespace OmegaTeam
 		private static Salvataggio Salvataggio = new Salvataggio ();
 
 		private static ButtonEvents Buttons = new ButtonEvents();
-		private static ManualResetEvent Terminate = new ManualResetEvent(false);
 
 		public Brain () {
 		}
@@ -36,7 +35,7 @@ namespace OmegaTeam
 			sbyte white = BLACK [sensor];
 			sbyte black = WHITE [sensor];
 			
-			sbyte colorValue = S.getColors () [sensor];
+			sbyte colorValue = S.getColor (sensor);
 
 			if (colorValue >= white) {
 			
@@ -56,7 +55,7 @@ namespace OmegaTeam
 
 		public static sbyte correction(sbyte sensor) {
 
-			return (sbyte)(Math.Abs (WHITE [sensor] - S.getColors () [sensor]) * 0.05); // Formula per calcolare la correzione di posizione
+			return (sbyte)(Math.Abs (WHITE [sensor] - S.getColor (sensor)) * 0.05); // Formula per calcolare la correzione di posizione
 
 		}
 
@@ -70,24 +69,22 @@ namespace OmegaTeam
 
 			bool CL = state (0); // Bianco o nero?
 			bool CR = state (1);
+			bool SILVER = (S.getColor (0) >= 90 && S.getColor (1) >= 90);
 
 			if (!CL && !CR) { // Bianco Bianco
 
-				print ("Bianco Bianco");
 				M.goStraight (15);
 
 			}
 
 			if (CL && !CR) { //Nero Bianco
 
-				print ("Nero Bianco");
 				M.turnLeft ();
 
 			}
 
 			if (!CL && CR) { //Bianco Nero
 
-				print ("Bianco Nero");
 				M.turnRight ();
 
 			}
@@ -99,6 +96,12 @@ namespace OmegaTeam
 
 			}
 
+			if (SILVER) {
+
+				stop = true;
+
+			}
+
 			if (CL && CR) { // Nero Nero, forse Verde?
 
 				M.Brake ();
@@ -107,7 +110,6 @@ namespace OmegaTeam
 
 				bool GL = green [0];
 				bool GR = green [1];
-				bool SILVER = green [2];
 
 				if (GL) { // Verde a sinistra
 
@@ -137,20 +139,12 @@ namespace OmegaTeam
 
 				}
 
-				if (SILVER) {
-
-					stop = true;
-					Terminate.Set ();
-
-				}
-
 			}
 
 
 			Buttons.EscapePressed += () => {
 
 				stop=true;
-				Terminate.Set();
 				LcdConsole.WriteLine ("Fine seguilinea");
 
 			};
@@ -158,14 +152,6 @@ namespace OmegaTeam
 		}
 
 		public static void rescue () {
-
-			Salvataggio.CaricaPallina ();
-			P.afferra ();
-
-			// WallFollower
-
-			P.rilascia ();
-
 
 		}
 

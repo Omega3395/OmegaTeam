@@ -14,7 +14,7 @@ namespace OmegaTeam
 		//################################################################################
 		//################################################################################
 
-		private const sbyte SPEED = 10;
+		private const sbyte SPEED = -10;
 
 		//################################################################################
 		//################################################################################
@@ -22,14 +22,16 @@ namespace OmegaTeam
 		public Motor motL;
 		public Motor motR;
 		public Motor motP;
+		public Motor motB;
 
 		public Vehicle V = new Vehicle (MotorPort.OutB, MotorPort.OutD);
 
 
 		public Motors () {
 
+			motP = new Motor (MotorPort.OutA);
 			motL = new Motor (MotorPort.OutB);
-			motP = new Motor (MotorPort.OutC);
+			motB = new Motor (MotorPort.OutC);
 			motR = new Motor (MotorPort.OutD);
 		
 		}
@@ -38,6 +40,8 @@ namespace OmegaTeam
 
 			motL.Brake ();
 			motR.Brake ();
+			motP.Off ();
+			motR.Off ();
 
 		}
 
@@ -45,7 +49,8 @@ namespace OmegaTeam
 
 			motL.Off ();
 			motR.Off ();
-			//motP.Off ();
+			motP.Off ();
+			motB.Off ();
 
 		}
 
@@ -54,6 +59,7 @@ namespace OmegaTeam
 			motL.ResetTacho ();
 			motR.ResetTacho ();
 			motP.ResetTacho ();
+			motB.ResetTacho ();
 
 		}
 
@@ -67,13 +73,6 @@ namespace OmegaTeam
 
 			if (brake)
 				Brake ();
-
-		}
-
-		public void setCraneSpeed(sbyte speed, double timeout=1.5) {
-
-			motP.SetSpeed (speed);
-			Thread.Sleep ((int)(timeout * 1000));
 
 		}
 
@@ -131,13 +130,13 @@ namespace OmegaTeam
 
 			if (correction > 2) {
 				
-				motL.SetSpeed ((sbyte)(-SPEED * correction * 1.5));
-				motR.SetSpeed ((sbyte)(SPEED * correction));
+				motL.SetSpeed ((sbyte)(SPEED * correction * 1.5));
+				motR.SetSpeed ((sbyte)(-SPEED * correction));
 
 			} else {
 				
-				motL.SetSpeed ((sbyte)(-SPEED * correction * 0.5));
-				motR.SetSpeed ((sbyte)(SPEED * correction));
+				motL.SetSpeed ((sbyte)(SPEED * correction * 0.5));
+				motR.SetSpeed ((sbyte)(-SPEED * correction));
 
 			}
 
@@ -151,13 +150,13 @@ namespace OmegaTeam
 
 			if (correction > 2) {
 
-				motL.SetSpeed ((sbyte)(SPEED * correction));
-				motR.SetSpeed ((sbyte)(-SPEED * correction * 1.5));
+				motL.SetSpeed ((sbyte)(-SPEED * correction));
+				motR.SetSpeed ((sbyte)(SPEED * correction * 1.5));
 
 			} else {
 
-				motL.SetSpeed ((sbyte)(SPEED * correction));
-				motR.SetSpeed ((sbyte)(-SPEED * correction * 0.5));
+				motL.SetSpeed ((sbyte)(-SPEED * correction));
+				motR.SetSpeed ((sbyte)(SPEED * correction * 0.5));
 
 			}
 
@@ -169,13 +168,13 @@ namespace OmegaTeam
 
 			turn (90, 0.1);
 
-			V.TurnLeftForward (10, 60, 1300, true).WaitOne ();
+			V.TurnLeftForward (10, 60, 1000, true).WaitOne (); //1300
 
 			turn (90, 0.1);
 
 		}
 
-		public void turn (int degrees, double timeout=1) {
+		public void turn (int degrees, double timeout=0.1) {
 			
 			double k = 2.1;
 			bool l = true, r = true;
