@@ -40,9 +40,8 @@ namespace OmegaTeam
 
 			motL.Brake ();
 			motR.Brake ();
-			motP.Off ();
-			motR.Off ();
-
+			motP.Brake ();
+			motB.Brake ();
 		}
 
 		public void Off() {

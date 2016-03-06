@@ -17,22 +17,13 @@ namespace OmegaTeam
 
 		public static void Main (string[] args)
 		{
-
-<<<<<<< HEAD
-			/*while (!Brain.stop) {
-=======
 			while (!Brain.stop) {
->>>>>>> origin/lineFollower
 
 				LcdConsole.WriteLine ("" + S.getColor (0) + "  " + S.getColor (1));
 				Brain.lineFollower ();
 
-			}*/
-
-			P.chiudi ();
-			Thread.Sleep (2000);
-			P.apri ();
-
+			}
+			
 			//Brain.rescue ();
 
 			M.Off ();

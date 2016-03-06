@@ -40,7 +40,6 @@
     <Compile Include="Motors.cs" />
     <Compile Include="Brain.cs" />
     <Compile Include="Sensors.cs" />
-    <Compile Include="Salvataggio.cs" />
     <Compile Include="Pinza.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

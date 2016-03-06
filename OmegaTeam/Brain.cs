@@ -23,7 +23,6 @@ namespace OmegaTeam
 		private static Sensors S = new Sensors ();
 		private static Motors M = new Motors ();
 		private static Pinza P = new Pinza ();
-		private static Salvataggio Salvataggio = new Salvataggio ();
 
 		private static ButtonEvents Buttons = new ButtonEvents();
 
@@ -69,11 +68,7 @@ namespace OmegaTeam
 
 			bool CL = state (0); // Bianco o nero?
 			bool CR = state (1);
-<<<<<<< HEAD
 			bool SILVER = (S.getColor (0) >= 90 && S.getColor (1) >= 90);
-=======
-			bool SILVER = (S.getColor (0) >= 90 && S.getColor (1));
->>>>>>> origin/lineFollower
 
 			if (!CL && !CR) { // Bianco Bianco
 
