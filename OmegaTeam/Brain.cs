@@ -69,7 +69,11 @@ namespace OmegaTeam
 
 			bool CL = state (0); // Bianco o nero?
 			bool CR = state (1);
+<<<<<<< HEAD
 			bool SILVER = (S.getColor (0) >= 90 && S.getColor (1) >= 90);
+=======
+			bool SILVER = (S.getColor (0) >= 90 && S.getColor (1));
+>>>>>>> origin/lineFollower
 
 			if (!CL && !CR) { // Bianco Bianco
 

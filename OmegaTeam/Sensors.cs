@@ -52,7 +52,11 @@ namespace OmegaTeam
 
 		public bool getMaxColor() { // Restituisci il sensore più sul bianco
 
+<<<<<<< HEAD
 			if (getColor (0) == 1) {
+=======
+			if (getColor(0)) {
+>>>>>>> origin/lineFollower
 				return true;
 			} else {
 				return false;
@@ -60,6 +64,7 @@ namespace OmegaTeam
 
 		}
 
+<<<<<<< HEAD
 		public sbyte getColor(sbyte sensor) {
 
 			if (sensor == 0) {
@@ -71,6 +76,17 @@ namespace OmegaTeam
 			}
 
 			return 0;
+=======
+		public sbyte[] getColor(sbyte sensor) {
+
+			if (sensor == 0) {
+				return colL.Read ();
+			}
+
+			if (sensor == 1) {
+				return colR.Read ();
+			}
+>>>>>>> origin/lineFollower
 
 		}
 

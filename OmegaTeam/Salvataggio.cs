@@ -14,7 +14,11 @@ namespace OmegaTeam
 		private static Motors M = new Motors();
 		private static ButtonEvents Buttons = new ButtonEvents();
 
+<<<<<<< HEAD
 		private static int Number,min,Diminuzione;
+=======
+		private static int Number,min,Diminuzione,Diminuzione2;
+>>>>>>> origin/lineFollower
 		private static bool  fine;
 		private static int[] distanza;	
 		private static int[] tacho;
@@ -94,10 +98,18 @@ namespace OmegaTeam
 
 		}
 
+<<<<<<< HEAD
 		public void AnalisiDati2() {
 			for (int i = Diminuzione; i < Diminuzione + 5; i++) {
 				if (distanza [i] < min) {
 					min = distanza [i];
+=======
+		public static void AnalisiDati2() {
+			for (int i = Diminuzione; i < Diminuzione + 5; i++) {
+				if (distanza [i] < min) {
+					min = distanza [i];
+					Diminuzione2 = i;
+>>>>>>> origin/lineFollower
 				}
 			}
 		}
@@ -114,7 +126,11 @@ namespace OmegaTeam
 
 		}
 
+<<<<<<< HEAD
 		public void Rotazione () {
+=======
+		public static void Rotazione () {
+>>>>>>> origin/lineFollower
 			
 			LcdConsole.WriteLine ("RUOTANDO IL ROBOT...");
 
@@ -124,7 +140,11 @@ namespace OmegaTeam
 		
 		}
 
+<<<<<<< HEAD
 		public void Avvicinamento() {
+=======
+		public static void Avvicinamento() {
+>>>>>>> origin/lineFollower
 			
 			LcdConsole.WriteLine ("AVVICINANDO ALL'OGGETTO...");
 
@@ -137,7 +157,11 @@ namespace OmegaTeam
 
 		}
 
+<<<<<<< HEAD
 		public void Conclusione() {
+=======
+		public static void Conclusione() {
+>>>>>>> origin/lineFollower
 
 			M.Brake ();
 
