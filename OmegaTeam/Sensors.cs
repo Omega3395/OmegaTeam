@@ -19,15 +19,15 @@ namespace OmegaTeam
 		//################################################################################
 
 		public static EV3ColorSensor colL;
-		public static EV3UltrasonicSensor sonic;
+		public static EV3IRSensor IR2;
 		public static EV3IRSensor IR;
 		public static EV3ColorSensor colR;
 
 		public Sensors() {
 
 			colL = new EV3ColorSensor (SensorPort.In1, ColorMode.Reflection);
-			sonic = new EV3UltrasonicSensor (SensorPort.In2, UltraSonicMode.Centimeter);
-			IR = new EV3IRSensor (SensorPort.In3, IRMode.Proximity);
+			IR2 = new EV3IRSensor (SensorPort.In2, IRMode.Proximity); //Sensore laterale
+			IR = new EV3IRSensor (SensorPort.In3, IRMode.Proximity); //Sensore anteriore
 			colR = new EV3ColorSensor (SensorPort.In4, ColorMode.Reflection);
 
 		}
@@ -35,8 +35,8 @@ namespace OmegaTeam
 		public int getDist(bool infrared=false) {
 
 			if (infrared)
-				return IR.ReadDistance ();
-			return sonic.Read ();
+				return IR2.Read();
+			return IR.Read ();
 
 		}
 

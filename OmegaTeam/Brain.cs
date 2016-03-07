@@ -15,6 +15,7 @@ namespace OmegaTeam
 
 		private static sbyte[] BLACK = { 20, 20 }; // Valore per cui viene attivato "nero"
 		private static sbyte[] WHITE = { 60, 60 }; // Valore per cui viene attivato "bianco"
+		private const sbyte SPEED = 10;
 		public static bool stop = false;
 
 		//################################################################################
@@ -22,7 +23,6 @@ namespace OmegaTeam
 
 		private static Sensors S = new Sensors ();
 		private static Motors M = new Motors ();
-		private static Pinza P = new Pinza ();
 
 		private static ButtonEvents Buttons = new ButtonEvents();
 
@@ -147,6 +147,68 @@ namespace OmegaTeam
 				LcdConsole.WriteLine ("Fine seguilinea");
 
 			};
+
+		}
+
+		private static void wallFollower_Posizionamento() {
+			LcdConsole.WriteLine ("Inizio Posizionamento");
+
+			while (S.getDist () > 35 && S.getDist (true) > 20)
+				M.setSpeed (SPEED, SPEED);
+			
+			M.Brake ();
+			Thread.Sleep (100);
+
+			if (S.getDist () <= 35) {
+
+				while (S.getDist (true) >= 20) {
+					M.V.SpinLeft (SPEED);
+				}
+				
+				M.Brake ();
+			}
+
+			if (S.getDist (true) <= 20) {
+				LcdConsole.WriteLine ("Inizio 2"); //Temporaneo
+				bool stop = false;
+				int distanza = 0;
+
+				M.V.SpinLeft (SPEED);
+
+				while (!stop) {
+					distanza = S.getDist (true);
+					Thread.Sleep (50);
+
+					while (S.getDist (true) > distanza)
+						M.V.SpinRight (SPEED);
+
+					if (S.getDist (true) <= distanza) {
+						int minimo = S.getDist (true);
+						Thread.Sleep (50);
+
+						while (S.getDist (true) <= minimo) {
+							minimo = S.getDist (true);
+							Thread.Sleep (50);
+						}
+
+						stop = true;
+					}
+				}
+			}
+
+			M.Brake ();
+
+			LcdConsole.WriteLine ("Fine posizionamento");
+
+			Thread.Sleep (2000);
+		}
+
+		public static void wallFollower() {
+			LcdConsole.WriteLine ("Inizio Wall-Follower");
+
+			wallFollower_Posizionamento ();
+
+			LcdConsole.WriteLine ("Fine Wall-Follower");
 
 		}
 
