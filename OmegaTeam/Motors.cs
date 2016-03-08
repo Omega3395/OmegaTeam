@@ -15,6 +15,8 @@ namespace OmegaTeam
 		//################################################################################
 
 		private const sbyte SPEED = 10;
+		private const double CENTIMETERS_CONST = 19.73;
+		private const double TURN_CONST = 2.1;
 
 		//################################################################################
 		//################################################################################
@@ -35,6 +37,8 @@ namespace OmegaTeam
 			motR = new Motor (MotorPort.OutD);
 		
 		}
+
+		public sbyte Speed { get { return SPEED; } }
 
 		public void Brake() {
 
@@ -75,52 +79,49 @@ namespace OmegaTeam
 
 		}
 
-		public void goStraight(sbyte speed=SPEED, int centimeters =0, double timeout=0.1) {
+		public void goStraight(sbyte speed=SPEED,double timeout=0) {
+						
+			motL.SetSpeed (speed);
+			motR.SetSpeed (speed);
 
-			if (centimeters == 0) { // Non è stata specificata una distanza da percorrere
+			Thread.Sleep ((int)(timeout * 1000));
+
+		}
+
+		public void goStraight(sbyte speed=SPEED,double timeout=0,int centimeters=0){
+
+			bool l = true, r = true;
+
+			resetTacho ();
+			DateTime TIni = DateTime.Now;
+
+			setSpeed (speed, speed);
+
+			do {
+
+				TimeSpan t = DateTime.Now - TIni;
+
+				if (t.Seconds > 20) {
+
+					Brake ();
+					return;
+
+				}
+				if (motL.GetTachoCount () >= centimeters * CENTIMETERS_CONST) {
+
+					motL.Brake ();
+					l = false;
+
+				}
+				if (motR.GetTachoCount () >= centimeters * CENTIMETERS_CONST) {
+
+					motR.Brake ();
+					r = false;
+
+				}
+
+			} while(l || r);
 				
-				motL.SetSpeed (speed);
-				motR.SetSpeed (speed);
-				Thread.Sleep ((int)(timeout * 1000));
-
-			} else { // E' stata specificata una distanza da percorrere, da usare solo con SPEED
-
-				double k = 19.73;
-				bool l = true, r = true;
-
-				resetTacho ();
-				DateTime TIni = DateTime.Now;
-
-				setSpeed (speed, speed);
-
-				do {
-					
-					TimeSpan t = DateTime.Now - TIni;
-
-					if (t.Seconds > 20) {
-						
-						Brake ();
-						return;
-
-					}
-					if (motL.GetTachoCount () >= centimeters * k) {
-						
-						motL.Brake ();
-						l = false;
-
-					}
-					if (motR.GetTachoCount () >= centimeters * k) {
-						
-						motR.Brake ();
-						r = false;
-
-					}
-
-				} while(l || r);
-
-				Thread.Sleep ((int)(timeout * 1000));
-			
-			}
 		}
 
 		public void turnLeft(double timeout=0) {
@@ -138,6 +139,43 @@ namespace OmegaTeam
 				motR.SetSpeed ((sbyte)(-SPEED * correction));
 
 			}
+
+			Thread.Sleep ((int)(timeout * 1000));
+
+		}
+
+		public void turnLeft(double timeout=0,int degrees=0){
+
+			bool l = true, r = true;
+
+			resetTacho ();
+
+			setSpeed (SPEED, -SPEED);
+			DateTime TIni = DateTime.Now;
+
+			do {
+
+				TimeSpan t = DateTime.Now - TIni;
+
+				if (t.Seconds > 20) {
+
+					Brake ();
+					return;
+
+				}
+
+				if (motL.GetTachoCount () <= degrees * TURN_CONST) {
+					motL.Brake ();
+					l = false;
+				}
+
+
+				if (motR.GetTachoCount () >= -degrees * TURN_CONST) {
+					motR.Brake ();
+					r = false;
+				}
+
+			} while (l || r);
 
 			Thread.Sleep ((int)(timeout * 1000));
 
@@ -163,95 +201,40 @@ namespace OmegaTeam
 
 		}
 
-		public void avoidObstacle() {
+		public void turnRight(double timeout=0,int degrees=90){
 
-			turn (90, 0.1);
-
-			V.TurnLeftForward (10, 60, 1000, true).WaitOne (); //1300
-
-			turn (90, 0.1);
-
-		}
-
-		public void turn (int degrees, double timeout=0.1) {
-			
-			double k = 2.1;
 			bool l = true, r = true;
 
 			resetTacho ();
 
-			if (degrees>0) { // Gira a destra
-				
-				setSpeed (SPEED, -SPEED);
-				DateTime TIni = DateTime.Now;
+			setSpeed (SPEED, -SPEED);
+			DateTime TIni = DateTime.Now;
 
-				do {
-					
-					TimeSpan t = DateTime.Now - TIni;
+			do {
 
-					if (t.Seconds > 20) {
-						
-						Brake ();
-						return;
+				TimeSpan t = DateTime.Now - TIni;
 
-					}
+				if (t.Seconds > 20) {
 
-					if (motL.GetTachoCount () >= degrees * k) {
-						
-						motL.Brake ();
-						l = false;
+					Brake ();
+					return;
 
-					}
+				}
 
-					if (motR.GetTachoCount () <= -degrees * k) {
-						
-						motR.Brake ();
-						r = false;
+				if (motL.GetTachoCount () >= degrees * TURN_CONST) {
+					motL.Brake ();
+					l = false;
+				}
 
-					}
+				if (motR.GetTachoCount () <= -degrees * TURN_CONST) {
+					motR.Brake ();
+					r = false;
+				}
 
-				} while (l || r);
+			} while (l || r);
 
-				Thread.Sleep ((int)(timeout * 1000));
+			Thread.Sleep ((int)(timeout * 1000));
 
-			} else { // Gira a sinistra
-
-				LcdConsole.WriteLine ("Valuses: " + l + " " + r);
-
-				setSpeed (-SPEED, SPEED);
-				DateTime TIni = DateTime.Now;
-
-				do {
-					
-					TimeSpan t = DateTime.Now - TIni;
-
-					if (t.Seconds > 20) {
-						
-						Brake ();
-						return;
-
-					}
-						
-					if (motL.GetTachoCount () <= degrees * k) {
-						
-						motL.Brake ();
-						l = false;
-
-					}
-
-
-					if (motR.GetTachoCount () >= -degrees * k) {
-						
-						motR.Brake ();
-						r = false;
-
-					}
-						
-				} while (l || r);
-					
-				Thread.Sleep ((int)(timeout * 1000));
-
-			}
 		}
 
 		//

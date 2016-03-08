@@ -28,7 +28,7 @@ namespace OmegaTeam
 			
 			//Brain.rescue ();
 
-			Brain.wallFollower ();
+			wallFollower.run ();
 
 			Thread.Sleep (2000);
 

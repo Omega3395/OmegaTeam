@@ -15,7 +15,6 @@ namespace OmegaTeam
 
 		private static sbyte[] BLACK = { 20, 20 }; // Valore per cui viene attivato "nero"
 		private static sbyte[] WHITE = { 60, 60 }; // Valore per cui viene attivato "bianco"
-		private const sbyte SPEED = 10;
 		public static bool stop = false;
 
 		//################################################################################
@@ -58,9 +57,19 @@ namespace OmegaTeam
 
 		}
 
-		public static void print(string a) {
+		private static void print(string a) {
 			 
 			LcdConsole.WriteLine (a);
+
+		}
+
+		private static void avoidObstacle() {
+
+			M.turnRight (0.1, 90);
+
+			M.V.TurnLeftForward (10, 60, 1000, true).WaitOne (); //1300
+
+			M.turnRight (0.1, 90);
 
 		}
 
@@ -72,26 +81,26 @@ namespace OmegaTeam
 
 			if (!CL && !CR) { // Bianco Bianco
 
-				M.goStraight (15);
+				M.goStraight (15, 0.1);
 
 			}
 
 			if (CL && !CR) { //Nero Bianco
 
-				M.turnLeft ();
+				M.turnLeft (0.1);
 
 			}
 
 			if (!CL && CR) { //Bianco Nero
 
-				M.turnRight ();
+				M.turnRight (0.1);
 
 			}
 
 			if (S.obstacle ()) { // Attenzione... Ostacolo rilevato!
 
 				print ("Ostacolo!");
-				M.avoidObstacle ();
+				avoidObstacle ();
 
 			}
 
@@ -113,7 +122,7 @@ namespace OmegaTeam
 				if (GL) { // Verde a sinistra
 
 					print ("Verde sinistra");
-					M.goStraight (10, 0, 0.2);
+					M.goStraight (M.Speed, 0.2);
 					M.setSpeed (-2, 20, 0.8);
 
 				}
@@ -121,7 +130,7 @@ namespace OmegaTeam
 				if (GR) { // Verde a destra
 
 					print ("Verde destra");
-					M.goStraight (10, 0, 0.2);
+					M.goStraight (M.Speed, 0.2);
 					M.setSpeed (20, -2, 0.8);
 
 				}
@@ -144,71 +153,9 @@ namespace OmegaTeam
 			Buttons.EscapePressed += () => {
 
 				stop=true;
-				LcdConsole.WriteLine ("Fine seguilinea");
+				print("Fine seguilinea");
 
 			};
-
-		}
-
-		private static void wallFollower_Posizionamento() {
-			LcdConsole.WriteLine ("Inizio Posizionamento");
-
-			while (S.getDist () > 35 && S.getDist (true) > 20)
-				M.setSpeed (SPEED, SPEED);
-			
-			M.Brake ();
-			Thread.Sleep (100);
-
-			if (S.getDist () <= 35) {
-
-				while (S.getDist (true) >= 20) {
-					M.V.SpinLeft (SPEED);
-				}
-				
-				M.Brake ();
-			}
-
-			if (S.getDist (true) <= 20) {
-				LcdConsole.WriteLine ("Inizio 2"); //Temporaneo
-				bool stop = false;
-				int distanza = 0;
-
-				M.V.SpinLeft (SPEED);
-
-				while (!stop) {
-					distanza = S.getDist (true);
-					Thread.Sleep (50);
-
-					while (S.getDist (true) > distanza)
-						M.V.SpinRight (SPEED);
-
-					if (S.getDist (true) <= distanza) {
-						int minimo = S.getDist (true);
-						Thread.Sleep (50);
-
-						while (S.getDist (true) <= minimo) {
-							minimo = S.getDist (true);
-							Thread.Sleep (50);
-						}
-
-						stop = true;
-					}
-				}
-			}
-
-			M.Brake ();
-
-			LcdConsole.WriteLine ("Fine posizionamento");
-
-			Thread.Sleep (2000);
-		}
-
-		public static void wallFollower() {
-			LcdConsole.WriteLine ("Inizio Wall-Follower");
-
-			wallFollower_Posizionamento ();
-
-			LcdConsole.WriteLine ("Fine Wall-Follower");
 
 		}
 
@@ -218,4 +165,3 @@ namespace OmegaTeam
 
 	}
 }
-

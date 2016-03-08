@@ -41,6 +41,7 @@
     <Compile Include="Brain.cs" />
     <Compile Include="Sensors.cs" />
     <Compile Include="Pinza.cs" />
+    <Compile Include="wallFollower.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>
