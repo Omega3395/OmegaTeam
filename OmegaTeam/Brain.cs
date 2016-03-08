@@ -159,6 +159,71 @@ namespace OmegaTeam
 
 		}
 
+<<<<<<< Updated upstream
+=======
+		private static void wallFollower_Posizionamento() {
+			LcdConsole.WriteLine ("Inizio Posizionamento");
+
+			while (S.getDist () > 20 && S.getDist (true) > 20)
+				M.setSpeed (SPEED, SPEED);
+			
+			M.Brake ();
+			Thread.Sleep (100);
+
+			if (S.getDist () <= 20) {
+
+				while (S.getDist (true) >= 20) {
+					M.V.SpinLeft (SPEED);
+				}
+				
+				M.Brake ();
+			}
+
+			if (S.getDist (true) <= 20) {
+				LcdConsole.WriteLine ("Inizio 2"); //Temporaneo
+				bool stop = false;
+				int distanza = 0;
+
+				M.V.SpinLeft (SPEED);
+
+				while (!stop) {
+					distanza = S.getDist (true);
+					Thread.Sleep (50);
+
+					while (S.getDist (true) > distanza)
+						M.V.SpinRight (SPEED);
+
+					if (S.getDist (true) <= distanza) {
+						int minimo = S.getDist (true);
+						Thread.Sleep (50);
+
+						while (S.getDist (true) <= minimo) {
+							minimo = S.getDist (true);
+							Thread.Sleep (50);
+						}
+
+						stop = true;
+					}
+				}
+			}
+
+			M.Brake ();
+
+			LcdConsole.WriteLine ("Fine posizionamento");
+
+			Thread.Sleep (2000);
+		}
+
+		public static void wallFollower() {
+			LcdConsole.WriteLine ("Inizio Wall-Follower");
+
+			wallFollower_Posizionamento ();
+
+			LcdConsole.WriteLine ("Fine Wall-Follower");
+
+		}
+
+>>>>>>> Stashed changes
 		public static void rescue () {
 
 		}
