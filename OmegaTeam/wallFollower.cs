@@ -11,38 +11,58 @@ namespace OmegaTeam
 
 		private static Sensors S = new Sensors ();
 		private static Motors M = new Motors ();
+		private const int FDIST = 35;
+		private const int LDIST = 20;
+		private const sbyte SPEED = 10;
 
 		public wallFollower (){
 		}
 
-		private static void posizionamento() {
+		private static void avoidSilver() {
+			M.Brake ();
+			Thread.Sleep (100);
+
+			M.goFor (30, false, 0.1);  //Necessita calibrazione
+
+			if (S.getDist (true) > FDIST)
+				M.turnRight (180, 0.1);  //Necessita calibrazione
+			else
+				M.turnLeft (180, 0.1);
+		}
+
+		private static void primo_Posizionamento() {
 
 			LcdConsole.WriteLine ("Inizio Posizionamento");
+			LcdConsole.WriteLine ("Fase 1");
 
-			while (S.getDist () > 35 && S.getDist (true) > 20)
-				
-				M.setSpeed (M.Speed, M.Speed);
+			while (S.getDist () > FDIST && S.getDist (true) > LDIST) {
+				M.setSpeed (SPEED, SPEED);
+
+				/*if (S.isSilver ()) {  //Necessita calibrazione
+					avoidSilver();
+				}*/
+			}
 
 			M.Brake ();
 			Thread.Sleep (100);
 
-			if (S.getDist () <= 35) {
+			if (S.getDist () <= FDIST) {
 
-				while (S.getDist (true) >= 20) {
-					M.V.SpinLeft (M.Speed);
+				while (S.getDist (true) >= FDIST) {
+					M.V.SpinLeft (SPEED);
 				}
 
 				M.Brake ();
 			}
 
-			if (S.getDist (true) <= 20) {
+			if (S.getDist (true) <= FDIST) {
 
-				LcdConsole.WriteLine ("Inizio 2"); //Temporaneo
+				LcdConsole.WriteLine ("Inizio 2");
 
 				bool stop = false;
 				int distanza = 0;
 
-				M.V.SpinLeft (M.Speed);
+				M.V.SpinLeft (SPEED);
 
 				while (!stop) {
 
@@ -51,7 +71,7 @@ namespace OmegaTeam
 
 					while (S.getDist (true) > distanza)
 
-						M.V.SpinRight (M.Speed);
+						M.V.SpinRight (SPEED);
 
 					if (S.getDist (true) <= distanza) {
 
@@ -72,9 +92,45 @@ namespace OmegaTeam
 
 			M.Brake ();
 
-			LcdConsole.WriteLine ("Fine posizionamento");
-
 			Thread.Sleep (2000);
+		}
+
+		private static void secondo_Posizionamento() {
+
+			LcdConsole.WriteLine ("Fase 2");
+
+			while (S.getDist () < FDIST)
+				M.setSpeed (-SPEED, -SPEED);
+
+			while (S.getDist () > FDIST) {
+				M.setSpeed (SPEED, SPEED);
+
+				/*if (S.isSilver ()) {  //Necessita calibrazione
+					avoidSilver();
+				}*/
+			}
+			
+			M.Brake ();
+
+			if (S.getDist (true) > LDIST) {
+				M.turnRight (90, 0.1);  //Necessita calibrazione
+
+				while (S.getDist () > LDIST)
+					M.setSpeed (SPEED, SPEED);
+				
+				M.Brake ();
+				Thread.Sleep (100);
+
+				M.turnRight (270, 0.1);  //Necessita calibrazione
+
+			}
+
+			LcdConsole.WriteLine ("Fine posizionamento");
+		}
+
+		private static void posizionamento() {
+			primo_Posizionamento ();
+			secondo_Posizionamento ();
 		}
 
 		public static void run(){

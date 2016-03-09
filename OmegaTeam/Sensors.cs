@@ -94,6 +94,12 @@ namespace OmegaTeam
 
 		}
 			
+		public bool isSilver() {
+			colL.Mode = ColorMode.Color;
+			colR.Mode = ColorMode.Color;
+
+			return getColor (0) >= 90 && getColor (1) >= 90;
+		}
 
 	}
 }

@@ -88,39 +88,72 @@ namespace OmegaTeam
 
 		}
 
-		public void goStraight(sbyte speed=SPEED,double timeout=0,int centimeters=0){
+		public void goFor(int centimeters=0,bool forward=true,double timeout=0) {
 
 			bool l = true, r = true;
 
 			resetTacho ();
 			DateTime TIni = DateTime.Now;
 
-			setSpeed (speed, speed);
+			if (forward) {
+				setSpeed (SPEED, SPEED);
 
-			do {
+				do {
 
-				TimeSpan t = DateTime.Now - TIni;
+					TimeSpan t = DateTime.Now - TIni;
 
-				if (t.Seconds > 20) {
+					if (t.Seconds > 20) {
 
-					Brake ();
-					return;
+						Brake ();
+						return;
 
-				}
-				if (motL.GetTachoCount () >= centimeters * CENTIMETERS_CONST) {
+					}
+					if (motL.GetTachoCount () >= centimeters * CENTIMETERS_CONST) {
 
-					motL.Brake ();
-					l = false;
+						motL.Brake ();
+						l = false;
 
-				}
-				if (motR.GetTachoCount () >= centimeters * CENTIMETERS_CONST) {
+					}
+					if (motR.GetTachoCount () >= centimeters * CENTIMETERS_CONST) {
 
-					motR.Brake ();
-					r = false;
+						motR.Brake ();
+						r = false;
 
-				}
+					}
 
-			} while(l || r);
+				} while(l || r);
+			} 
+
+			else {
+				setSpeed (-SPEED, -SPEED);
+
+				do {
+
+					TimeSpan t = DateTime.Now - TIni;
+
+					if (t.Seconds > 20) {
+
+						Brake ();
+						return;
+
+					}
+					if (motL.GetTachoCount () <= -centimeters * CENTIMETERS_CONST) {
+
+						motL.Brake ();
+						l = false;
+
+					}
+					if (motR.GetTachoCount () <= -centimeters * CENTIMETERS_CONST) {
+
+						motR.Brake ();
+						r = false;
+
+					}
+
+				} while(l || r);
+			}
+
+			Thread.Sleep ((int)(timeout * 1000));
 				
 		}
 
@@ -144,7 +177,7 @@ namespace OmegaTeam
 
 		}
 
-		public void turnLeft(double timeout=0,int degrees=0){
+		public void turnLeft(int degrees,double timeout=0){
 
 			bool l = true, r = true;
 
@@ -201,7 +234,7 @@ namespace OmegaTeam
 
 		}
 
-		public void turnRight(double timeout=0,int degrees=90){
+		public void turnRight(int degrees,double timeout=0){
 
 			bool l = true, r = true;
 

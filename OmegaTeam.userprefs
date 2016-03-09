@@ -2,19 +2,12 @@
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" />
   <MonoDevelop.Ide.Workbench ActiveDocument="OmegaTeam/wallFollower.cs">
     <Files>
-      <File FileName="OmegaTeam/Main.cs" Line="31" Column="24" />
-      <File FileName="OmegaTeam/wallFollower.cs" Line="14" Column="1" />
-      <File FileName="OmegaTeam/Brain.cs" Line="163" Column="4" />
       <File FileName="OmegaTeam/Pinza.cs" Line="1" Column="1" />
-<<<<<<< Updated upstream
-      <File FileName="OmegaTeam/Sensors.cs" Line="44" Column="4" />
-      <File FileName="OmegaTeam/Motors.cs" Line="129" Column="39" />
-=======
-      <File FileName="OmegaTeam/Motors.cs" Line="1" Column="1" />
+      <File FileName="OmegaTeam/Motors.cs" Line="180" Column="36" />
+      <File FileName="OmegaTeam/wallFollower.cs" Line="24" Column="4" />
+      <File FileName="OmegaTeam/Brain.cs" Line="76" Column="38" />
+      <File FileName="OmegaTeam/Sensors.cs" Line="100" Column="4" />
       <File FileName="OmegaTeam/Main.cs" Line="1" Column="1" />
-      <File FileName="OmegaTeam/Brain.cs" Line="180" Column="24" />
-      <File FileName="OmegaTeam/Sensors.cs" Line="1" Column="1" />
->>>>>>> Stashed changes
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
