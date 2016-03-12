@@ -9,11 +9,18 @@ namespace OmegaTeam
 	public class wallFollower
 	{
 
-		private static Sensors S = new Sensors ();
-		private static Motors M = new Motors ();
+		//################################################################################
+		//################################################################################
+
 		private const int FDIST = 35;
 		private const int LDIST = 20;
 		private const sbyte SPEED = 10;
+
+		//################################################################################
+		//################################################################################
+
+		private static Sensors S = new Sensors ();
+		private static Motors M = new Motors ();
 
 		public wallFollower (){
 		}
