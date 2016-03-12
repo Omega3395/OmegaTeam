@@ -21,14 +21,13 @@ namespace OmegaTeam
 
 			/*while (!Brain.stop) {
 
-				LcdConsole.WriteLine ("" + S.getColor (0) + "  " + S.getColor (1));
 				Brain.lineFollower ();
 
 			}*/
-			
+
 			//Brain.rescue ();
 
-			hnbxxgf.hnbxxg ();
+			wallFollower.run ();
 
 			Thread.Sleep (2000);
 

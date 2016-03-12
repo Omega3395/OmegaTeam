@@ -13,8 +13,11 @@ namespace OmegaTeam
 		//################################################################################
 		//################################################################################
 
-		private const int FDIST = 30;
-		private const int LDIST = 15;
+		public const int FDIST = 25;
+		public const int LDIST = 15;
+		public const int ERROR = 2;
+		public const int OUT_ERROR = 20;
+		public const sbyte CORRECTION = 5;
 		private const sbyte SPEED = 20;
 
 		//################################################################################
@@ -22,8 +25,6 @@ namespace OmegaTeam
 
 		private static Sensors S = new Sensors ();
 		private static Motors M = new Motors ();
-
-		private static ButtonEvents Buttons = new ButtonEvents();
 
 		public wallFollower (){
 		}
@@ -34,7 +35,7 @@ namespace OmegaTeam
 
 			M.goFor (30, false, 0.1);
 
-			if (S.getDist (true) > FDIST)
+			if (S.getDist (3) > FDIST)
 				M.turnRight (180, 0.1);
 			else
 				M.turnLeft (180, 0.1);
@@ -45,27 +46,22 @@ namespace OmegaTeam
 			LcdConsole.WriteLine ("Inizio Posizionamento");
 			LcdConsole.WriteLine ("Fase 1");
 
-			while (S.getDist () > FDIST && S.getDist (true) > LDIST) {
+			while (S.getDist (2) > FDIST && S.getDist (3) > LDIST)
 				M.setSpeed (SPEED, SPEED);
-
-				/*if (S.isSilver ()) {  //Necessita calibrazione
-					avoidSilver();
-				}*/
-			}
 
 			M.Brake ();
 			Thread.Sleep (100);
 
-			if (S.getDist () <= FDIST) {
+			if (S.getDist (2) <= FDIST) {
 
-				while (S.getDist (true) >= FDIST) {
+				while (S.getDist (3) >= FDIST) {
 					M.V.SpinLeft (SPEED);
 				}
 
 				M.Brake ();
 			}
 
-			if (S.getDist (true) <= FDIST) {
+			if (S.getDist (3) <= FDIST) {
 
 				LcdConsole.WriteLine ("Inizio 2");
 
@@ -76,21 +72,21 @@ namespace OmegaTeam
 
 				while (!stop) {
 
-					distanza = S.getDist (true);
+					distanza = S.getDist (3);
 					Thread.Sleep (50);
 
-					while (S.getDist (true) > distanza)
+					while (S.getDist (3) > distanza)
 
 						M.V.SpinRight (SPEED);
 
-					if (S.getDist (true) <= distanza) {
+					if (S.getDist (3) <= distanza) {
 
-						int minimo = S.getDist (true);
+						int minimo = S.getDist (3);
 						Thread.Sleep (50);
 
-						while (S.getDist (true) <= minimo) {
+						while (S.getDist (3) <= minimo) {
 
-							minimo = S.getDist (true);
+							minimo = S.getDist (3);
 							Thread.Sleep (50);
 
 						}
@@ -102,26 +98,26 @@ namespace OmegaTeam
 
 			M.Brake ();
 
-			Thread.Sleep (2000);
+			Thread.Sleep (500);
 		}
 
 		private static void secondo_Posizionamento() {
 
 			LcdConsole.WriteLine ("Fase 2");
 
-			while (S.getDist () < FDIST)
+			while (S.getDist (2) < FDIST)
 				M.setSpeed (-SPEED, -SPEED);
 
-			while (S.getDist () > FDIST) {
+			while (S.getDist (2) > FDIST) {
 				M.setSpeed (SPEED, SPEED);
 			}
 			
 			M.Brake ();
 
-			if (S.getDist (true) > LDIST) {
+			if (S.getDist (3) > LDIST) {
 				M.turnRight (90, 0.1);
 
-				while (S.getDist () > LDIST)
+				while (S.getDist (2) > LDIST)
 					M.setSpeed (SPEED, SPEED);
 				
 				M.Brake ();
@@ -134,6 +130,33 @@ namespace OmegaTeam
 			LcdConsole.WriteLine ("Fine posizionamento");
 		}
 
+		private static void trovaAngolo() {
+			LcdConsole.WriteLine ("Trova angolo");
+
+			while (S.isTouched()) {
+				if (S.getDist (2) >= FDIST && S.isNearTheWall ())
+					M.setSpeed (SPEED, SPEED);
+
+				if (S.getDist (2) >= FDIST && S.getDist (3) < LDIST - ERROR)
+					while (S.getDist (3) < LDIST)
+						M.setSpeed (SPEED - CORRECTION, SPEED + CORRECTION);
+
+				if (S.getDist (2) >= FDIST && S.getDist (3) > LDIST + ERROR) {
+					while (S.getDist (2) > FDIST) {
+					}
+
+					if (S.getDist (3) > LDIST + OUT_ERROR)
+						M.turnLeft (90);
+					
+					while (S.getDist (3) > LDIST)
+						M.setSpeed (SPEED + CORRECTION, SPEED - CORRECTION);
+				}
+
+				if (S.getDist (2) <= FDIST)
+					M.turnLeft (90);
+			}
+		}
+
 		private static void posizionamento() {
 			primo_Posizionamento ();
 			secondo_Posizionamento ();
@@ -144,6 +167,8 @@ namespace OmegaTeam
 			LcdConsole.WriteLine ("Inizio Wall-Follower");
 
 			posizionamento ();
+			Thread.Sleep (500);
+			trovaAngolo ();
 
 			LcdConsole.WriteLine ("Fine Wall-Follower");
 		}

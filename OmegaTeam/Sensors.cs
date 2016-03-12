@@ -19,34 +19,65 @@ namespace OmegaTeam
 		//################################################################################
 
 		public static EV3ColorSensor colL;
-		public static EV3IRSensor IR2;
-		public static EV3IRSensor IR;
 		public static EV3ColorSensor colR;
+		//public static MSSensorMUXBase IR;
+		//public static MSSensorMUXBase IR2;
+		//public static MSSensorMUXBase IR3;
+		public static EV3TouchSensor Touch;
+
+		public static EV3IRSensor IR2;
+		public static EV3IRSensor IR3;
+
 
 		public Sensors() {
 
+			//IR = new MSSensorMUXBase (SensorPort.In4, MSSensorMUXPort.C1, IRMode.Proximity); // Infrarossi anteriore inferiore
+			//IR2 = new MSSensorMUXBase (SensorPort.In4, MSSensorMUXPort.C2, IRMode.Proximity); // Infrarossi anteriore superiore
+			//IR3 = new MSSensorMUXBase (SensorPort.In4, MSSensorMUXPort.C3, IRMode.Proximity); // Infrarossi laterale (superiore)
 			colL = new EV3ColorSensor (SensorPort.In1, ColorMode.Reflection);
-			IR2 = new EV3IRSensor (SensorPort.In3, IRMode.Proximity); //Sensore laterale
-			IR = new EV3IRSensor (SensorPort.In4, IRMode.Proximity); //Sensore anteriore
 			colR = new EV3ColorSensor (SensorPort.In2, ColorMode.Reflection);
+			Touch = new EV3TouchSensor (SensorPort.In3);
+
+			//IR = new EV3IRSensor (SensorPort.In3, IRMode.Proximity);
+			IR2= new EV3IRSensor (SensorPort.In4, IRMode.Proximity);
+			IR3 = new EV3IRSensor (SensorPort.In3, IRMode.Proximity);
 
 		}
 
-		public int getDist(bool infrared=false) {
+		public bool isTouched() {
+			return Touch.IsPressed ();
+		}
 
-			if (infrared)
-				return IR2.Read();
-			return IR.Read ();
+		public int getDist(sbyte sensor) {
 
+			switch (sensor) {
+
+			//case 1:
+			//	return IR.Read ();
+
+			case 2:
+				return IR2.Read ();
+
+			case 3:
+				return IR3.Read ();
+
+			default:
+				return 0;
+
+			}
+
+		}
+
+		public bool isNearTheWall() {
+			return (getDist (3) <= wallFollower.LDIST + wallFollower.ERROR) && (getDist (3) >= wallFollower.LDIST - wallFollower.ERROR);
 		}
 
 		public bool obstacle() {
 
-			if (getDist() < OBSTACLE_DISTANCE * 10)
+			if (getDist(1) < OBSTACLE_DISTANCE)
 				return true;
 
 			return false;
-
 
 		}
 
@@ -62,15 +93,19 @@ namespace OmegaTeam
 			
 		public sbyte getColor(sbyte sensor) {
 
-			if (sensor == 0) {
+			switch (sensor) {
+
+			case 0:
 				return (sbyte)(colL.Read ());
-			}
 
-			if (sensor == 1) {
+			case 1:
 				return (sbyte)(colR.Read ());
+
+			default:
+				return 0;
+
 			}
 
-			return 0;
 		}
 
 		public bool[] isGreen() {
@@ -92,13 +127,6 @@ namespace OmegaTeam
 
 			return green;
 
-		}
-			
-		public bool isSilver() {
-			colL.Mode = ColorMode.Color;
-			colR.Mode = ColorMode.Color;
-
-			return getColor (0) >= 90 && getColor (1) >= 90;
 		}
 
 	}

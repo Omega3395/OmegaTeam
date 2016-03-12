@@ -10,3 +10,9 @@
 /Users/AlbertoGiacalone/Desktop/OmegaTeam/OmegaTeam/obj/x86/Debug/OmegaTeam.exe
 /Users/AlbertoGiacalone/Desktop/OmegaTeam/OmegaTeam/obj/x86/Debug/OmegaTeam.exe.mdb
 /Users/AlbertoGiacalone/Desktop/OmegaTeam/OmegaTeam/bin/Debug/MonoBrickFirmware.dll
+/Volumes/AlbertoGiacalone/Desktop/OmegaTeam/OmegaTeam/obj/x86/Debug/.NETFramework,Version=v4.5.AssemblyAttribute.cs
+/Volumes/AlbertoGiacalone/Desktop/OmegaTeam/OmegaTeam/bin/Debug/OmegaTeam.exe.mdb
+/Volumes/AlbertoGiacalone/Desktop/OmegaTeam/OmegaTeam/bin/Debug/OmegaTeam.exe
+/Volumes/AlbertoGiacalone/Desktop/OmegaTeam/OmegaTeam/obj/x86/Debug/OmegaTeam.exe
+/Volumes/AlbertoGiacalone/Desktop/OmegaTeam/OmegaTeam/obj/x86/Debug/OmegaTeam.exe.mdb
+/Volumes/AlbertoGiacalone/Desktop/OmegaTeam/OmegaTeam/bin/Debug/MonoBrickFirmware.dll

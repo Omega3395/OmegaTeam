@@ -14,7 +14,7 @@ namespace OmegaTeam
 		//################################################################################
 		//################################################################################
 
-		private const sbyte SPEED = 10;
+		private const sbyte SPEED = 15;
 		private const double CENTIMETERS_CONST = 34.61;
 		private const double TURN_CONST = 5;
 
@@ -91,6 +91,7 @@ namespace OmegaTeam
 			DateTime TIni = DateTime.Now;
 
 			if (forward) {
+				
 				setSpeed (SPEED, SPEED);
 
 				do {
@@ -120,6 +121,7 @@ namespace OmegaTeam
 			} 
 
 			else {
+				
 				setSpeed (-SPEED, -SPEED);
 
 				do {
@@ -163,7 +165,7 @@ namespace OmegaTeam
 
 			} else {
 				
-				motL.SetSpeed ((sbyte)(-SPEED * correction * 0.5));
+				motL.SetSpeed ((sbyte)(-SPEED * correction * 0.8));
 				motR.SetSpeed ((sbyte)(SPEED * correction));
 
 			}
@@ -221,7 +223,7 @@ namespace OmegaTeam
 			} else {
 
 				motL.SetSpeed ((sbyte)(SPEED * correction));
-				motR.SetSpeed ((sbyte)(-SPEED * correction * 0.5));
+				motR.SetSpeed ((sbyte)(-SPEED * correction * 0.8));
 
 			}
 

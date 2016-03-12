@@ -13,7 +13,7 @@ namespace OmegaTeam
 		//################################################################################
 		//################################################################################
 
-		private static sbyte[] BLACK = { 20, 20 }; // Valore per cui viene attivato "nero"
+		private static sbyte[] BLACK = { 25, 25 }; // Valore per cui viene attivato "nero"
 		private static sbyte[] WHITE = { 60, 60 }; // Valore per cui viene attivato "bianco"
 		public static bool stop = false;
 
@@ -67,9 +67,7 @@ namespace OmegaTeam
 
 			M.turnRight (90, 0.1);
 
-			M.V.TurnLeftForward (10, 60, 1000, true).WaitOne (); //1300
-
-			M.turnRight (90, 0.1);
+			M.V.TurnLeftForward (20, 70, 1800, false).WaitOne ();
 
 		}
 
@@ -78,6 +76,8 @@ namespace OmegaTeam
 			bool CL = state (0); // Bianco o nero?
 			bool CR = state (1);
 			bool SILVER = (S.getColor (0) >= 90 && S.getColor (1) >= 90);
+
+
 
 			if (!CL && !CR) { // Bianco Bianco
 
@@ -123,7 +123,7 @@ namespace OmegaTeam
 
 					print ("Verde sinistra");
 					M.goStraight (M.Speed, 0.2);
-					M.setSpeed (-2, 20, 0.8);
+					M.turnLeft (20);
 
 				}
 
@@ -131,7 +131,7 @@ namespace OmegaTeam
 
 					print ("Verde destra");
 					M.goStraight (M.Speed, 0.2);
-					M.setSpeed (20, -2, 0.8);
+					M.turnRight (20);
 
 				}
 

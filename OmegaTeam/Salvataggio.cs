@@ -7,14 +7,14 @@ using MonoBrickFirmware.Sensors;
 
 namespace OmegaTeam
 {
-	public class hnbxxgf
+	public class Salvataggio
 	{
-		public static void  hnbxxg()
+		public static void  Salva()
 		{
 			//for (int j = 0; j < 6; j++) {
 				if (!fine) {
 					CaricaPallina ();
-					buts.EnterPressed += () => {
+					B.EnterPressed += () => {
 						fine = true;
 					};
 				}
@@ -23,24 +23,23 @@ namespace OmegaTeam
 
 		//inizializzazione dei sensori e dei motori
 
+		private static Sensors S = new Sensors();
 		public static Motors M = new Motors ();
 		public static Pinza P = new Pinza ();
-		public static int Number = 100;
-		public static Vehicle v = new Vehicle(MotorPort.OutB, MotorPort.OutD);
-		public static ManualResetEvent terminateprogram = new ManualResetEvent(false);
-		public static ButtonEvents buts = new ButtonEvents();
-		public static EV3IRSensor sensor = new EV3IRSensor(SensorPort.In3);
-		public static EV3IRSensor sensorB = new EV3IRSensor(SensorPort.In4);
+		public static ButtonEvents B = new ButtonEvents();
+
 		public static Motor motorA = new Motor(MotorPort.OutB);
 		public static Motor motorB = new Motor(MotorPort.OutD);
-		public static bool fine = false;
-		public static int[] Dist = new int[100];
-		public static int[] Dist2 = new int[100];
-		public static int[] distanza = new int[100];
-		public static int[] distanza2 = new int[100];
-		public static int[] tacho = new int[100];
-		public static int[] diff = new int[100];
-		public static int k = 0;
+
+		public static int Number = 100;
+		private static bool fine = false;
+		private static int[] Dist = new int[100];
+		private static int[] Dist2 = new int[100];
+		private static int[] distanza = new int[100];
+		private static int[] distanza2 = new int[100];
+		private static int[] tacho = new int[100];
+		private static int[] diff = new int[100];
+		private static int k = 0;
 
 
 		//funzione principare della classe del salvataggio
@@ -69,11 +68,11 @@ namespace OmegaTeam
 			LcdConsole.WriteLine("POSIZIONANDO ROBOT...");
 			if (!fine)
 			{
-				motorA.SetSpeed(45);
-				motorB.SetSpeed(45);
+				M.motL.SetSpeed(45);
+				M.motR.SetSpeed(45);
 				Thread.Sleep(4000);
-				v.Brake();
-				buts.EnterPressed += () => {
+				M.V.Brake();
+				B.EnterPressed += () => {
 					fine = true;
 				};
 			}
@@ -81,20 +80,20 @@ namespace OmegaTeam
 
 		public static void Radar()
 		{
-			motorA.ResetTacho();
-			motorB.ResetTacho();
+			M.motL.ResetTacho();
+			M.motR.ResetTacho();
 			LcdConsole.WriteLine("SCANNERIZZANDO STANZA...");
 			for (int i = 0; i < Number; i++)
 			{
 				if (!fine)
 				{
 					Thread.Sleep(250);
-					Dist[i] = sensor.ReadDistance();
-					Dist2 [i] = sensorB.ReadDistance ();
-					tacho[i] = motorB.GetTachoCount();
+					Dist[i] = S.getDist(1);
+					Dist2 [i] = S.getDist(2);
+					tacho[i] = M.motR.GetTachoCount();
 					LcdConsole.WriteLine("    DIST " + Dist[i]);
-					v.SpinLeft(25, 25, true);
-					buts.EnterPressed += () => {
+					M.V.SpinLeft(25, 25, true);
+					B.EnterPressed += () => {
 						fine = true;
 					};
 				}
@@ -109,7 +108,7 @@ namespace OmegaTeam
 
 					distanza [i] = (Dist [i] + Dist [i + 1] + Dist [i + 2] + Dist [i + 3]) / 4;
 					distanza2 [i] = (Dist2 [i] + Dist2 [i + 1] + Dist2 [i + 2] + Dist2 [i + 3]) / 4;
-					buts.EnterPressed += () => {
+					B.EnterPressed += () => {
 						fine = true;
 					};
 				}
@@ -133,7 +132,7 @@ namespace OmegaTeam
 					diff [i] = distanza2 [i] - distanza [i];
 					Thread.Sleep (10);
 					LcdConsole.WriteLine ("    DIFF " + diff [i]);
-					buts.EnterPressed += () => {
+					B.EnterPressed += () => {
 						fine = true;
 					};
 				}
@@ -153,12 +152,12 @@ namespace OmegaTeam
 		public static void Allineamento()
 		{
 			LcdConsole.WriteLine("ALLINEANDO CON L'OGGETTO...");
-			while ((motorB.GetTachoCount() > tacho[k] + 18 )&&(!fine))
+			while ((M.motR.GetTachoCount() > tacho[k] + 18 )&&(!fine))
 			{
-				v.SpinRight(25, 25, true);
+				M.V.SpinRight(25, 25, true);
 				Thread.Sleep (250);
-				LcdConsole.WriteLine("    TACHO " + motorB.GetTachoCount() + " SU " + tacho[k]);
-				buts.EnterPressed += () => {
+				LcdConsole.WriteLine("    TACHO " + M.motR.GetTachoCount() + " SU " + tacho[k]);
+				B.EnterPressed += () => {
 					fine = true;
 				};
 			}
@@ -169,12 +168,12 @@ namespace OmegaTeam
 			LcdConsole.WriteLine("AVVICINANDO ALL'OGGETTO...");
 			if (!fine)
 			{
-				int dist = sensor.ReadDistance();
+				int dist = S.getDist(1);
 				int time = dist * 17;
-				motorA.SetSpeed(-45);
-				motorB.SetSpeed(-45);
+				M.motL.SetSpeed(-45);
+				M.motR.SetSpeed(-45);
 				Thread.Sleep(time);
-				buts.EnterPressed += () => {
+				B.EnterPressed += () => {
 					fine = true;
 				};
 			}
@@ -183,8 +182,8 @@ namespace OmegaTeam
 
 		public static void Conclusione()
 		{
-			motorA.Brake();
-			motorB.Brake();
+			M.motL.Brake();
+			M.motR.Brake();
 		}
 	}
 }
