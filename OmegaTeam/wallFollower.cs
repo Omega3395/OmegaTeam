@@ -3,6 +3,7 @@ using System.Threading;
 
 using MonoBrickFirmware;
 using MonoBrickFirmware.Display;
+using MonoBrickFirmware.UserInput;
 
 namespace OmegaTeam
 {
@@ -12,15 +13,17 @@ namespace OmegaTeam
 		//################################################################################
 		//################################################################################
 
-		private const int FDIST = 35;
-		private const int LDIST = 20;
-		private const sbyte SPEED = 10;
+		private const int FDIST = 30;
+		private const int LDIST = 15;
+		private const sbyte SPEED = 20;
 
 		//################################################################################
 		//################################################################################
 
 		private static Sensors S = new Sensors ();
 		private static Motors M = new Motors ();
+
+		private static ButtonEvents Buttons = new ButtonEvents();
 
 		public wallFollower (){
 		}
@@ -29,10 +32,10 @@ namespace OmegaTeam
 			M.Brake ();
 			Thread.Sleep (100);
 
-			M.goFor (30, false, 0.1);  //Necessita calibrazione
+			M.goFor (30, false, 0.1);
 
 			if (S.getDist (true) > FDIST)
-				M.turnRight (180, 0.1);  //Necessita calibrazione
+				M.turnRight (180, 0.1);
 			else
 				M.turnLeft (180, 0.1);
 		}
@@ -111,16 +114,12 @@ namespace OmegaTeam
 
 			while (S.getDist () > FDIST) {
 				M.setSpeed (SPEED, SPEED);
-
-				/*if (S.isSilver ()) {  //Necessita calibrazione
-					avoidSilver();
-				}*/
 			}
 			
 			M.Brake ();
 
 			if (S.getDist (true) > LDIST) {
-				M.turnRight (90, 0.1);  //Necessita calibrazione
+				M.turnRight (90, 0.1);
 
 				while (S.getDist () > LDIST)
 					M.setSpeed (SPEED, SPEED);
@@ -128,7 +127,7 @@ namespace OmegaTeam
 				M.Brake ();
 				Thread.Sleep (100);
 
-				M.turnRight (270, 0.1);  //Necessita calibrazione
+				M.turnLeft (90, 0.1);
 
 			}
 
@@ -147,7 +146,6 @@ namespace OmegaTeam
 			posizionamento ();
 
 			LcdConsole.WriteLine ("Fine Wall-Follower");
-
 		}
 
 	}

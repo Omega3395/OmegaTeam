@@ -26,9 +26,9 @@ namespace OmegaTeam
 		public Sensors() {
 
 			colL = new EV3ColorSensor (SensorPort.In1, ColorMode.Reflection);
-			IR2 = new EV3IRSensor (SensorPort.In2, IRMode.Proximity); //Sensore laterale
-			IR = new EV3IRSensor (SensorPort.In3, IRMode.Proximity); //Sensore anteriore
-			colR = new EV3ColorSensor (SensorPort.In4, ColorMode.Reflection);
+			IR2 = new EV3IRSensor (SensorPort.In3, IRMode.Proximity); //Sensore laterale
+			IR = new EV3IRSensor (SensorPort.In4, IRMode.Proximity); //Sensore anteriore
+			colR = new EV3ColorSensor (SensorPort.In2, ColorMode.Reflection);
 
 		}
 

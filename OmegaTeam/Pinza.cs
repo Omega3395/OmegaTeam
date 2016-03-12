@@ -6,7 +6,7 @@ namespace OmegaTeam
 	public class Pinza
 	{
 		
-		private const int TachoP = 425;
+		private const int TachoP = 500;
 		private bool isopen;
 		private bool isclose;
 
@@ -14,8 +14,8 @@ namespace OmegaTeam
 
 		public Pinza () {
 
-			isopen = true;
-			isclose = false;
+			isopen = false;
+			isclose = true;
 
 		}
 
@@ -33,64 +33,47 @@ namespace OmegaTeam
 
 		public void apri() {
 
-			if (isclose) {
-				bool p = true;
+			bool p = true;
 
-				M.resetTacho ();
-				M.motB.Brake();
+			M.resetTacho ();
 
-				M.motP.SetSpeed(-50);
+			M.motP.SetSpeed(-50);
 
-				do {
-					if (M.motP.GetTachoCount () <= -TachoP ) {
+			do {
+				if (M.motP.GetTachoCount () <= -TachoP ) {
 
-						M.motP.Brake ();
-						p = false;
+					M.motP.Brake ();
+					p = false;
 
-					}
+				}
 
-				} while(p);
+			} while(p);
 
-				isopen = true;
-				isclose = false;
-			}
+			isopen = true;
+			isclose = false;
 		}
 
 		public void chiudi() {
+			bool p = true;
 
-			if (isopen) {
-				
-				bool p = true;
+			M.resetTacho();
 
-				M.resetTacho();
+			M.motP.SetSpeed(50);
 
-				M.motB.SetSpeed(50);
-				Thread.Sleep(100);
-				M.Off();
-
-				M.motP.SetSpeed(50);
-
-				do
+			do
+			{
+				if (M.motP.GetTachoCount() >= TachoP)
 				{
-					if (M.motP.GetTachoCount() >= TachoP)
-					{
 
-						M.motP.Brake();
-						p = false;
+					M.motP.Brake();
+					p = false;
 
-					}
+				}
 
-				} while (p);
+			} while (p);
 
-				M.motB.SetSpeed(-50);
-				Thread.Sleep(750);
-				M.motB.Brake();
-
-				isopen = false;
-				isclose = true;
-
-			}
-
+			isopen = false;
+			isclose = true;
 		}
 	}
 }

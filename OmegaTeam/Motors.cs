@@ -15,8 +15,8 @@ namespace OmegaTeam
 		//################################################################################
 
 		private const sbyte SPEED = 10;
-		private const double CENTIMETERS_CONST = 19.73;
-		private const double TURN_CONST = 2.1;
+		private const double CENTIMETERS_CONST = 34.61;
+		private const double TURN_CONST = 5;
 
 		//################################################################################
 		//################################################################################
@@ -24,16 +24,14 @@ namespace OmegaTeam
 		public Motor motL;
 		public Motor motR;
 		public Motor motP;
-		public Motor motB;
 
 		public Vehicle V = new Vehicle (MotorPort.OutB, MotorPort.OutD);
 
 
 		public Motors () {
 
-			motP = new Motor (MotorPort.OutA);
+			motP = new Motor (MotorPort.OutC);
 			motL = new Motor (MotorPort.OutB);
-			motB = new Motor (MotorPort.OutC);
 			motR = new Motor (MotorPort.OutD);
 		
 		}
@@ -45,7 +43,6 @@ namespace OmegaTeam
 			motL.Brake ();
 			motR.Brake ();
 			motP.Brake ();
-			motB.Brake ();
 		}
 
 		public void Off() {
@@ -53,7 +50,6 @@ namespace OmegaTeam
 			motL.Off ();
 			motR.Off ();
 			motP.Off ();
-			motB.Off ();
 
 		}
 
@@ -62,7 +58,6 @@ namespace OmegaTeam
 			motL.ResetTacho ();
 			motR.ResetTacho ();
 			motP.ResetTacho ();
-			motB.ResetTacho ();
 
 		}
 
@@ -163,13 +158,13 @@ namespace OmegaTeam
 
 			if (correction > 2) {
 				
-				motL.SetSpeed ((sbyte)(SPEED * correction * 1.5));
-				motR.SetSpeed ((sbyte)(-SPEED * correction));
+				motL.SetSpeed ((sbyte)(-SPEED * correction * 1.5));
+				motR.SetSpeed ((sbyte)(SPEED * correction));
 
 			} else {
 				
-				motL.SetSpeed ((sbyte)(SPEED * correction * 0.5));
-				motR.SetSpeed ((sbyte)(-SPEED * correction));
+				motL.SetSpeed ((sbyte)(-SPEED * correction * 0.5));
+				motR.SetSpeed ((sbyte)(SPEED * correction));
 
 			}
 
@@ -183,7 +178,7 @@ namespace OmegaTeam
 
 			resetTacho ();
 
-			setSpeed (SPEED, -SPEED);
+			setSpeed (-SPEED, SPEED);
 			DateTime TIni = DateTime.Now;
 
 			do {
@@ -197,13 +192,13 @@ namespace OmegaTeam
 
 				}
 
-				if (motL.GetTachoCount () <= degrees * TURN_CONST) {
+				if (motL.GetTachoCount () <= -degrees * TURN_CONST) {
 					motL.Brake ();
 					l = false;
 				}
 
 
-				if (motR.GetTachoCount () >= -degrees * TURN_CONST) {
+				if (motR.GetTachoCount () >= degrees * TURN_CONST) {
 					motR.Brake ();
 					r = false;
 				}
@@ -220,13 +215,13 @@ namespace OmegaTeam
 
 			if (correction > 2) {
 
-				motL.SetSpeed ((sbyte)(-SPEED * correction));
-				motR.SetSpeed ((sbyte)(SPEED * correction * 1.5));
+				motL.SetSpeed ((sbyte)(SPEED * correction));
+				motR.SetSpeed ((sbyte)(-SPEED * correction * 1.5));
 
 			} else {
 
-				motL.SetSpeed ((sbyte)(-SPEED * correction));
-				motR.SetSpeed ((sbyte)(SPEED * correction * 0.5));
+				motL.SetSpeed ((sbyte)(SPEED * correction));
+				motR.SetSpeed ((sbyte)(-SPEED * correction * 0.5));
 
 			}
 
