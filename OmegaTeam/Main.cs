@@ -19,15 +19,13 @@ namespace OmegaTeam
 		{
 			M.Brake ();
 
-			/*while (!Brain.stop) {
+			while (!Brain.stop) {
 
 				Brain.lineFollower ();
 
-			}*/
+			}
 
 			//Brain.rescue ();
-
-			wallFollower.run ();
 
 			Thread.Sleep (2000);
 

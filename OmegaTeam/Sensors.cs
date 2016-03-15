@@ -13,47 +13,41 @@ namespace OmegaTeam
 		//################################################################################
 		//################################################################################
 
-		private const short OBSTACLE_DISTANCE = 5; // Distanza a cui si riconosce un ostacolo, in cm
-
 		//################################################################################
 		//################################################################################
 
-		public static EV3ColorSensor colL;
-		public static EV3ColorSensor colR;
-		//public static MSSensorMUXBase IR;
-		//public static MSSensorMUXBase IR2;
-		//public static MSSensorMUXBase IR3;
-		public static EV3TouchSensor Touch;
+		public EV3ColorSensor colL;
+		public EV3ColorSensor colR;
+		public MSSensorMUXBase IR;
+        public MSSensorMUXBase IR2;
+		public MSSensorMUXBase IR3;
+		public EV3TouchSensor Touch;
 
-		public static EV3IRSensor IR2;
-		public static EV3IRSensor IR3;
+		//public static EV3IRSensor IR2;
+		//public static EV3IRSensor IR3;
 
 
 		public Sensors() {
 
-			//IR = new MSSensorMUXBase (SensorPort.In4, MSSensorMUXPort.C1, IRMode.Proximity); // Infrarossi anteriore inferiore
-			//IR2 = new MSSensorMUXBase (SensorPort.In4, MSSensorMUXPort.C2, IRMode.Proximity); // Infrarossi anteriore superiore
-			//IR3 = new MSSensorMUXBase (SensorPort.In4, MSSensorMUXPort.C3, IRMode.Proximity); // Infrarossi laterale (superiore)
+			IR = new MSSensorMUXBase (SensorPort.In4, MSSensorMUXPort.C1, IRMode.Proximity); // Infrarossi anteriore inferiore
+			IR2 = new MSSensorMUXBase (SensorPort.In4, MSSensorMUXPort.C2, IRMode.Proximity); // Infrarossi anteriore superiore
+			IR3 = new MSSensorMUXBase (SensorPort.In4, MSSensorMUXPort.C3, IRMode.Proximity); // Infrarossi laterale (superiore)
 			colL = new EV3ColorSensor (SensorPort.In1, ColorMode.Reflection);
 			colR = new EV3ColorSensor (SensorPort.In2, ColorMode.Reflection);
 			Touch = new EV3TouchSensor (SensorPort.In3);
 
 			//IR = new EV3IRSensor (SensorPort.In3, IRMode.Proximity);
-			IR2= new EV3IRSensor (SensorPort.In4, IRMode.Proximity);
-			IR3 = new EV3IRSensor (SensorPort.In3, IRMode.Proximity);
+			//IR2= new EV3IRSensor (SensorPort.In4, IRMode.Proximity);
+			//IR3 = new EV3IRSensor (SensorPort.In3, IRMode.Proximity);
 
-		}
-
-		public bool isTouched() {
-			return Touch.IsPressed ();
 		}
 
 		public int getDist(sbyte sensor) {
 
 			switch (sensor) {
 
-			//case 1:
-			//	return IR.Read ();
+			case 1:
+				return IR.Read ();
 
 			case 2:
 				return IR2.Read ();
@@ -74,10 +68,7 @@ namespace OmegaTeam
 
 		public bool obstacle() {
 
-			if (getDist(1) < OBSTACLE_DISTANCE)
-				return true;
-
-			return false;
+            return Touch.IsPressed();
 
 		}
 
