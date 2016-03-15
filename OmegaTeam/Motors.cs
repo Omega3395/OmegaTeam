@@ -8,269 +8,277 @@ using MonoBrickFirmware.Display;
 
 namespace OmegaTeam
 {
-	public class Motors
-	{
+    public class Motors
+    {
 
-		//################################################################################
-		//################################################################################
+        //################################################################################
+        //################################################################################
 
-		private const sbyte SPEED = 15;
-		private const double CENTIMETERS_CONST = 34.61;
-		private const double TURN_CONST = 5.42;
+        private const sbyte SPEED = 15;
+        private const double CENTIMETERS_CONST = 34.61;
+        private const double TURN_CONST = 5.48;
 
-		private const double CORRECTION_MAX = 1.5;
-		private const double CORRECTION_MIN = 0.6;
+        //################################################################################
+        //################################################################################
 
-		//################################################################################
-		//################################################################################
+        public Motor motL;
+        public Motor motR;
+        public Motor motP;
 
-		public Motor motL;
-		public Motor motR;
-		public Motor motP;
-
-		public Vehicle V = new Vehicle (MotorPort.OutB, MotorPort.OutD);
+        public Vehicle V = new Vehicle(MotorPort.OutB, MotorPort.OutD);
 
 
-		public Motors () {
+        public Motors() {
 
-			motP = new Motor (MotorPort.OutC);
-			motL = new Motor (MotorPort.OutB);
-			motR = new Motor (MotorPort.OutD);
+            motL = new Motor(MotorPort.OutB);
+            motP = new Motor(MotorPort.OutC);
+            motR = new Motor(MotorPort.OutD);
 		
-		}
+        }
 
-		public sbyte Speed { get { return SPEED; } }
+        public sbyte Speed { get { return SPEED; } }
 
-		public void Brake() {
+        public void Brake() {
 
-			motL.Brake ();
-			motR.Brake ();
-			motP.Brake ();
-		}
+            motL.Brake();
+            motR.Brake();
+            motP.Brake();
+        }
 
-		public void Off() {
+        public void Off() {
 
-			motL.Off ();
-			motR.Off ();
-			motP.Off ();
+            motL.Off();
+            motR.Off();
+            motP.Off();
 
-		}
+        }
 
-		public void resetTacho() {
+        public void resetTacho() {
 
-			motL.ResetTacho ();
-			motR.ResetTacho ();
-			motP.ResetTacho ();
+            motL.ResetTacho();
+            motR.ResetTacho();
+            motP.ResetTacho();
 
-		}
+        }
 
 
-		public void setSpeed(sbyte speedLeft,sbyte speedRight,double timeout=0,bool brake=false){
+        public void setSpeed(sbyte speedLeft, sbyte speedRight, double timeout = 0, bool brake = false) {
 
-			motL.SetSpeed (speedLeft);
-			motR.SetSpeed (speedRight);
+            motL.SetSpeed(speedLeft);
+            motR.SetSpeed(speedRight);
 
-			Thread.Sleep ((int)(timeout * 1000));
+            Thread.Sleep((int)(timeout * 1000));
 
-			if (brake)
-				Brake ();
+            if (brake)
+                Brake();
 
-		}
+        }
 
-		public void goStraight(sbyte speed=SPEED,double timeout=0) {
-						
-			motL.SetSpeed (speed);
-			motR.SetSpeed (speed);
+        public void goStraight(sbyte speed, double timeout = 0, bool brake = false) {
 
-			Thread.Sleep ((int)(timeout * 1000));
+            setSpeed(speed, speed);
 
-		}
+            Thread.Sleep((int)(timeout * 1000));
 
-		public void goFor(int centimeters=0,bool forward=true,double timeout=0) {
+            if (brake)
+                Brake();
 
-			bool l = true, r = true;
+        }
 
-			resetTacho ();
-			DateTime TIni = DateTime.Now;
+        public void goFor(int centimeters = 0, bool forward = true, double timeout = 0) {
 
-			if (forward) {
-				
-				setSpeed (SPEED, SPEED);
+            bool l = true, r = true;
 
-				do {
+            resetTacho();
+            DateTime TIni = DateTime.Now;
 
-					TimeSpan t = DateTime.Now - TIni;
+            if (forward) {
 
-					if (t.Seconds > 20) {
+                setSpeed(SPEED, SPEED);
 
-						Brake ();
-						return;
+                do {
 
-					}
-					if (motL.GetTachoCount () >= centimeters * CENTIMETERS_CONST) {
+                    TimeSpan t = DateTime.Now - TIni;
 
-						motL.Brake ();
-						l = false;
+                    if (t.Seconds > 20) {
 
-					}
-					if (motR.GetTachoCount () >= centimeters * CENTIMETERS_CONST) {
+                        Brake();
+                        return;
 
-						motR.Brake ();
-						r = false;
+                    }
+                    if (motL.GetTachoCount() >= centimeters * CENTIMETERS_CONST) {
 
-					}
+                        motL.Brake();
+                        l = false;
 
-				} while(l || r);
-			} 
+                    }
+                    if (motR.GetTachoCount() >= centimeters * CENTIMETERS_CONST) {
 
-			else {
-				
-				setSpeed (-SPEED, -SPEED);
+                        motR.Brake();
+                        r = false;
 
-				do {
+                    }
 
-					TimeSpan t = DateTime.Now - TIni;
+                } while(l || r);
+            }
+            else {
 
-					if (t.Seconds > 20) {
+                setSpeed(-SPEED, -SPEED);
 
-						Brake ();
-						return;
+                do {
 
-					}
-					if (motL.GetTachoCount () <= -centimeters * CENTIMETERS_CONST) {
+                    TimeSpan t = DateTime.Now - TIni;
 
-						motL.Brake ();
-						l = false;
+                    if (t.Seconds > 20) {
 
-					}
-					if (motR.GetTachoCount () <= -centimeters * CENTIMETERS_CONST) {
+                        Brake();
+                        return;
 
-						motR.Brake ();
-						r = false;
+                    }
+                    if (motL.GetTachoCount() <= -centimeters * CENTIMETERS_CONST) {
 
-					}
+                        motL.Brake();
+                        l = false;
 
-				} while(l || r);
-			}
+                    }
+                    if (motR.GetTachoCount() <= -centimeters * CENTIMETERS_CONST) {
 
-			Thread.Sleep ((int)(timeout * 1000));
-				
-		}
+                        motR.Brake();
+                        r = false;
 
-		public void turnLeft(double timeout=0, double reverse =1) {
+                    }
+
+                } while(l || r);
+            }
+
+            Thread.Sleep((int)(timeout * 1000));
+
+        }
+
+        public void turnLeft(double timeout = 0, bool maxColor = false) {
 			
-			sbyte correction = Brain.correction (0);
+            double correction = Brain.correction(0);
+            double line = 1;
 
-			if (correction >= 2) {
+            if (maxColor)
+                line = 0.5;
+
+            if (correction > 1.5) {
 				
-				motL.SetSpeed ((sbyte)(-SPEED * correction * reverse));
-				motR.SetSpeed ((sbyte)(SPEED * correction));
+                motL.SetSpeed((sbyte)(-SPEED * correction * 1.8 * line));
+                motR.SetSpeed((sbyte)(SPEED * correction));
 
-			} else {
+            }
+            else {
 				
-				motL.SetSpeed ((sbyte)(-SPEED * correction * reverse));
-				motR.SetSpeed ((sbyte)(SPEED * correction));
+                motL.SetSpeed((sbyte)(-SPEED * correction * 0.5 * line));
+                motR.SetSpeed((sbyte)(SPEED * correction));
 
-			}
+            }
 
-			Thread.Sleep ((int)(timeout * 1000));
+            Thread.Sleep((int)(timeout * 1000));
 
-		}
+        }
 
-		public void turnLeft(int degrees,double timeout=0){
+        public void turnRight(double timeout = 0, bool maxColor = false) {
 
-			bool l = true, r = true;
+            double correction = Brain.correction(1);
+            double line = 1;
 
-			resetTacho ();
+            if (maxColor)
+                line = 0.5;
 
-			setSpeed (-SPEED, SPEED);
-			DateTime TIni = DateTime.Now;
+            if (correction > 1.5) {
 
-			do {
+                motL.SetSpeed((sbyte)(SPEED * correction));
+                motR.SetSpeed((sbyte)(-SPEED * correction * 1.8 * line));
 
-				TimeSpan t = DateTime.Now - TIni;
+            }
+            else {
 
-				if (t.Seconds > 20) {
+                motL.SetSpeed((sbyte)(SPEED * correction));
+                motR.SetSpeed((sbyte)(-SPEED * correction * 0.5 * line));
 
-					Brake ();
-					return;
+            }
 
-				}
+            Thread.Sleep((int)(timeout * 1000));
 
-				if (motL.GetTachoCount () <= -degrees * TURN_CONST) {
-					motL.Brake ();
-					l = false;
-				}
+        }
+
+        public void turnLeft(int degrees = 0, double timeout = 0) {
+
+            bool l = true, r = true;
+
+            resetTacho();
+
+            setSpeed(SPEED, -SPEED);
+            DateTime TIni = DateTime.Now;
+
+            do {
+
+                TimeSpan t = DateTime.Now - TIni;
+
+                if (t.Seconds > 20) {
+
+                    Brake();
+                    return;
+
+                }
+
+                if (motL.GetTachoCount() <= degrees * TURN_CONST) {
+                    motL.Brake();
+                    l = false;
+                }
 
 
-				if (motR.GetTachoCount () >= degrees * TURN_CONST) {
-					motR.Brake ();
-					r = false;
-				}
+                if (motR.GetTachoCount() >= -degrees * TURN_CONST) {
+                    motR.Brake();
+                    r = false;
+                }
 
-			} while (l || r);
+            } while (l || r);
 
-			Thread.Sleep ((int)(timeout * 1000));
+            Thread.Sleep((int)(timeout * 1000));
 
-		}
+        }
 
-		public void turnRight(double timeout=0, double reverse =1) {
+        public void turnRight(int degrees = 0, double timeout = 0) {
 
-			sbyte correction = Brain.correction (1);
+            bool l = true, r = true;
 
-			if (correction >= 2) {
+            resetTacho();
 
-				motL.SetSpeed ((sbyte)(SPEED * correction));
-				motR.SetSpeed ((sbyte)(-SPEED * correction * reverse));
+            setSpeed(SPEED, -SPEED);
+            DateTime TIni = DateTime.Now;
 
-			} else {
+            do {
 
-				motL.SetSpeed ((sbyte)(SPEED * correction));
-				motR.SetSpeed ((sbyte)(-SPEED * correction * reverse));
+                TimeSpan t = DateTime.Now - TIni;
 
-			}
+                if (t.Seconds > 20) {
 
-			Thread.Sleep ((int)(timeout * 1000));
+                    Brake();
+                    return;
 
-		}
+                }
 
-		public void turnRight(int degrees,double timeout=0){
+                if (motL.GetTachoCount() >= degrees * TURN_CONST) {
+                    motL.Brake();
+                    l = false;
+                }
 
-			bool l = true, r = true;
+                if (motR.GetTachoCount() <= -degrees * TURN_CONST) {
+                    motR.Brake();
+                    r = false;
+                }
 
-			resetTacho ();
+            } while (l || r);
 
-			setSpeed (SPEED, -SPEED);
-			DateTime TIni = DateTime.Now;
+            Thread.Sleep((int)(timeout * 1000));
 
-			do {
+        }
 
-				TimeSpan t = DateTime.Now - TIni;
+        //
 
-				if (t.Seconds > 20) {
-
-					Brake ();
-					return;
-
-				}
-
-				if (motL.GetTachoCount () >= degrees * TURN_CONST) {
-					motL.Brake ();
-					l = false;
-				}
-
-				if (motR.GetTachoCount () <= -degrees * TURN_CONST) {
-					motR.Brake ();
-					r = false;
-				}
-
-			} while (l || r);
-
-			Thread.Sleep ((int)(timeout * 1000));
-
-		}
-
-		//
-
-	}
+    }
 }

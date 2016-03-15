@@ -1,79 +1,75 @@
 ﻿using System;
 using System.Threading;
 
-namespace OmegaTeam
-{
-	public class Pinza
-	{
-		
-		private const int TachoP = 425;
-		private bool isopen;
-		private bool isclose;
+namespace OmegaTeam {
+    public class Pinza {
 
-		private static Motors M = new Motors ();
+        private const int TachoP = 425;
+        private bool isopen;
+        private bool isclose;
 
-		public Pinza () {
+        private static Motors M = new Motors();
 
-			isopen = false;
-			isclose = true;
+        public Pinza() {
 
-		}
+            isopen = false;
+            isclose = true;
 
-		private bool isOpen() {
+        }
 
-			return isopen;
+        private bool isOpen() {
 
-		}
+            return isopen;
 
-		private bool isClose() {
+        }
 
-			return isclose;
+        private bool isClose() {
 
-		}
+            return isclose;
 
-		public void apri() {
+        }
 
-			bool p = true;
+        public void apri() {
 
-			M.resetTacho ();
+            bool p = true;
 
-			M.motP.SetSpeed(-50);
+            M.resetTacho();
 
-			do {
-				if (M.motP.GetTachoCount () <= -TachoP ) {
+            M.motP.SetSpeed(-50);
 
-					M.motP.Brake ();
-					p = false;
+            do {
+                if (M.motP.GetTachoCount() <= -TachoP) {
 
-				}
+                    M.motP.Brake();
+                    p = false;
 
-			} while(p);
+                }
 
-			isopen = true;
-			isclose = false;
-		}
+            } while(p);
 
-		public void chiudi() {
-			bool p = true;
+            isopen = true;
+            isclose = false;
+        }
 
-			M.resetTacho();
+        public void chiudi() {
+            bool p = true;
 
-			M.motP.SetSpeed(50);
+            M.resetTacho();
 
-			do
-			{
-				if (M.motP.GetTachoCount() >= TachoP)
-				{
+            M.motP.SetSpeed(50);
 
-					M.motP.Brake();
-					p = false;
+            do {
+                if (M.motP.GetTachoCount() >= TachoP) {
 
-				}
+                    M.motP.Brake();
+                    p = false;
 
-			} while (p);
+                }
 
-			isopen = false;
-			isclose = true;
-		}
-	}
+            } while (p);
+
+            isopen = false;
+            isclose = true;
+        }
+    }
 }

@@ -1,207 +1,91 @@
-﻿using System;
+﻿/*using System;
 using System.Threading;
 
 using MonoBrickFirmware;
 using MonoBrickFirmware.Display;
-using MonoBrickFirmware.UserInput;
 
 namespace OmegaTeam
 {
-    public class wallFollower
-    {
+	public class wallFollower
+	{
 
-        //################################################################################
-        //################################################################################
+		private static Sensors S = new Sensors ();
+		private static Motors M = new Motors ();
 
-        public const int FDIST = 30;
-        public const int LDIST = 20;
-        public const int ERROR = 2;
-        public const int OUT_ERROR = 20;
-        public const sbyte CORRECTION = 5;
-        private const sbyte SPEED = 20;
+		public wallFollower (){
+		}
 
-        //################################################################################
-        //################################################################################
+		private static void posizionamento() {
 
-        private static Sensors S = new Sensors();
-        private static Motors M = new Motors();
+			LcdConsole.WriteLine ("Inizio Posizionamento");
 
-        public wallFollower()
-        {
-        }
+			while (S.getDist () > 35 && S.getDist (true) > 20)
+				
+				M.setSpeed (M.Speed, M.Speed);
 
-        private static void avoidSilver()
-        {
-            LcdConsole.WriteLine("RIENTRATA");
+			M.Brake ();
+			Thread.Sleep (100);
 
-            M.Brake();
-            Thread.Sleep(100);
+			if (S.getDist () <= 35) {
 
-            M.goFor(30, false, 0.1);
+				while (S.getDist (true) >= 20) {
+					M.V.SpinLeft (M.Speed);
+				}
 
-            if (S.getDist(3) > FDIST)
-                M.turnRight(180, 0.1);
-            else
-                M.turnLeft(180, 0.1);
-        }
+				M.Brake ();
+			}
 
-        private static void primo_Posizionamento()
-        {
+			if (S.getDist (true) <= 20) {
 
-            LcdConsole.WriteLine("Inizio posizionamento");
-            LcdConsole.WriteLine("Fase 1-1");
+				LcdConsole.WriteLine ("Inizio 2"); //Temporaneo
 
-            while (S.getDist(2) > FDIST && S.getDist(3) > LDIST)
-                M.setSpeed(SPEED, SPEED);
+				bool stop = false;
+				int distanza = 0;
 
-            M.Brake();
-            Thread.Sleep(100);
+				M.V.SpinLeft (M.Speed);
 
-            if (S.getDist(2) <= FDIST)
-            {
+				while (!stop) {
 
-                while (S.getDist(3) >= FDIST)
-                {
-                    M.V.SpinLeft(SPEED);
-                }
+					distanza = S.getDist (true);
+					Thread.Sleep (50);
 
-                M.Brake();
-            }
+					while (S.getDist (true) > distanza)
 
-            if (S.getDist(3) <= FDIST)
-            {
+						M.V.SpinRight (M.Speed);
 
-                LcdConsole.WriteLine("Fase 1-2");
+					if (S.getDist (true) <= distanza) {
 
-                bool stop = false;
-                int distanza = 0;
+						int minimo = S.getDist (true);
+						Thread.Sleep (50);
 
-                M.V.SpinLeft(SPEED);
+						while (S.getDist (true) <= minimo) {
 
-                while (!stop)
-                {
+							minimo = S.getDist (true);
+							Thread.Sleep (50);
 
-                    distanza = S.getDist(3);
-                    Thread.Sleep(50);
+						}
 
-                    while (S.getDist(3) > distanza)
+						stop = true;
+					}
+				}
+			}
 
-                        M.V.SpinRight(SPEED);
+			M.Brake ();
 
-                    if (S.getDist(3) <= distanza)
-                    {
+			LcdConsole.WriteLine ("Fine posizionamento");
 
-                        int minimo = S.getDist(3);
-                        Thread.Sleep(50);
+			Thread.Sleep (2000);
+		}
 
-                        while (S.getDist(3) <= minimo)
-                        {
+		public static void run(){
 
-                            minimo = S.getDist(3);
-                            Thread.Sleep(50);
+			LcdConsole.WriteLine ("Inizio Wall-Follower");
 
-                        }
+			posizionamento ();
 
-                        stop = true;
-                    }
-                }
-            }
+			LcdConsole.WriteLine ("Fine Wall-Follower");
 
-            M.Brake();
+		}
 
-            Thread.Sleep(500);
-        }
-
-        private static void secondo_Posizionamento()
-        {
-
-            LcdConsole.WriteLine("Fase 2");
-
-            while (S.getDist(2) < FDIST)
-                M.setSpeed(-SPEED, -SPEED);
-
-            while (S.getDist(2) > FDIST)
-            {
-                M.setSpeed(SPEED, SPEED);
-            }
-
-            M.Brake();
-
-            if (S.getDist(3) > LDIST)
-            {
-                M.turnRight(90, 0.1);
-
-                while (S.getDist(2) > LDIST)
-                    M.setSpeed(SPEED, SPEED);
-
-                M.Brake();
-                Thread.Sleep(100);
-
-                M.turnLeft(90, 0.1);
-
-            }
-
-            LcdConsole.WriteLine("Fine posizionamento");
-        }
-
-        private static void trovaAngolo()
-        {
-            LcdConsole.WriteLine("Ricerca angolo");
-
-            while (!S.obstacle())
-            {
-                if (S.getDist(2) >= FDIST && S.isNearTheWall())
-                    M.setSpeed(SPEED, SPEED);
-
-                if (S.getDist(2) >= FDIST && S.getDist(3) < LDIST - ERROR)
-                    M.setSpeed(SPEED - CORRECTION, SPEED + CORRECTION);
-
-                if (S.getDist(2) >= FDIST && S.getDist(3) > LDIST + ERROR)
-                {
-
-                    if (S.getDist(3) > LDIST + OUT_ERROR)
-                    {
-                        LcdConsole.WriteLine("USCITA");
-                        avoidSilver();
-                        posizionamento();
-                    }
-                    else
-                    {
-                        M.setSpeed(SPEED + CORRECTION, SPEED - CORRECTION);
-                    }
-                }
-
-                if (S.getDist(2) <= FDIST)
-                {
-                    M.turnLeft(90);
-
-                    while (!S.isNearTheWall())
-                        M.setSpeed(SPEED + CORRECTION, SPEED - CORRECTION);
-                }
-            }
-
-            LcdConsole.WriteLine("Angolo trovato");
-        }
-
-        private static void posizionamento()
-        {
-            primo_Posizionamento();
-            secondo_Posizionamento();
-        }
-
-        public static void run()
-        {
-
-            LcdConsole.WriteLine("Inizio Wall-Follower");
-
-            posizionamento();
-
-            Thread.Sleep(500);
-
-            trovaAngolo();
-
-            LcdConsole.WriteLine("Fine Wall-Follower");
-        }
-
-    }
-}
+	}
+}*/

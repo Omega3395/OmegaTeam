@@ -7,159 +7,149 @@ using MonoBrickFirmware.UserInput;
 
 namespace OmegaTeam
 {
-	public class Brain
-	{
+    public class Brain
+    {
 
-		//################################################################################
-		//################################################################################
+        //################################################################################
+        //################################################################################
 
-		private static sbyte[] BLACK = { 25, 25 }; // Valore per cui viene attivato "nero"
-		private static sbyte[] WHITE = { 60, 60 }; // Valore per cui viene attivato "bianco"
-		public static bool stop = false;
+        private static sbyte[] BLACK = { 30, 30 };
+        // Valore per cui viene attivato "nero"
+        private static sbyte[] WHITE = { 50, 50 };
+        public static bool stop = false;
 
-		//################################################################################
-		//################################################################################
+        //################################################################################
+        //################################################################################
 
-		private static Sensors S = new Sensors ();
-		private static Motors M = new Motors ();
+        private static Sensors S = new Sensors();
+        private static Motors M = new Motors();
 
-		private static ButtonEvents Buttons = new ButtonEvents();
+        private static ButtonEvents Buttons = new ButtonEvents();
 
-		public Brain () {
-		}
+        public Brain() {
+        }
 
-		private static bool state(sbyte sensor) {
+        private static bool state(sbyte sensor) {
+			
+            sbyte colorValue = S.getColor(sensor);
 
-			sbyte white = BLACK [sensor];
-			sbyte black = WHITE [sensor];
+            if (colorValue <= BLACK[sensor])
+                return true; // Sono sul nero, necessito di correzione
 
-			sbyte colorValue = S.getColor (sensor);
+            return false; // Sono a metà, non necessito di correzione
 
-			if (colorValue >= white) {
+        }
 
-				return false; // Sono sul bianco o quasi
+        public static double correction(sbyte sensor) {
 
-			}
+            return Math.Abs(WHITE[sensor] - S.getColor(sensor)) * 0.05; // Formula per calcolare la correzione di posizione
 
-			if (colorValue <= black) {
+        }
 
-				return true; // Sono sul nero o sulla soglia del nero
+        private static void print(string a) {
+			
+            LcdConsole.WriteLine(a);
 
-			}
+        }
 
-			return false; // Sono a metà, risulto bianco
+        private static void avoidObstacle() {
 
-		}
+            M.turnRight(0, 90);
 
-		public static sbyte correction(sbyte sensor) {
+            M.V.TurnLeftForward(M.Speed, 80, 1200, true).WaitOne();
 
-			return (sbyte)(Math.Abs (WHITE [sensor] - S.getColor (sensor)) * 0.05); // Formula per calcolare la correzione di posizione
+        }
 
-		}
+        public static void lineFollower() {
 
-		private static void print(string a) {
+            bool CL = state(0); // Bianco o nero?
+            bool CR = state(1);
+            bool SILVER = (S.getColor(0) >= 90 && S.getColor(1) >= 90);
 
-			LcdConsole.WriteLine (a);
+            if (!CL && !CR) { // Bianco Bianco
 
-		}
+                M.goStraight(M.Speed, 0.1);
 
-		private static void avoidObstacle() {
+            }
 
-			M.turnRight (90, 0.1);
+            if (CL && !CR) { //Nero Bianco
 
-			M.V.TurnLeftForward (20, 70, 1800, false).WaitOne ();
+                M.turnLeft(0.1);
 
-		}
+            }
 
-		public static void lineFollower() {
+            if (!CL && CR) { //Bianco Nero
 
-			bool CL = state (0); // Bianco o nero?
-			bool CR = state (1);
-			bool SILVER = (S.getColor (0) >= 90 && S.getColor (1) >= 90);
+                M.turnRight(0.1);
 
-			if (!CL && !CR) { // Bianco Bianco
+            }
 
-				M.goStraight (15, 0.1);
+            if (S.obstacle()) { // Attenzione... Ostacolo rilevato!
 
-			}
+                print("Ostacolo!");
+                avoidObstacle();
 
-			if (CL && !CR) { //Nero Bianco
+            }
 
-				M.turnLeft (0.1, correction (0));
+            if (SILVER) {
 
-			}
+                stop = true;
 
-			if (!CL && CR) { //Bianco Nero
+            }
 
-				M.turnRight (0.1, correction (1));
+            if (CL && CR) { // Nero Nero, forse Verde?
 
-			}
+                M.Brake();
 
-			if (S.obstacle ()) { // Attenzione... Ostacolo rilevato!
+                bool[] green = S.isGreen();
 
-				print ("Ostacolo!");
-				avoidObstacle ();
+                bool GL = green[0];
+                bool GR = green[1];
 
-			}
+                if (GL) { // Verde a sinistra
 
-			if (SILVER) {
+                    print("Verde sinistra");
+                    M.goStraight(M.Speed, 0.2);
+                    M.setSpeed(-2, 20, 0.8);
 
-				stop = true;
+                }
 
-			}
+                if (GR) { // Verde a destra
 
-			if (CL && CR) { // Nero Nero, forse Verde?
+                    print("Verde destra");
+                    M.goStraight(M.Speed, 0.2);
+                    M.setSpeed(20, -2, 0.8);
 
-				M.Brake ();
+                }
 
-				bool[] green = S.isGreen ();
+                if (!GL && !GR) { // Nero nero
 
-				bool GL = green [0];
-				bool GR = green [1];
+                    M.Brake();
 
-				if (GL) { // Verde a sinistra
+                    if (S.getMaxColor()) { // Quale sensore è più sul bianco? 0 (sinistra) o 1 (destra)
+                        M.turnLeft(0.2, true); // Il sensore destra è più sul bianco
+                    }
+                    else {
+                        M.turnRight(0.2, true); // Il sensore sinistra è più sul bianco
+                    }
 
-					print ("Verde sinistra");
-					M.goStraight (M.Speed, 0.2);
-					M.turnLeft (30);
+                }
 
-				}
+            }
 
-				if (GR) { // Verde a destra
 
-					print ("Verde destra");
-					M.goStraight (M.Speed, 0.2);
-					M.turnRight (30);
+            Buttons.EscapePressed += () => {
 
-				}
+                stop = true;
+                print("Fine seguilinea");
 
-				if (!GL && !GR) { // Nero nero
+            };
 
-					M.goStraight (M.Speed, 0.2);
+        }
 
-					if (S.getMaxColor ()) { // Quale sensore è più sul bianco? 0 (sinistra) o 1 (destra)
-						M.turnLeft (0.2,2); // Il sensore destra è più sul bianco
-					} else {
-						M.turnRight (0.2,2); // Il sensore sinistra è più sul bianco
-					}
+        public static void rescue() {
 
-				}
+        }
 
-			}
-
-
-			Buttons.EscapePressed += () => {
-
-				stop=true;
-				print("Fine seguilinea");
-
-			};
-
-		}
-
-		public static void rescue () {
-
-		}
-
-	}
+    }
 }
