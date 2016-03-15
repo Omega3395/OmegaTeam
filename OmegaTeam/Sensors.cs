@@ -13,19 +13,18 @@ namespace OmegaTeam
 		//################################################################################
 		//################################################################################
 
+		private const int OBSTACLE_DISTANCE = 5;
+
 		//################################################################################
 		//################################################################################
 
 		public EV3ColorSensor colL;
 		public EV3ColorSensor colR;
+
 		public MSSensorMUXBase IR;
         public MSSensorMUXBase IR2;
 		public MSSensorMUXBase IR3;
 		public EV3TouchSensor Touch;
-
-		//public static EV3IRSensor IR2;
-		//public static EV3IRSensor IR3;
-
 
 		public Sensors() {
 
@@ -35,10 +34,6 @@ namespace OmegaTeam
 			colL = new EV3ColorSensor (SensorPort.In1, ColorMode.Reflection);
 			colR = new EV3ColorSensor (SensorPort.In2, ColorMode.Reflection);
 			Touch = new EV3TouchSensor (SensorPort.In3);
-
-			//IR = new EV3IRSensor (SensorPort.In3, IRMode.Proximity);
-			//IR2= new EV3IRSensor (SensorPort.In4, IRMode.Proximity);
-			//IR3 = new EV3IRSensor (SensorPort.In3, IRMode.Proximity);
 
 		}
 
@@ -68,7 +63,10 @@ namespace OmegaTeam
 
 		public bool obstacle() {
 
-            return Touch.IsPressed();
+			if (getDist(1) <= OBSTACLE_DISTANCE)
+				return true;
+
+			return false;
 
 		}
 

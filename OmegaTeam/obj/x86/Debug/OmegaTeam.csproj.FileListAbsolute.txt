@@ -1,12 +1,5 @@
 C:\Users\a.giacalone\Desktop\OmegaTeam\OmegaTeam\bin\Debug\OmegaTeam.exe
 C:\Users\a.giacalone\Desktop\OmegaTeam\OmegaTeam\bin\Debug\OmegaTeam.pdb
 C:\Users\a.giacalone\Desktop\OmegaTeam\OmegaTeam\bin\Debug\MonoBrickFirmware.dll
-C:\Users\a.giacalone\Desktop\OmegaTeam\OmegaTeam\obj\x86\Debug\OmegaTeam.csprojResolveAssemblyReference.cache
 C:\Users\a.giacalone\Desktop\OmegaTeam\OmegaTeam\obj\x86\Debug\OmegaTeam.exe
 C:\Users\a.giacalone\Desktop\OmegaTeam\OmegaTeam\obj\x86\Debug\OmegaTeam.pdb
-C:\Users\f.letodipriolo\Documents\GitHub\OmegaTeam\OmegaTeam\obj\x86\Debug\OmegaTeam.exe
-C:\Users\f.letodipriolo\Documents\GitHub\OmegaTeam\OmegaTeam\obj\x86\Debug\OmegaTeam.csprojResolveAssemblyReference.cache
-C:\Users\f.letodipriolo\Documents\GitHub\OmegaTeam\OmegaTeam\bin\Debug\OmegaTeam.exe
-C:\Users\f.letodipriolo\Documents\GitHub\OmegaTeam\OmegaTeam\bin\Debug\OmegaTeam.pdb
-C:\Users\f.letodipriolo\Documents\GitHub\OmegaTeam\OmegaTeam\bin\Debug\MonoBrickFirmware.dll
-C:\Users\f.letodipriolo\Documents\GitHub\OmegaTeam\OmegaTeam\obj\x86\Debug\OmegaTeam.pdb

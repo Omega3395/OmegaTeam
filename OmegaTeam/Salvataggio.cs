@@ -12,12 +12,16 @@ namespace OmegaTeam
 		public static void  Salva()
 		{
 			//for (int j = 0; j < 6; j++) {
-				if (!fine) {
-					CaricaPallina ();
-					B.EnterPressed += () => {
-						fine = true;
-					};
-				}
+			if (!fine) {
+				CaricaPallina ();
+				wallFollower.run ();
+				B.EnterPressed += () => {
+					fine = true;
+				};
+			} else {
+				fine = false;
+				Salva ();
+			}
 			//}
 		}
 
@@ -68,10 +72,11 @@ namespace OmegaTeam
 			LcdConsole.WriteLine("POSIZIONANDO ROBOT...");
 			if (!fine)
 			{
-				M.motL.SetSpeed(45);
-				M.motR.SetSpeed(45);
-				Thread.Sleep(4000);
-				M.V.Brake();
+				M.goFor (60);
+				M.Brake ();
+				M.turnLeft (90);
+				M.goFor (25);
+				M.Brake();
 				B.EnterPressed += () => {
 					fine = true;
 				};

@@ -17,6 +17,7 @@ namespace OmegaTeam
 
 		public static void Main (string[] args)
 		{
+
 			M.Brake ();
 
 			while (!Brain.stop) {
@@ -24,7 +25,7 @@ namespace OmegaTeam
 				Brain.lineFollower ();
 
 			}
-
+				
 			//Brain.rescue ();
 
 			Thread.Sleep (2000);

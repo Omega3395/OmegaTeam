@@ -13,9 +13,9 @@ namespace OmegaTeam
         //################################################################################
         //################################################################################
 
-        public const int FDIST = 25;
-        public const int LDIST = 15;
-        public const int ERROR = 1;
+        public const int FDIST = 30;
+        public const int LDIST = 20;
+        public const int ERROR = 2;
         public const int OUT_ERROR = 20;
         public const sbyte CORRECTION = 5;
         private const sbyte SPEED = 20;

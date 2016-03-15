@@ -16,7 +16,10 @@ namespace OmegaTeam
 
 		private const sbyte SPEED = 15;
 		private const double CENTIMETERS_CONST = 34.61;
-		private const double TURN_CONST = 5;
+		private const double TURN_CONST = 5.42;
+
+		private const double CORRECTION_MAX = 1.5;
+		private const double CORRECTION_MIN = 0.6;
 
 		//################################################################################
 		//################################################################################
@@ -154,18 +157,18 @@ namespace OmegaTeam
 				
 		}
 
-		public void turnLeft(double timeout=0) {
+		public void turnLeft(double timeout=0, double reverse =1) {
 			
 			sbyte correction = Brain.correction (0);
 
-			if (correction > 2) {
+			if (correction >= 2) {
 				
-				motL.SetSpeed ((sbyte)(-SPEED * correction * 1.5));
+				motL.SetSpeed ((sbyte)(-SPEED * correction * reverse));
 				motR.SetSpeed ((sbyte)(SPEED * correction));
 
 			} else {
 				
-				motL.SetSpeed ((sbyte)(-SPEED * correction * 0.8));
+				motL.SetSpeed ((sbyte)(-SPEED * correction * reverse));
 				motR.SetSpeed ((sbyte)(SPEED * correction));
 
 			}
@@ -211,19 +214,19 @@ namespace OmegaTeam
 
 		}
 
-		public void turnRight(double timeout=0) {
+		public void turnRight(double timeout=0, double reverse =1) {
 
 			sbyte correction = Brain.correction (1);
 
-			if (correction > 2) {
+			if (correction >= 2) {
 
 				motL.SetSpeed ((sbyte)(SPEED * correction));
-				motR.SetSpeed ((sbyte)(-SPEED * correction * 1.5));
+				motR.SetSpeed ((sbyte)(-SPEED * correction * reverse));
 
 			} else {
 
 				motL.SetSpeed ((sbyte)(SPEED * correction));
-				motR.SetSpeed ((sbyte)(-SPEED * correction * 0.8));
+				motR.SetSpeed ((sbyte)(-SPEED * correction * reverse));
 
 			}
 

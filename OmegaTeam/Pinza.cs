@@ -6,7 +6,7 @@ namespace OmegaTeam
 	public class Pinza
 	{
 		
-		private const int TachoP = 500;
+		private const int TachoP = 425;
 		private bool isopen;
 		private bool isclose;
 
