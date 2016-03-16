@@ -5,8 +5,10 @@ using System.Linq;
 using MonoBrickFirmware;
 using MonoBrickFirmware.Sensors;
 
-namespace OmegaTeam {
-    public class Sensors {
+namespace OmegaTeam
+{
+    public class Sensors
+    {
 
         //################################################################################
         //################################################################################
@@ -22,7 +24,7 @@ namespace OmegaTeam {
         public MSSensorMUXBase IR;
         public MSSensorMUXBase IR2;
         public MSSensorMUXBase IR3;
-
+        public EV3TouchSensor Touch;
 
         public Sensors() {
 
@@ -32,6 +34,8 @@ namespace OmegaTeam {
             IR = new MSSensorMUXBase(SensorPort.In4, MSSensorMUXPort.C1, IRMode.Proximity); // Infrarossi anteriore inferiore
             IR2 = new MSSensorMUXBase(SensorPort.In4, MSSensorMUXPort.C2, IRMode.Proximity); // Infrarossi anteriore inferiore
             IR3 = new MSSensorMUXBase(SensorPort.In4, MSSensorMUXPort.C3, IRMode.Proximity); // Infrarossi anteriore inferiore
+
+            Touch = new EV3TouchSensor(SensorPort.In3);
 
         }
 
@@ -67,11 +71,11 @@ namespace OmegaTeam {
 
         public bool getMaxColor() { // Restituisci il sensore più sul bianco
 
-            if (getColor(0) == 1) {
-                return true;
+            if (getColor(0) > getColor(1)) {
+                return false;
             }
             else {
-                return false;
+                return true;
             }
 
         }

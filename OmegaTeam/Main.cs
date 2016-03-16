@@ -4,13 +4,15 @@ using System.Threading;
 using MonoBrickFirmware;
 using MonoBrickFirmware.Display;
 
- // Da rimuovere
+// Da rimuovere
 using MonoBrickFirmware.UserInput;
 
- // Da rimuovere
+// Da rimuovere
 
-namespace OmegaTeam {
-    class MainClass {
+namespace OmegaTeam
+{
+    class MainClass
+    {
 		
         public static Sensors S = new Sensors();
         public static Motors M = new Motors();
@@ -18,6 +20,7 @@ namespace OmegaTeam {
 
 
         public static void Main(string[] args) {
+            
             M.Brake();
 
             while (!Brain.stop) {
@@ -28,6 +31,7 @@ namespace OmegaTeam {
             }
 			
             //Brain.rescue ();
+            Salvataggio.Salva();
 
             Thread.Sleep(2000);
 

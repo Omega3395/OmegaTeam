@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Threading;
 
-namespace OmegaTeam {
-    public class Pinza {
+namespace OmegaTeam
+{
+    public class Pinza
+    {
 
-        private const int TachoP = 425;
+        private const int TachoP = 700;
         private bool isopen;
         private bool isclose;
 

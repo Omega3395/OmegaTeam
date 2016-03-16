@@ -54,7 +54,7 @@ namespace OmegaTeam
 
         private static void avoidObstacle() {
 
-            M.turnRight(0, 90);
+            M.turnRight(90);
 
             M.V.TurnLeftForward(M.Speed, 80, 1200, true).WaitOne();
 
@@ -65,6 +65,47 @@ namespace OmegaTeam
             bool CL = state(0); // Bianco o nero?
             bool CR = state(1);
             bool SILVER = (S.getColor(0) >= 90 && S.getColor(1) >= 90);
+
+            if (CL && CR) { // Nero Nero, forse Verde?
+
+                M.Brake();
+                M.goStraight((sbyte)(-M.Speed), 0.2, true);
+
+                bool[] green = S.isGreen();
+
+                bool GL = green[0];
+                bool GR = green[1];
+
+                if (GL) { // Verde a sinistra
+
+                    print("Verde sinistra");
+                    M.goStraight(M.Speed, 0.2);
+                    M.setSpeed(-2, 20, 0.8);
+
+                }
+
+                if (GR) { // Verde a destra
+
+                    print("Verde destra");
+                    M.goStraight(M.Speed, 0.2);
+                    M.setSpeed(20, -2, 0.8);
+
+                }
+
+                if (!GL && !GR) { // Nero nero
+
+                    M.Brake();
+
+                    if (S.getMaxColor()) { // Quale sensore è più sul bianco? 0 (sinistra) o 1 (destra)
+                        M.turnLeft(0.2); // Il sensore destra è più sul bianco
+                    }
+                    else {
+                        M.turnRight(0.2); // Il sensore sinistra è più sul bianco
+                    }
+
+                }
+
+            }
 
             if (!CL && !CR) { // Bianco Bianco
 
@@ -97,45 +138,7 @@ namespace OmegaTeam
 
             }
 
-            if (CL && CR) { // Nero Nero, forse Verde?
 
-                M.Brake();
-
-                bool[] green = S.isGreen();
-
-                bool GL = green[0];
-                bool GR = green[1];
-
-                if (GL) { // Verde a sinistra
-
-                    print("Verde sinistra");
-                    M.goStraight(M.Speed, 0.2);
-                    M.setSpeed(-2, 20, 0.8);
-
-                }
-
-                if (GR) { // Verde a destra
-
-                    print("Verde destra");
-                    M.goStraight(M.Speed, 0.2);
-                    M.setSpeed(20, -2, 0.8);
-
-                }
-
-                if (!GL && !GR) { // Nero nero
-
-                    M.Brake();
-
-                    if (S.getMaxColor()) { // Quale sensore è più sul bianco? 0 (sinistra) o 1 (destra)
-                        M.turnLeft(0.2, true); // Il sensore destra è più sul bianco
-                    }
-                    else {
-                        M.turnRight(0.2, true); // Il sensore sinistra è più sul bianco
-                    }
-
-                }
-
-            }
 
 
             Buttons.EscapePressed += () => {

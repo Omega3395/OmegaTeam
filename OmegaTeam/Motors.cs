@@ -16,7 +16,7 @@ namespace OmegaTeam
 
         private const sbyte SPEED = 15;
         private const double CENTIMETERS_CONST = 34.61;
-        private const double TURN_CONST = 5.48;
+        private const double TURN_CONST = 14;
 
         //################################################################################
         //################################################################################
@@ -165,13 +165,13 @@ namespace OmegaTeam
 
             if (correction > 1.5) {
 				
-                motL.SetSpeed((sbyte)(-SPEED * correction * 1.8 * line));
+                motL.SetSpeed((sbyte)(-SPEED * correction * 1.4 * line));
                 motR.SetSpeed((sbyte)(SPEED * correction));
 
             }
             else {
 				
-                motL.SetSpeed((sbyte)(-SPEED * correction * 0.5 * line));
+                motL.SetSpeed((sbyte)(-SPEED * correction * 0.3 * line));
                 motR.SetSpeed((sbyte)(SPEED * correction));
 
             }
@@ -191,7 +191,7 @@ namespace OmegaTeam
             if (correction > 1.5) {
 
                 motL.SetSpeed((sbyte)(SPEED * correction));
-                motR.SetSpeed((sbyte)(-SPEED * correction * 1.8 * line));
+                motR.SetSpeed((sbyte)(-SPEED * correction * 1.5 * line));
 
             }
             else {
