@@ -59,7 +59,7 @@ namespace OmegaTeam
             Differenze();
             DIffMax();
             Allineamento();
-            M.turnRight(180);
+            //M.turnRight(180);
             P.apri();
             Thread.Sleep(800);
             Avvicinamento();
@@ -75,7 +75,7 @@ namespace OmegaTeam
             if (!fine) {
                 M.goFor(60);
                 M.Brake();
-                M.turnLeft(90);
+                //M.turnLeft(90);
                 M.goFor(35);
                 M.Brake();
                 B.EnterPressed += () => {

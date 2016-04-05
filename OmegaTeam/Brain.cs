@@ -29,7 +29,7 @@ namespace OmegaTeam
         public Brain() {
         }
 
-        private static bool state(sbyte sensor) {
+        private static bool getState(sbyte sensor) {
 			
             sbyte colorValue = S.getColor(sensor);
 
@@ -40,7 +40,7 @@ namespace OmegaTeam
 
         }
 
-        public static double correction(sbyte sensor) {
+        public static double getCorrection(sbyte sensor) {
 
             //return Math.Abs(WHITE[sensor] - S.getColor(sensor)) * 0.05; // Formula per calcolare la correzione di posizione
 
@@ -49,7 +49,6 @@ namespace OmegaTeam
 				currentColor = WHITE [sensor];
 
 			return Math.Pow (Math.Pow (S.getColor (sensor) - WHITE [sensor], 2), 1.0 / 3); //y=3°root((x^2-whiteval)^2)
-
         }
 
         private static void print(string a) {
@@ -58,18 +57,19 @@ namespace OmegaTeam
 
         }
 
-        private static void avoidObstacle() {
+        /*private static void avoidObstacle() {
 
             M.turnRight(90);
 
             M.V.TurnLeftForward(M.Speed, 80, 1200, true).WaitOne();
 
-        }
+        }*/
 
         public static void lineFollower() {
 
-            bool CL = state(0);
-            bool CR = state(1);
+            bool CL = getState(0);
+			bool CR = getState(1);
+
             bool SILVER = (S.getColor(0) >= 90 && S.getColor(1) >= 90);
 
 			if (CL && CR) {
@@ -118,7 +118,7 @@ namespace OmegaTeam
 			if (S.obstacle()) {
 
 				print("Ostacolo!");
-				avoidObstacle();
+				//avoidObstacle();
 
 			}
 

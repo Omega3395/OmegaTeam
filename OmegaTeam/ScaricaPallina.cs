@@ -17,11 +17,11 @@ namespace OmegaTeam
             if (!Salvataggio.fine)                          //se in alto a destra    M.turnRight(90);   M.turnLeft(90);   M.turnLeft(135); 
                 Avvicinamento3();
             if (!Salvataggio.fine)                          //se in basso a sinistra   M.turnLeft(90);    M.turnLeft(90);   M.turnLeft(135);
-                M.turnLeft(90);
+                //M.turnLeft(90);
             if (!Salvataggio.fine)                          //se in basso a destra   M.turnRight(90);    M.turnRight(90);    M.turnRight(135);
                 RaggiungiAngolo();
             if (!Salvataggio.fine)
-                M.turnLeft(135);
+               // M.turnLeft(135);
             if (!Salvataggio.fine) {
                 P.apri();
                 Thread.Sleep(250);
