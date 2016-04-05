@@ -29,7 +29,7 @@ namespace OmegaTeam
         public Brain() {
         }
 
-        private static bool state(sbyte sensor) {
+        private static bool getState(sbyte sensor) {
 			
             sbyte colorValue = S.getColor(sensor);
 
@@ -40,9 +40,9 @@ namespace OmegaTeam
 
         }
 
-        public static double correction(sbyte sensor) {
+        public static double getCorrection(sbyte sensor) {
 
-            return Math.Abs(WHITE[sensor] - S.getColor(sensor)) * 0.05; // Formula per calcolare la correzione di posizione
+            return Math.Abs(WHITE[sensor] - S.getColor(sensor)) * 0.05; // Formu0la per calcolare la correzione di posizione
 
         }
 
@@ -62,8 +62,8 @@ namespace OmegaTeam
 
         public static void lineFollower() {
 
-            bool CL = state(0); // Bianco o nero?
-            bool CR = state(1);
+            bool CL = getState(0); // Bianco o nero?
+			bool CR = getState(1);
             bool SILVER = (S.getColor(0) >= 90 && S.getColor(1) >= 90);
 
             if (CL && CR) { // Nero Nero, forse Verde?
