@@ -205,6 +205,28 @@ namespace OmegaTeam
 
         }
 
+		public void turn (double timeout=0) {
+
+			double correctionL = Brain.correction (0);
+			double correctionR = Brain.correction (1);
+
+			if (correctionL <= correctionR) {
+				
+				motL.SetSpeed ((sbyte)(SPEED + correctionR));
+				motR.SetSpeed ((sbyte)(SPEED - correctionR));
+
+			} 
+
+			else {
+				
+				motL.SetSpeed ((sbyte)(SPEED - correctionL));
+				motR.SetSpeed ((sbyte)(SPEED + correctionL));
+
+			}
+
+			Thread.Sleep((int)(timeout*1000));
+		}
+
         public void turnLeft(int degrees = 0, double timeout = 0) {
 
             bool l = true, r = true;

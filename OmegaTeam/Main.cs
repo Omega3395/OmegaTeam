@@ -31,7 +31,7 @@ namespace OmegaTeam
             }
 			
             //Brain.rescue ();
-            Salvataggio.Salva();
+            //Salvataggio.Salva();
 
             Thread.Sleep(2000);
 
