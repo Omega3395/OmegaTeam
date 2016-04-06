@@ -7,57 +7,48 @@ using MonoBrickFirmware.UserInput;
 
 namespace OmegaTeam
 {
-    public class Brain
-    {
+	public class Brain
+	{
 
-        //################################################################################
-        //################################################################################
+		//################################################################################
+		//################################################################################
 
-        private static sbyte[] BLACK = { 25, 25 };
-        // Valore per cui viene attivato "nero"
-        private static sbyte[] WHITE = { 60, 60 };
-        public static bool stop = false;
+		public static bool stop = false;
 
-        //################################################################################
-        //################################################################################
+		//################################################################################
+		//################################################################################
 
-        private static Sensors S = new Sensors();
-        private static Motors M = new Motors();
+		private static Sensors S = new Sensors();
+		private static Motors M = new Motors();
 
-        private static ButtonEvents Buttons = new ButtonEvents();
+		private static ButtonEvents Buttons = new ButtonEvents();
 
-        public Brain() {
-        }
+		public Brain() {
+		}
 
-        private static bool getState(sbyte sensor) {
+		/// <summary>
+		/// Gets the correction.
+		/// </summary>
+		/// <returns>The correction of the most dark sensor</returns>
+		/// <param name="sensor">Sensor (0: left, 1: right)</param>
+		public static double getCorrection(sbyte sensor) {
+
+			//return Math.Abs(WHITE[sensor] - S.getColor(sensor)) * 0.05; // Formula per calcolare la correzione di posizione
+
+			sbyte currentColor = S.getColor(sensor);
+			if (currentColor > Sensors.WHITE[sensor])
+				currentColor = Sensors.WHITE[sensor];
+
+			return Math.Pow(Math.Pow(S.getColor(sensor) - Sensors.WHITE[sensor], 2), 1.0 / 3); // y=(x-whiteval)^(2/3)
+		}
+
+		private static void print(string a) {
 			
-            sbyte colorValue = S.getColor(sensor);
+			LcdConsole.WriteLine(a);
 
-            if (colorValue <= BLACK[sensor])
-                return true; // Sono sul nero, necessito di correzione
+		}
 
-            return false; // Sono a metà, non necessito di correzione
-
-        }
-
-        public static double getCorrection(sbyte sensor) {
-
-            //return Math.Abs(WHITE[sensor] - S.getColor(sensor)) * 0.05; // Formula per calcolare la correzione di posizione
-
-			sbyte currentColor = S.getColor (sensor);
-			if (currentColor > WHITE [sensor])
-				currentColor = WHITE [sensor];
-
-			return Math.Pow (Math.Pow (S.getColor (sensor) - WHITE [sensor], 2), 1.0 / 3); //y=3°root((x^2-whiteval)^2)
-        }
-
-        private static void print(string a) {
-			
-            LcdConsole.WriteLine(a);
-
-        }
-
-        /*private static void avoidObstacle() {
+		/*private static void avoidObstacle() {
 
             M.turnRight(90);
 
@@ -65,12 +56,12 @@ namespace OmegaTeam
 
         }*/
 
-        public static void lineFollower() {
+		public static void lineFollower() {
 
-            bool CL = getState(0);
-			bool CR = getState(1);
+			bool CL = S.getState(0);
+			bool CR = S.getState(1);
 
-            bool SILVER = (S.getColor(0) >= 90 && S.getColor(1) >= 90);
+			bool SILVER = (S.getColor(0) >= 90 && S.getColor(1) >= 90); // Da rivisitare con LineLeader
 
 			if (CL && CR) {
 
@@ -85,19 +76,19 @@ namespace OmegaTeam
 				if (GL) {
 
 					print("Verde sinistra");
-					M.turn (1);
+					M.turn(1);
 
 				}
 
 				if (GR) {
 
 					print("Verde destra");
-					M.turn (1);
+					M.turn(1);
 				}
 
 				if (!GL && !GR) {
 
-					M.turn (0.3);
+					M.turn(0.3);
 
 				}
 
@@ -105,7 +96,7 @@ namespace OmegaTeam
 
 			if ((CL && !CR) || (!CL && CR)) {
 				
-				M.turn (0.1);
+				M.turn(0.1);
 
 			}
 
@@ -115,7 +106,7 @@ namespace OmegaTeam
 
 			}
 
-			if (S.obstacle()) {
+			if (S.obstacleNoticed()) {
 
 				print("Ostacolo!");
 				//avoidObstacle();
@@ -128,90 +119,18 @@ namespace OmegaTeam
 
 			}
 
-            /*if (CL && CR) { // Nero Nero, forse Verde?
+			Buttons.EscapePressed += () => {
 
-                M.Brake();
-                M.goStraight((sbyte)(-M.Speed), 0.2, true);
+				stop = true;
+				print("Fine seguilinea");
 
-                bool[] green = S.isGreen();
+			};
 
-                bool GL = green[0];
-                bool GR = green[1];
+		}
 
-                if (GL) { // Verde a sinistra
+		public static void rescue() {
 
-                    print("Verde sinistra");
-                    M.goStraight(M.Speed, 0.2);
-                    M.setSpeed(-2, 20, 0.8);
+		}
 
-                }
-
-                if (GR) { // Verde a destra
-
-                    print("Verde destra");
-                    M.goStraight(M.Speed, 0.2);
-                    M.setSpeed(20, -2, 0.8);
-
-                }
-
-                if (!GL && !GR) { // Nero nero
-
-                    M.Brake();
-
-                    if (S.getMaxColor()) { // Quale sensore è più sul bianco? 0 (sinistra) o 1 (destra)
-                        M.turnLeft(0.2); // Il sensore destra è più sul bianco
-                    }
-                    else {
-                        M.turnRight(0.2); // Il sensore sinistra è più sul bianco
-                    }
-
-                }
-
-            }
-
-            if (!CL && !CR) { // Bianco Bianco
-
-                M.goStraight(M.Speed, 0.1);
-
-            }
-            
-            if (CL && !CR) { //Nero Bianco
-
-                M.turnLeft(0.1);
-
-            }
-
-            if (!CL && CR) { //Bianco Nero
-
-                M.turnRight(0.1);
-
-            }
-
-            if (S.obstacle()) { // Attenzione... Ostacolo rilevato!
-
-                print("Ostacolo!");
-                avoidObstacle();
-
-            }
-
-            if (SILVER) {
-
-                stop = true;
-
-            }*/
-
-            Buttons.EscapePressed += () => {
-
-                stop = true;
-                print("Fine seguilinea");
-
-            };
-
-        }
-
-        public static void rescue() {
-
-        }
-
-    }
+	}
 }
