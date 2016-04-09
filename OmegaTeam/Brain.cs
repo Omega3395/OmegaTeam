@@ -55,7 +55,7 @@ namespace OmegaTeam
             M.V.TurnLeftForward(M.Speed, 80, 1200, true).WaitOne();
 
         }*/
-
+			
 		public static void lineFollower() {
 
 			bool CL = S.getState(0);
@@ -66,31 +66,28 @@ namespace OmegaTeam
 			if (CL && CR) {
 
 				M.Brake();
-				M.goStraight((sbyte)(-M.Speed), 0.2, true);
 
-				bool[] green = S.isGreen();
+				switch (S.checkGreen()) {
 
-				bool GL = green[0];
-				bool GR = green[1];
-
-				if (GL) {
-
-					print("Verde sinistra");
-					M.turn(1);
-
-				}
-
-				if (GR) {
-
-					print("Verde destra");
-					M.turn(1);
-				}
-
-				if (!GL && !GR) {
-
-					M.turn(0.3);
+					case 0:
+						print("verde sx");
+						S.setSensorsMode(MonoBrickFirmware.Sensors.ColorMode.Reflection);
+						M.setSpeed(-8, 20, 0.8, true);
+						break;
+					case 1:
+						print("verde dx");
+						S.setSensorsMode(MonoBrickFirmware.Sensors.ColorMode.Reflection);
+						M.setSpeed(20, -8, 0.8, true);
+						break;
+					case -1:
+						print("Niente");
+						S.setSensorsMode(MonoBrickFirmware.Sensors.ColorMode.Reflection);
+						break;
 
 				}
+
+				Thread.Sleep(50);
+					
 
 			}
 
@@ -100,27 +97,28 @@ namespace OmegaTeam
 
 			}
 
-			if (!CL && !CR) {
+			if (!CL && !CR) { // Da rivisitare con LineLeader
 
 				M.goStraight(M.Speed, 0.1);
 
 			}
 
-			if (S.obstacleNoticed()) {
+			/*if (S.obstacleNoticed()) {
 
 				print("Ostacolo!");
-				//avoidObstacle();
+				avoidObstacle();
 
-			}
+			}*/
 
-			if (SILVER) {
+			/*if (SILVER) {
 
 				stop = true;
 
-			}
+			}*/
 
 			Buttons.EscapePressed += () => {
 
+				M.Brake();
 				stop = true;
 				print("Fine seguilinea");
 

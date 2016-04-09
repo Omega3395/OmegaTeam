@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿/*
+using System.Threading;
 using MonoBrickFirmware;
 using MonoBrickFirmware.Movement;
 using MonoBrickFirmware.Display;
@@ -37,7 +38,7 @@ namespace OmegaTeam
 
         private static Sensors S = new Sensors();
         public static Motors M = new Motors();
-        public static Pinza P = new Pinza();
+		public static Claw = new Claw()
         public static ButtonEvents B = new ButtonEvents();
 
         public static Motor motorA = new Motor(MotorPort.OutB);
@@ -89,3 +90,4 @@ namespace OmegaTeam
     }
 
 }
+*/

@@ -11,33 +11,28 @@ using MonoBrickFirmware.UserInput;
 
 namespace OmegaTeam
 {
-    class MainClass
-    {
+	class MainClass
+	{
 		
-        public static Sensors S = new Sensors();
-        public static Motors M = new Motors();
-        public static Pinza P = new Pinza();
+		static Sensors S = new Sensors();
+		static Motors M = new Motors();
+		static Claw C = new Claw();
 
-
-        public static void Main(string[] args) {
+		public static void Main(string[] args) {
             
-            M.Brake();
+			M.Brake();
 
-            while (!Brain.stop) {
+			while (!Brain.stop) {
 
-                LcdConsole.WriteLine("" + S.getColor(0) + "  " + S.getColor(1));
-                Brain.lineFollower();
+				Brain.lineFollower();
 
-            }
-			
-            //Brain.rescue ();
-            //Salvataggio.Salva();
+			}
 
-            Thread.Sleep(2000);
+			Thread.Sleep(2000);
 
-            M.Off();
+			M.Off();
 
-        }
-    }
+		}
+	}
 
 }

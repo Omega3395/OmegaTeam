@@ -15,9 +15,10 @@ namespace OmegaTeam
 
 		private const short OBSTACLE_DISTANCE = 5;
 		// Distanza a cui si riconosce un ostacolo, in cm
-		public static sbyte[] BLACK = { 25, 20 };
+		public static sbyte[] BLACK = { 60, 60 };
+		//25 20
 		// Valore per cui viene attivato "nero"
-		public static sbyte[] WHITE = { 90, 70 };
+		public static sbyte[] WHITE = { 80, 80 };
 
 		//################################################################################
 		//################################################################################
@@ -27,6 +28,8 @@ namespace OmegaTeam
 		public EV3TouchSensor Touch;
 		public MSSensorMUXBase IR;
 		public MSSensorMUXBase IR2;
+
+		Motors M = new Motors();
 
 		public Sensors() {
 
@@ -62,6 +65,13 @@ namespace OmegaTeam
 
 		}
 
+		public void setSensorsMode(ColorMode Mode) {
+
+			colL.Mode = Mode;
+			colR.Mode = Mode;
+
+		}
+
 		/// <summary>
 		/// Notices obstacles.
 		/// </summary>
@@ -71,7 +81,6 @@ namespace OmegaTeam
 				return true;
 
 			return false;
-
 
 		}
 
@@ -113,32 +122,111 @@ namespace OmegaTeam
 
 		}
 
-
+		/*
 		/// <summary>
 		/// Notices the green.
 		/// </summary>
 		/// <returns>The array with green values (true if green, false if not)</returns>
-		public bool[] isGreen() {
+		public int checkGreen() {
 
-			Thread.Sleep(200); // Prenditi un pò di tempo per analizzare il colore... Abbondiamo con gli sleep
-
-			colL.Mode = ColorMode.Color;
-			colR.Mode = ColorMode.Color;
+			setSensorsMode(ColorMode.Color);
 
 			bool greenL = colL.ReadColor() == Color.Green;
 			bool greenR = colR.ReadColor() == Color.Green;
 
-			Thread.Sleep(200);
+			if (greenL)
+				return 0;
+			if (greenR)
+				return 1;
 
-			colL.Mode = ColorMode.Reflection;
-			colR.Mode = ColorMode.Reflection;
+			M.goStraight(M.Speed, 0.2, true);
 
-			bool[] green = { greenL, greenR };
+			greenL = colL.ReadColor() == Color.Green;
+			greenR = colR.ReadColor() == Color.Green;
 
-			return green;
+			if (greenL)
+				return 0;
+			if (greenR)
+				return 1;
+
+			M.goStraight((sbyte)-M.Speed, 0.4, true);
+
+			greenL = colL.ReadColor() == Color.Green;
+			greenR = colR.ReadColor() == Color.Green;
+
+			if (greenL)
+				return 0;
+			if (greenR)
+				return 1;
+
+			M.goStraight(M.Speed, 0.2, true);
+
+			return -1;
 
 		}
-			
+		*/
+
+
+
+		/// <summary>
+		/// Checks the green.
+		/// </summary>
+		/// <returns>The green.</returns>
+		public int checkGreen() {
+
+			M.Brake();
+
+			setSensorsMode(ColorMode.Color);
+
+			M.goStraight(M.Speed);
+
+			DateTime Init = DateTime.Now;
+
+			do {
+					
+				if (colL.ReadColor() == Color.Green) {
+
+					M.Brake();
+					return 0;
+
+				}
+
+				if (colR.ReadColor() == Color.Green) {
+
+					M.Brake();
+					return 1;
+
+				}
+					
+			} while(DateTime.Now.Millisecond - Init.Millisecond <= 200);
+
+			M.goStraight((sbyte)-M.Speed);
+
+			Init = DateTime.Now;
+
+			do {
+
+				if (colL.ReadColor() == Color.Green) {
+
+					M.Brake();
+					return 0;
+
+				}
+
+				if (colR.ReadColor() == Color.Green) {
+
+					M.Brake();
+					return 1;
+
+				}
+					
+			} while(DateTime.Now.Millisecond - Init.Millisecond <= 200);
+
+			return -1;
+
+		}
+
+
 
 	}
 }

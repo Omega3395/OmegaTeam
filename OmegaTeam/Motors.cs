@@ -120,11 +120,11 @@ namespace OmegaTeam
 			if (correctionL <= correctionR) {
 				
 				motL.SetSpeed((sbyte)(SPEED + correctionR));
-				motR.SetSpeed((sbyte)(SPEED - 2 * correctionR));
+				motR.SetSpeed ((sbyte)(SPEED - 2 * correctionR));
 
 			} else {
 				
-				motL.SetSpeed((sbyte)(SPEED - 2 * correctionL));
+				motL.SetSpeed ((sbyte)(SPEED - 2 * correctionL));
 				motR.SetSpeed((sbyte)(SPEED + correctionL));
 
 			}
