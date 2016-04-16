@@ -14,7 +14,7 @@ namespace OmegaTeam
 		//################################################################################
 		//################################################################################
 
-		private const sbyte SPEED = 15;
+		private const sbyte SPEED = 20;
 		private const double CENTIMETERS_CONST = 34.61;
 		private const double TURN_CONST = 14;
 
@@ -25,13 +25,13 @@ namespace OmegaTeam
 		public Motor motR;
 		public Motor motP;
 
-		public Vehicle V = new Vehicle(MotorPort.OutB, MotorPort.OutD);
+		public Vehicle V = new Vehicle(MotorPort.OutA, MotorPort.OutB);
 
 		public Motors() {
 
-			motL = new Motor(MotorPort.OutB);
+			motL = new Motor(MotorPort.OutA);
+			motR = new Motor(MotorPort.OutB);
 			motP = new Motor(MotorPort.OutC);
-			motR = new Motor(MotorPort.OutD);
 		
 		}
 
@@ -120,11 +120,11 @@ namespace OmegaTeam
 			if (correctionL <= correctionR) {
 				
 				motL.SetSpeed((sbyte)(SPEED + correctionR));
-				motR.SetSpeed ((sbyte)(SPEED - 2 * correctionR));
+				motR.SetSpeed((sbyte)(SPEED - 2.5 * correctionR));
 
 			} else {
 				
-				motL.SetSpeed ((sbyte)(SPEED - 2 * correctionL));
+				motL.SetSpeed((sbyte)(SPEED - 2.5 * correctionL));
 				motR.SetSpeed((sbyte)(SPEED + correctionL));
 
 			}

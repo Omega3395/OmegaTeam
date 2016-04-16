@@ -29,7 +29,7 @@ namespace OmegaTeam
 		/// <summary>
 		/// Gets the correction.
 		/// </summary>
-		/// <returns>The correction of the most dark sensor</returns>
+		/// <returns>The correction of the darkest sensor</returns>
 		/// <param name="sensor">Sensor (0: left, 1: right)</param>
 		public static double getCorrection(sbyte sensor) {
 
@@ -39,7 +39,7 @@ namespace OmegaTeam
 			if (currentColor > Sensors.WHITE[sensor])
 				currentColor = Sensors.WHITE[sensor];
 
-			return Math.Pow(Math.Pow(S.getColor(sensor) - Sensors.WHITE[sensor], 2), 1.0 / 3); // y=(x-whiteval)^(2/3)
+			return Math.Pow(Math.Pow(currentColor - Sensors.WHITE[sensor], 4), 1.0 / 5); // y=(x-whiteval)^(2/3)
 		}
 
 		private static void print(string a) {
@@ -48,20 +48,39 @@ namespace OmegaTeam
 
 		}
 
-		/*private static void avoidObstacle() {
+		private static void avoidObstacle() {
 
-            M.turnRight(90);
+			bool bl, br;
 
-            M.V.TurnLeftForward(M.Speed, 80, 1200, true).WaitOne();
+			M.V.SpinRight(30, 500, true).WaitOne();
 
-        }*/
-			
+			if (S.Ultra.Read() > 20 * 10) {
+
+				M.V.TurnLeftForward(30, 66, 2600, true).WaitOne();
+
+			} else {
+
+				M.V.SpinLeft(30, 1000, true).WaitOne();
+
+				M.V.TurnRightForward(30, 66, 2600, true).WaitOne();
+
+			}
+
+			M.setSpeed(20, 20);
+
+			do {
+			} while((!(bl = S.getState(0))) || (!(br = S.getState(1))));
+
+			M.Brake();
+
+		}
+
 		public static void lineFollower() {
 
 			bool CL = S.getState(0);
 			bool CR = S.getState(1);
 
-			bool SILVER = (S.getColor(0) >= 90 && S.getColor(1) >= 90); // Da rivisitare con LineLeader
+			bool SILVER = (S.getColor(0) >= 70 && S.getColor(1) >= 70); // Da rivisitare con LineLeader
 
 			if (CL && CR) {
 
@@ -70,18 +89,19 @@ namespace OmegaTeam
 				switch (S.checkGreen()) {
 
 					case 0:
-						print("verde sx");
-						S.setSensorsMode(MonoBrickFirmware.Sensors.ColorMode.Reflection);
-						M.setSpeed(-8, 20, 0.8, true);
+						print("Verde sinistra");
+						S.setColorSensorsMode(MonoBrickFirmware.Sensors.ColorMode.Reflection);
+						M.setSpeed(-10, 30, 1, true);
 						break;
 					case 1:
-						print("verde dx");
-						S.setSensorsMode(MonoBrickFirmware.Sensors.ColorMode.Reflection);
-						M.setSpeed(20, -8, 0.8, true);
+						print("Verde destra");
+						S.setColorSensorsMode(MonoBrickFirmware.Sensors.ColorMode.Reflection);
+						M.setSpeed(30, -10, 1, true);
 						break;
 					case -1:
 						print("Niente");
-						S.setSensorsMode(MonoBrickFirmware.Sensors.ColorMode.Reflection);
+						S.setColorSensorsMode(MonoBrickFirmware.Sensors.ColorMode.Reflection);
+						M.turn(0.2);
 						break;
 
 				}
@@ -103,18 +123,19 @@ namespace OmegaTeam
 
 			}
 
-			/*if (S.obstacleNoticed()) {
+			if (S.obstacleNoticed()) {
 
-				print("Ostacolo!");
+				print("Ostacolo");
 				avoidObstacle();
 
-			}*/
+			}
 
-			/*if (SILVER) {
-
+			if (SILVER) {
+				
+				print("Entro in modalità Salvataggio...");
 				stop = true;
 
-			}*/
+			}
 
 			Buttons.EscapePressed += () => {
 

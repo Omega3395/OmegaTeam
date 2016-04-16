@@ -16,13 +16,13 @@ namespace OmegaTeam
 		
 		static Sensors S = new Sensors();
 		static Motors M = new Motors();
-		static Claw C = new Claw();
+		//static Claw C = new Claw();
 
 		public static void Main(string[] args) {
             
 			M.Brake();
 
-			while (!Brain.stop) {
+			while (!S.Touch.IsPressed()) {
 
 				Brain.lineFollower();
 

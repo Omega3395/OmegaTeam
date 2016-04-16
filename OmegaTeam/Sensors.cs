@@ -13,12 +13,9 @@ namespace OmegaTeam
 		//################################################################################
 		//################################################################################
 
-		private const short OBSTACLE_DISTANCE = 5;
-		// Distanza a cui si riconosce un ostacolo, in cm
-		public static sbyte[] BLACK = { 60, 60 };
-		//25 20
-		// Valore per cui viene attivato "nero"
-		public static sbyte[] WHITE = { 80, 80 };
+		private const short OBSTACLE_DISTANCE = 5; // Distanza a cui si riconosce un ostacolo, in cm
+		public static sbyte[] BLACK = { 30, 35 }; // Valore per cui viene attivato "nero"
+		public static sbyte[] WHITE = { 45, 50 };
 
 		//################################################################################
 		//################################################################################
@@ -29,17 +26,21 @@ namespace OmegaTeam
 		public MSSensorMUXBase IR;
 		public MSSensorMUXBase IR2;
 
+		public EV3UltrasonicSensor Ultra;
+
 		Motors M = new Motors();
 
-		public Sensors() {
+		public Sensors(){
 
-			colL = new EV3ColorSensor(SensorPort.In1, ColorMode.Reflection);
-			colR = new EV3ColorSensor(SensorPort.In2, ColorMode.Reflection);
+			colL = new EV3ColorSensor (SensorPort.In1, ColorMode.Reflection);
+			colR = new EV3ColorSensor (SensorPort.In2, ColorMode.Reflection);
 
-			Touch = new EV3TouchSensor(SensorPort.In3);
+			Touch = new EV3TouchSensor (SensorPort.In3);
 
-			IR = new MSSensorMUXBase(SensorPort.In4, MSSensorMUXPort.C1, IRMode.Proximity); // Infrarossi anteriore inferiore
-			IR2 = new MSSensorMUXBase(SensorPort.In4, MSSensorMUXPort.C2, IRMode.Proximity); // Infrarossi anteriore superiore
+			Ultra = new EV3UltrasonicSensor (SensorPort.In4, UltraSonicMode.Centimeter);
+
+			//IR = new MSSensorMUXBase(SensorPort.In4, MSSensorMUXPort.C1, MSDistanceSensor); // Infrarossi anteriore inferiore
+			//IR2 = new MSSensorMUXBase(SensorPort.In4, MSSensorMUXPort.C2, MSDistanceSensor); // Infrarossi anteriore superiore
 
 		}
 
@@ -65,7 +66,11 @@ namespace OmegaTeam
 
 		}
 
-		public void setSensorsMode(ColorMode Mode) {
+		/// <summary>
+		/// Sets the color sensors mode.
+		/// </summary>
+		/// <param name="Mode">Mode (Ambient, Color, Reflection).</param>
+		public void setColorSensorsMode(ColorMode Mode) {
 
 			colL.Mode = Mode;
 			colR.Mode = Mode;
@@ -77,7 +82,7 @@ namespace OmegaTeam
 		/// </summary>
 		public bool obstacleNoticed() {
 
-			if (getDist(0) < OBSTACLE_DISTANCE)
+			if (Ultra.Read() < OBSTACLE_DISTANCE * 10)
 				return true;
 
 			return false;
@@ -122,14 +127,13 @@ namespace OmegaTeam
 
 		}
 
-		/*
 		/// <summary>
 		/// Notices the green.
 		/// </summary>
-		/// <returns>The array with green values (true if green, false if not)</returns>
+		/// <returns>The green.</returns>
 		public int checkGreen() {
 
-			setSensorsMode(ColorMode.Color);
+			setColorSensorsMode(ColorMode.Color);
 
 			bool greenL = colL.ReadColor() == Color.Green;
 			bool greenR = colR.ReadColor() == Color.Green;
@@ -139,7 +143,7 @@ namespace OmegaTeam
 			if (greenR)
 				return 1;
 
-			M.goStraight(M.Speed, 0.2, true);
+			M.goStraight(M.Speed, 0.3, true);
 
 			greenL = colL.ReadColor() == Color.Green;
 			greenR = colR.ReadColor() == Color.Green;
@@ -149,7 +153,7 @@ namespace OmegaTeam
 			if (greenR)
 				return 1;
 
-			M.goStraight((sbyte)-M.Speed, 0.4, true);
+			M.goStraight((sbyte)-M.Speed, 0.6, true);
 
 			greenL = colL.ReadColor() == Color.Green;
 			greenR = colR.ReadColor() == Color.Green;
@@ -159,15 +163,14 @@ namespace OmegaTeam
 			if (greenR)
 				return 1;
 
-			M.goStraight(M.Speed, 0.2, true);
+			M.goStraight(M.Speed, 0.45, true);
 
 			return -1;
 
 		}
-		*/
 
 
-
+		/*
 		/// <summary>
 		/// Checks the green.
 		/// </summary>
@@ -181,6 +184,7 @@ namespace OmegaTeam
 			M.goStraight(M.Speed);
 
 			DateTime Init = DateTime.Now;
+			TimeSpan Span;
 
 			do {
 					
@@ -197,8 +201,10 @@ namespace OmegaTeam
 					return 1;
 
 				}
+
+				Span=DateTime.Now-Init;
 					
-			} while(DateTime.Now.Millisecond - Init.Millisecond <= 200);
+			} while(Span.Milliseconds <= 200);
 
 			M.goStraight((sbyte)-M.Speed);
 
@@ -219,13 +225,15 @@ namespace OmegaTeam
 					return 1;
 
 				}
+
+				Span=DateTime.Now-Init;
 					
-			} while(DateTime.Now.Millisecond - Init.Millisecond <= 200);
+			} while(Span.Milliseconds <= 200);
 
 			return -1;
 
 		}
-
+		*/
 
 
 	}
