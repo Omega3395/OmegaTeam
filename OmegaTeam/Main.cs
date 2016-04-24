@@ -22,15 +22,17 @@ namespace OmegaTeam
             
 			M.Brake();
 
-			while (!S.Touch.IsPressed()) {
+			while (!S.Touch.IsPressed ()) {
 
+				//LcdConsole.WriteLine(S.GetColor(0) + " " + S.GetColor(1));
+				//LcdConsole.WriteLine (S.GetDist (0) + "  " + S.GetDist (1));
 				Brain.lineFollower();
 
 			}
 
-			Thread.Sleep(2000);
+            Thread.Sleep(2000);
 
-			M.Off();
+            M.Off();
 
 		}
 	}

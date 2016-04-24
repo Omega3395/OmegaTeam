@@ -6,7 +6,7 @@ namespace MonoBrickFirmware.Sensors
 	/// <summary>
 	/// Class for Mindsensors LineLeader Sensor
 	/// </summary>
-	public class MSLineLeaderSensor :I2CSensor
+	public class MSLineLeaderSensor : I2CSensor
 	{
 		private static byte PowerOnCommand = (byte)'P';
 		private static byte PowerOffCommand = (byte)'D';

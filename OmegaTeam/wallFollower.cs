@@ -20,23 +20,23 @@ namespace OmegaTeam
 
 			LcdConsole.WriteLine ("Inizio Posizionamento");
 
-			while (S.getDist () > 35 && S.getDist (true) > 20)
+			while (S.GetDist () > 35 && S.GetDist (true) > 20)
 				
-				M.setSpeed (M.Speed, M.Speed);
+				M.SetSpeed (M.Speed, M.Speed);
 
 			M.Brake ();
 			Thread.Sleep (100);
 
-			if (S.getDist () <= 35) {
+			if (S.GetDist () <= 35) {
 
-				while (S.getDist (true) >= 20) {
+				while (S.GetDist (true) >= 20) {
 					M.V.SpinLeft (M.Speed);
 				}
 
 				M.Brake ();
 			}
 
-			if (S.getDist (true) <= 20) {
+			if (S.GetDist (true) <= 20) {
 
 				LcdConsole.WriteLine ("Inizio 2"); //Temporaneo
 
@@ -47,21 +47,21 @@ namespace OmegaTeam
 
 				while (!stop) {
 
-					distanza = S.getDist (true);
+					distanza = S.GetDist (true);
 					Thread.Sleep (50);
 
-					while (S.getDist (true) > distanza)
+					while (S.GetDist (true) > distanza)
 
 						M.V.SpinRight (M.Speed);
 
-					if (S.getDist (true) <= distanza) {
+					if (S.GetDist (true) <= distanza) {
 
-						int minimo = S.getDist (true);
+						int minimo = S.GetDist (true);
 						Thread.Sleep (50);
 
-						while (S.getDist (true) <= minimo) {
+						while (S.GetDist (true) <= minimo) {
 
-							minimo = S.getDist (true);
+							minimo = S.GetDist (true);
 							Thread.Sleep (50);
 
 						}

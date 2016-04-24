@@ -14,9 +14,10 @@ namespace OmegaTeam
 		//################################################################################
 		//################################################################################
 
-		private const sbyte SPEED = 20;
-		private const double CENTIMETERS_CONST = 34.61;
-		private const double TURN_CONST = 14;
+		const sbyte SPEED = 20;
+		const double REVERSE_CORRECTION = 2.4;
+		const double CENTIMETERS_CONST = 34.61;
+		const double TURN_CONST = 14;
 
 		//################################################################################
 		//################################################################################
@@ -25,13 +26,14 @@ namespace OmegaTeam
 		public Motor motR;
 		public Motor motP;
 
-		public Vehicle V = new Vehicle(MotorPort.OutA, MotorPort.OutB);
+        public Vehicle V;
 
 		public Motors() {
 
-			motL = new Motor(MotorPort.OutA);
-			motR = new Motor(MotorPort.OutB);
-			motP = new Motor(MotorPort.OutC);
+			motL = new Motor (MotorPort.OutA);
+			motR = new Motor (MotorPort.OutB);
+			motP = new Motor (MotorPort.OutC);
+			V = new Vehicle (MotorPort.OutA, MotorPort.OutB);
 		
 		}
 
@@ -64,7 +66,7 @@ namespace OmegaTeam
 		/// <summary>
 		/// Resets the tacho.
 		/// </summary>
-		public void resetTacho() {
+		public void ResetTacho() {
 
 			motL.ResetTacho();
 			motR.ResetTacho();
@@ -79,7 +81,7 @@ namespace OmegaTeam
 		/// <param name="speedRight">Speed right.</param>
 		/// <param name="timeout">Amount of time the speed is ran for.</param>
 		/// <param name="brake">If set to <c>true</c> motors will brake.</param>
-		public void setSpeed(sbyte speedLeft, sbyte speedRight, double timeout = 0, bool brake = false) {
+		public void SetSpeed(sbyte speedLeft, sbyte speedRight, double timeout = 0, bool brake = false) {
 
 			motL.SetSpeed(speedLeft);
 			motR.SetSpeed(speedRight);
@@ -97,9 +99,9 @@ namespace OmegaTeam
 		/// <param name="speed">Speed.</param>
 		/// <param name="timeout">Amount of time the speed is ran for.</param>
 		/// <param name="brake">If set to <c>true</c> motors will brake.</param>
-		public void goStraight(sbyte speed, double timeout = 0, bool brake = false) {
+		public void GoStraight(sbyte speed, double timeout = 0, bool brake = false) {
 
-			setSpeed(speed, speed);
+			SetSpeed(speed, speed);
 
 			Thread.Sleep((int)(timeout * 1000));
 
@@ -112,24 +114,24 @@ namespace OmegaTeam
 		/// Turn with a fixed correction given by the sensor readings.
 		/// </summary>
 		/// <param name="timeout">Timeout at the end of the action.</param>
-		public void turn(double timeout = 0) {
+		public void Turn(double timeout = 0) {
 
-			double correctionL = Brain.getCorrection(0);
-			double correctionR = Brain.getCorrection(1);
+			double correctionL = Brain.GetCorrection (0);
+			double correctionR = Brain.GetCorrection (1);
 
 			if (correctionL <= correctionR) {
 				
-				motL.SetSpeed((sbyte)(SPEED + correctionR));
-				motR.SetSpeed((sbyte)(SPEED - 2.5 * correctionR));
+				motL.SetSpeed ((sbyte)(SPEED + correctionR));
+				motR.SetSpeed ((sbyte)(SPEED - REVERSE_CORRECTION * correctionR));
 
 			} else {
 				
-				motL.SetSpeed((sbyte)(SPEED - 2.5 * correctionL));
-				motR.SetSpeed((sbyte)(SPEED + correctionL));
+				motL.SetSpeed ((sbyte)(SPEED - REVERSE_CORRECTION * correctionL));
+				motR.SetSpeed ((sbyte)(SPEED + correctionL));
 
 			}
 
-			Thread.Sleep((int)(timeout * 1000));
+			Thread.Sleep ((int)(timeout * 1000));
 		}
 
 		/// <summary>
@@ -138,16 +140,16 @@ namespace OmegaTeam
 		/// <param name="centimeters">Amount of entimeters.</param>
 		/// <param name="forward">If set to <c>true</c> goes forward, if set to false goes backward.</param>
 		/// <param name="timeout">Timeout at the end of the action.</param>
-		public void goFor(int centimeters, bool forward = true, double timeout = 0) {
+		public void GoFor(int centimeters, bool forward = true, double timeout = 0) {
 
 			bool l = true, r = true;
 
-			resetTacho();
+			ResetTacho();
 			DateTime TIni = DateTime.Now;
 
 			if (forward) {
 
-				setSpeed(SPEED, SPEED);
+				SetSpeed(SPEED, SPEED);
 
 				do {
 
@@ -159,6 +161,7 @@ namespace OmegaTeam
 						return;
 
 					}
+
 					if (motL.GetTachoCount() >= centimeters * CENTIMETERS_CONST) {
 
 						motL.Brake();
@@ -173,9 +176,10 @@ namespace OmegaTeam
 					}
 
 				} while(l || r);
+
 			} else {
 
-				setSpeed(-SPEED, -SPEED);
+				SetSpeed(-SPEED, -SPEED);
 
 				do {
 

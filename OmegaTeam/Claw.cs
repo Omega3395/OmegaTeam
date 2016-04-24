@@ -38,7 +38,7 @@ namespace OmegaTeam
 
             bool p = true;
 
-            M.resetTacho();
+            M.ResetTacho();
 
             M.motP.SetSpeed(-50);
 
@@ -62,7 +62,7 @@ namespace OmegaTeam
         public void Close() {
             bool p = true;
 
-            M.resetTacho();
+            M.ResetTacho();
 
             M.motP.SetSpeed(50);
 
