@@ -8,511 +8,583 @@ using MonoBrickFirmware.Display;
 using MonoBrickFirmware.UserInput;
 using MonoBrickFirmware.Sensors;
 using MonoBrickFirmware.Display.Dialogs;
+using System.Security.Cryptography.X509Certificates;
+using System.Security.Cryptography;
 
 namespace OmegaTeam
 {
-    class Salvataggio
-    {
-
-        public static int Valore = 1;
-        public static Vehicle V = new Vehicle(MotorPort.OutA, MotorPort.OutB);
-        public static ManualResetEvent terminateprogram = new ManualResetEvent(false);
-        public static ButtonEvents buts = new ButtonEvents();
-        public static bool fine;
-        public static MSDistanceSensor sensorA = new MSDistanceSensor(SensorPort.In1);
-        public static MSDistanceSensor sensorB = new MSDistanceSensor(SensorPort.In2);
-        public static EV3TouchSensor TouchSensor = new EV3TouchSensor(SensorPort.In3);
-        public static Motor motorA = new Motor(MotorPort.OutB);
-        public static Motor motorB = new Motor(MotorPort.OutA);
-        public static Motor motorC = new Motor(MotorPort.OutC);
-        public static bool founded = false;
-        public static int[] Dist = new int[400];
-        public static int[] Dist2 = new int[400];
-        public static int[] Diff = new int[400];
-        public static int[] Differenza = new int[400];
-        public static int[] Tacho = new int[400];
-        public static int Distanza;
-        public static int Distanza2;
-        public static int i = 0;
-
-        public static void salva()
-        {
-
-            sensorA.PowerOn();
-            sensorB.PowerOn();
-            Thread.Sleep(500);
-
-            RunRescue();
-
-            //if (fine) {
-
-            //	fine = false;
-            //	RunRescue ();
-
-            //}
-
-        }
-
-        public static void RunRescue()
-        {
-
-            motorA.ResetTacho();
-            motorB.ResetTacho();
-            PosizionaRobot();
-            Caricapallina();
-            Allinea();
-            WallFollower();
-            Conclusione();
+	class Salvataggio
+	{
 
-        }
-
-        public static void Caricapallina()
-        {
+		public static int Valore = 1;
+		public static Vehicle V = new Vehicle(MotorPort.OutA, MotorPort.OutB);
+		public static ManualResetEvent terminateprogram = new ManualResetEvent(false);
+		public static ButtonEvents buts = new ButtonEvents();
+		public static bool fine;
+		public static MSDistanceSensor sensorA = new MSDistanceSensor(SensorPort.In1);
+		public static MSDistanceSensor sensorB = new MSDistanceSensor(SensorPort.In2);
+		public static EV3TouchSensor TouchSensor = new EV3TouchSensor(SensorPort.In3);
+		public static Motor motorA = new Motor(MotorPort.OutA);
+		public static Motor motorB = new Motor(MotorPort.OutB);
+		public static Motor motorC = new Motor(MotorPort.OutC);
+		public static bool founded = false;
+		public static int[] Dist = new int[400];
+		public static int[] Dist2 = new int[400];
+		public static int[] Diff = new int[400];
+		public static int[] Differenza = new int[400];
+		public static int[] Tacho = new int[400];
+		public static int Distanza;
+		public static int Distanza2;
+		public static int i = 0;
+		public static int sinc = 0;
+
+		public static void RunSalvataggio() {
+
+			motorA.ResetTacho();
+			motorB.ResetTacho();
+			PosizionaRobot();
+
+			while (sinc == 0) {
+
+				salva();
+
+				if (!fine) {
+
+					motorA.SetSpeed(35);
+					motorB.SetSpeed(35);
+					Thread.Sleep(2351);
+					V.Brake();
+
+					V.SpinLeft(20, 535, true);
+					Thread.Sleep(3000);
+
+
+				} else {
+
+					fine = false;
+
+					buts.EscapePressed += () => {
+						sinc = 1;
+						fine = true;
+					};
+
+					motorA.ResetTacho();
+					motorB.ResetTacho();
+
+					PosizionaRobot();
+					RunRescue();
 
-            ScannerizzaStanza();
-            DiffMassima();
-            All();
-            ApriPinza();
-            Ruota180();
-            Avanza();
-            ChiudiPinza();
+				}
+
+			}
 
-        }
 
-        public static void Allinea()
-        {
+		}
 
-            All2();
-            Sfondamento(5000);
+		public static void salva() {
 
-        }
+			sensorA.PowerOn();
+			sensorB.PowerOn();
+			Thread.Sleep(500);
 
-        public static void PosizionaRobot()
-        {
+			RunRescue();
 
+			//if (fine) {
 
-            if (!fine)
-            {
+			//	fine = false;
+			//	RunRescue ();
 
-                LcdConsole.WriteLine("POSIZIONANDO ROBOT...");
-                Line();
-                V.TurnLeftForward(20, 9, 2300, true);							//edit1
-                Thread.Sleep(7000);
-                buts.EnterPressed += () =>
-                {
-                    fine = true;
-                };
+			//}
 
-            }
-        }
+		}
 
-        public static void ScannerizzaStanza()
-        {
 
-            if (!fine)
-            {
-                LcdConsole.WriteLine("SCANNERIZZANDO STANZA...");
-                Line();
+		public static void RunRescue() {
+			
+			if (!fine) {
+				Caricapallina();
+			}
+			if (!fine) {
+				Allinea();
+			}
+			if (!fine) {
+				WallFollower();
+			}
+			if (!fine) {
+				Conclusione();
+			}
 
-                for (i = 0; i < 50; i++)
-                {
+		}
 
-                    if (!fine)
-                    {
+		public static void Caricapallina() {
+			
+			if (!fine) {
+				ScannerizzaStanza();
+			}
+			if (!fine) {
+				DiffMassima();
+			}
+			if (!fine) {
+				All();
+			}
+			if (!fine) {
+				Ruota180();
+			}
+			if (!fine) {
+				GoaBit(true);
+			}
+			if (!fine) {
+				ApriPinza(10000);
+			}
+			if (!fine) {
+				GoaBit(false);
+			}
+			if (!fine) {
+				Avanza();
+			}
+			if (!fine) {
+				ChiudiPinza(10250);
+			}
 
-                        Thread.Sleep(60);
-                        Dist[i] = sensorA.GetDistance();
-                        Dist2[i] = sensorB.GetDistance();
-                        GetDistanza();
-                        V.SpinLeft(14, 14, true);											//edit2
-                        Thread.Sleep(100);
-                        Differenza[i] = Distanza2 - Distanza;
-                        GetDifferenza();
-                        Tacho[i] = motorA.GetTachoCount();
-                        LcdConsole.WriteLine("    " + Diff[i] + "    " + Tacho[i]);
+		}
 
-                        buts.EnterPressed += () =>
-                        {
-                            fine = true;
-                        };
+		public static void Allinea() {
 
-                    }
+			All2();
+			Sfondamento(5000);
 
-                }
+		}
 
-                Line();
-                Thread.Sleep(500);
-                buts.EnterPressed += () =>
-                {
-                    fine = true;
-                };
+		public static void PosizionaRobot() {
 
-            }
+			Thread.Sleep(300);
 
-        }
+			if (!fine) {
 
-        public static void GetDifferenza()
-        {
+				LcdConsole.WriteLine("POSIZIONANDO ROBOT...");
+				Line();
+				V.TurnRightForward(40, 9, 2300, true);							//edit1
+				Thread.Sleep(7000);
+				buts.EnterPressed += () => {
+					fine = true;
+				};
 
-            switch (i)
-            {
+				Thread.Sleep(3000);
 
-                case 0:
-                    Diff[i] = Differenza[0];
-                    break;
+			}
 
-                case 1:
+			Thread.Sleep(300);
+		}
 
-                    Diff[i] = (Differenza[0] + Differenza[1]) / 2;
-                    break;
+		public static void GoaBit(bool a) {
 
-                default:
+			if (a) {
 
-                    Diff[i] = (Differenza[i - 2] + Differenza[i - 1] + Differenza[i]) / 3;
-                    break;
+				motorA.SetSpeed(30);
+				motorB.SetSpeed(30);
+				Thread.Sleep(1000);
+				V.Brake();
 
-            }
-        }
+			} else {
 
+				motorA.SetSpeed(-30);
+				motorB.SetSpeed(-30);
+				Thread.Sleep(1000);
+				V.Brake();
 
-        public static void GetDistanza()
-        {
+			}
 
-            switch (i)
-            {
+		}
 
-                case 0:
-                    Distanza = Dist[0];
-                    Distanza2 = Dist2[0];
-                    break;
+		public static void ScannerizzaStanza() {
 
-                case 1:
+			if (!fine) {
+				LcdConsole.WriteLine("SCANNERIZZANDO STANZA...");
+				Line();
 
-                    Distanza = (Dist[0] + Dist[1]) / 2;
-                    Distanza2 = (Dist2[0] + Dist2[1]) / 2;
-                    break;
+				Thread.Sleep(200);
 
-                default:
+				for (i = 0; i < 70; i++) {
 
-                    Distanza = (Dist[i - 2] + Dist[i - 1] + Dist[i]) / 3;
-                    Distanza2 = (Dist2[i - 2] + Dist2[i - 1] + Dist2[i]) / 3;
-                    break;
+					if (!fine) {
 
-            }
+						Thread.Sleep(60);
 
-        }
+						//if ((sensorA.GetDistance() < 700) {
 
-        public static void Avanza()
-        {
+						Dist[i] = sensorA.GetDistance();
+						Dist2[i] = sensorB.GetDistance();
 
-            if (!fine)
-            {
+						//} else {
 
-                LcdConsole.WriteLine("AVANZANDO...");
-                Line();
-                int time = (Distanza * 17) / 8;
-                motorA.SetSpeed(-30);
-                motorB.SetSpeed(-30);
-                Thread.Sleep(time);
-                V.Brake();
-                Thread.Sleep(500);
+						//	Dist[i] = 500;
+						//	Dist2[i] = 500;
 
-                buts.EnterPressed += () =>
-                {
-                    fine = true;
-                };
+						//}
 
-            }
-        }
+						GetDistanza();
+						V.SpinRight(17, 21, true);											//edit2
+						Thread.Sleep(150);
+						Differenza[i] = Distanza - Distanza2;
+						GetDifferenza();
+						Tacho[i] = motorA.GetTachoCount();
+						LcdConsole.WriteLine("    " + Distanza + "    " + Distanza2 + "    " + Diff[i]);	
 
-        public static void Conclusione()
-        {
+						buts.EnterPressed += () => {
+							fine = true;
+						};
 
-            V.Off();
-            motorC.Off();
-            ChiudiPinza();
-            sensorA.PowerOff();
-            sensorB.PowerOff();
+					}
 
-        }
+				}
 
-        public static void Line()
-        {
-            LcdConsole.WriteLine("");
-        }
+				Thread.Sleep(200);
 
-        public static void DiffMassima()
-        {
-            int max = 0;
-            for (int f = 0; f < 50; f++)
-            {
-                if (Diff[f] > max)
-                {
-                    max = Diff[f];
-                    Valore = f;
-                }
-            }
+				Line();
+				Thread.Sleep(500);
+				buts.EnterPressed += () => {
+					fine = true;
+				};
+			}
+		}
 
-            LcdConsole.WriteLine("    " + max + "    " + Valore + "    " + Tacho[Valore]);
 
-            Thread.Sleep(1000);
+		public static void GetDifferenza() {
 
-        }
+			switch (i) {
 
-        public static void All()
-        {
+				case 0:
+					Diff[i] = Differenza[0];
+					break;
 
-            if (!fine)
-            {
+				case 1:
 
-                Thread.Sleep(100);
-                LcdConsole.WriteLine("ALLINEANDO CON L'OGGETTO...");
-                Line();
-                LcdConsole.WriteLine("    " + motorA.GetTachoCount() + " su " + Tacho[Valore]);
+					Diff[i] = (Differenza[0] + Differenza[1]) / 2;
+					break;
 
-                while ((motorA.GetTachoCount() > Tacho[Valore] - 36) && (!fine))
-                {
+				default:
 
-                    V.SpinRight(14, 14, true);																			//edit3
-                    LcdConsole.WriteLine("    " + motorA.GetTachoCount() + " su " + Tacho[Valore]);
-                    Thread.Sleep(30);
+					Diff[i] = (Differenza[i - 2] + Differenza[i - 1] + Differenza[i]) / 3;
+					break;
 
-                    buts.EnterPressed += () =>
-                    {
-                        fine = true;
-                    };
+			}
+		}
 
-                }
 
-                Thread.Sleep(500);
+		public static void GetDistanza() {
 
-                buts.EnterPressed += () =>
-                {
-                    fine = true;
-                };
+			switch (i) {
 
-            }
+				case 0:
+					Distanza = Dist[0];
+					Distanza2 = Dist2[0];
+					break;
 
-        }
+				case 1:
 
-        public static void Ruota180()
-        {
+					Distanza = (Dist[0] + Dist[1]) / 2;
+					Distanza2 = (Dist2[0] + Dist2[1]) / 2;
+					break;
 
-            if (!fine)
-            {
+				default:
 
-                Thread.Sleep(100);
-                LcdConsole.WriteLine("RUOTANDO...");
-                Line();
-                V.SpinLeft(20, 1152, true);
-                Thread.Sleep(6000);
+					Distanza = (Dist[i - 2] + Dist[i - 1] + Dist[i]) / 3;
+					Distanza2 = (Dist2[i - 2] + Dist2[i - 1] + Dist2[i]) / 3;
+					break;
 
-                buts.EnterPressed += () =>
-                {
-                    fine = true;
-                };
+			}
 
-            }
-        }
+		}
 
-        public static void ApriPinza()
-        {
+		public static void Avanza() {
 
-            if (!fine)
-            {
+			if (!fine) {
 
-                LcdConsole.WriteLine("APRENDO PINZA...");
-                Line();
-                motorC.SetSpeed(-45);
-                Thread.Sleep(10000);
-                motorC.Brake();
+				LcdConsole.WriteLine("AVANZANDO...");
+				Line();
+				int time = (Distanza * 19) / 8;
+				motorA.SetSpeed(-38);
+				motorB.SetSpeed(-38);
+				Thread.Sleep(time);
+				V.Brake();
 
-                buts.EnterPressed += () =>
-                {
-                    fine = true;
-                };
+				buts.EnterPressed += () => {
+					fine = true;
+				};
 
-            }
+			}
+		}
 
-        }
+		public static void Conclusione() {
 
-        public static void ChiudiPinza()
-        {
+			ChiudiPinza(4100);
 
-            if (!fine)
-            {
+			motorA.SetSpeed(35);
+			motorB.SetSpeed(35);
+			Thread.Sleep(655);
+			V.SpinLeft(20, 450, true);
+			Thread.Sleep(3000);
+			V.Brake();
 
-                LcdConsole.WriteLine("CHIUDENDO PINZA...");
-                Line();
-                motorC.SetSpeed(45);
-                Thread.Sleep(10500);
-                motorC.Brake();
 
-                buts.EnterPressed += () =>
-                {
-                    fine = true;
-                };
+		}
 
-            }
-        }
+		public static void Line() {
+			LcdConsole.WriteLine("");
+		}
 
-        public static void All2()
-        {
+		public static void DiffMassima() {
+			if (!fine) {
+				int max = 0;
+				for (int f = 0; f < 70; f++) {
+					if (Diff[f] > max) {
+						max = Diff[f];
+						Valore = f;
+					}
+				}
 
-            if (!fine)
-            {
+				LcdConsole.WriteLine("    " + max + "    " + Valore + "    " + Tacho[Valore]);
 
-                Thread.Sleep(100);
-                LcdConsole.WriteLine("ALLINEANDO APPROSSIMATIVAMENTE...");
-                Line();
-                V.SpinRight(20, 387, true);
-                Thread.Sleep(2500);
+				Thread.Sleep(1000);
+			}
+				
+		}
 
-                while (motorA.GetTachoCount() > motorB.GetTachoCount() + 80)
-                {
-                    V.SpinLeft(14, 9, true);
-                    Thread.Sleep(50);
-                }
-                while (motorA.GetTachoCount() < motorB.GetTachoCount() + 80)
-                {
-                    V.SpinRight(14, 9, true);
-                    Thread.Sleep(50);
-                }
+		public static void All() {
 
-                V.SpinRight(20, 576, true);																	//edit4
-                Thread.Sleep(3000);
+			if (!fine) {
 
-                buts.EnterPressed += () =>
-                {
-                    fine = true;
-                };
+				Thread.Sleep(10);
+				LcdConsole.WriteLine("ALLINEANDO CON L'OGGETTO...");
+				Line();
+				LcdConsole.WriteLine("    " + motorA.GetTachoCount() + " su " + Tacho[Valore]);
 
-            }
+				while ((motorA.GetTachoCount() > Tacho[Valore]) && (!fine)) {												//edit2,5
 
-        }
+					V.SpinLeft(14, 25, true);																			//edit3
+					LcdConsole.WriteLine("    " + motorA.GetTachoCount() + " su " + Tacho[Valore]);
+					Thread.Sleep(150);
 
-        public static void Sfondamento(int tempo)
-        {
+					buts.EnterPressed += () => {
+						fine = true;
+					};
 
-            if (!fine)
-            {
+				}
 
-                LcdConsole.WriteLine("SFONDANDANDO LA PARETE...");
-                Line();
+				Thread.Sleep(50);
 
-                motorA.SetSpeed(40);
-                motorB.SetSpeed(40);
-                Thread.Sleep(tempo);
-                motorA.SetSpeed(-26);
-                motorB.SetSpeed(-26);
-                Thread.Sleep(500);
-                V.SpinLeft(20, 576, true);														//edit5
-                Thread.Sleep(2500);
+				buts.EnterPressed += () => {
+					fine = true;
+				};
 
-                buts.EnterPressed += () =>
-                {
-                    fine = true;
-                };
+			}
 
-            }
+		}
 
-        }
+		public static void Ruota180() {
 
-        public static void WallFollower()
-        {
+			if (!fine) {
 
-            LcdConsole.WriteLine("SEGUENDO IL MURO...");
-            Line();
-            SeguiMuro();
+				Thread.Sleep(10);
+				LcdConsole.WriteLine("RUOTANDO...");
+				Line();
+				V.SpinLeft(20, 1152, true);
+				Thread.Sleep(6000);
 
-        }
+				buts.EnterPressed += () => {
+					fine = true;
+				};
 
-        public static void SeguiMuro()
-        {
+			}
+		}
 
-            if (!fine)
-            {
+		public static void ApriPinza(int num) {
 
-                //int g = 20;
+			if (!fine) {
 
-                while ((sensorB.GetDistance() > 105) && (!TouchSensor.IsPressed()))
-                {
+				LcdConsole.WriteLine("APRENDO PINZA...");
+				Line();
+				motorC.SetSpeed(-90);
+				Thread.Sleep((num / 2));
+				motorC.Brake();
 
-                    //int correction = (sensorB.ReadDistance() - g) / 2;
-                    //LcdConsole.WriteLine ("    " + sensorB.ReadDistance());
-                    //Line ();
-                    //int speedA = 20 + correction;
-                    //int speedB = 20 - correction;
-                    //motorA.SetSpeed ((sbyte)speedA);
-                    //motorB.SetSpeed ((sbyte)speedB);
-                    //Thread.Sleep (45);
+				buts.EnterPressed += () => {
+					fine = true;
+				};
 
-                    int speedA = 20;
-                    int speedB = 20;
-                    motorA.SetSpeed((sbyte)speedA);
-                    motorB.SetSpeed((sbyte)speedB);
-                    Thread.Sleep(45);
+			}
 
+		}
 
-                }
+		public static void ChiudiPinza(int num1) {
 
-                buts.EnterPressed += () =>
-                {
-                    fine = true;
-                };
+			if (!fine) {
 
-                FineMuro();
+				LcdConsole.WriteLine("CHIUDENDO PINZA...");
+				Line();
+				motorC.SetSpeed(90);
+				Thread.Sleep((num1 / 2));
+				motorC.Brake();
 
-                buts.EnterPressed += () =>
-                {
-                    fine = true;
-                };
+				buts.EnterPressed += () => {
+					fine = true;
+				};
 
-            }
+			}
+		}
 
-        }
+		public static void All2() {
 
-        public static void FineMuro()
-        {
+			if (!fine) {
 
-            if (!fine)
-            {
+				Thread.Sleep(100);
+				LcdConsole.WriteLine("ALLINEANDO APPROSSIMATIVAMENTE...");
+				Line();
+				V.SpinRight(20, 387, true);
+				Thread.Sleep(2500);
 
-                if (TouchSensor.IsPressed())
-                {
+				while (motorA.GetTachoCount() > motorB.GetTachoCount() + 80) {
+					V.SpinLeft(18, 40, true);
+					Thread.Sleep(150);
+				}
+				while (motorA.GetTachoCount() < motorB.GetTachoCount() + 80) {
+					V.SpinRight(18, 40, true);
+					Thread.Sleep(150);
+				}
 
-                    motorA.SetSpeed(-30);
-                    motorB.SetSpeed(-30);
-                    Thread.Sleep(350);
-                    V.Brake();
-                    V.SpinRight(20, 1440, true);
-                    Thread.Sleep(4500);
-                    ApriPinza();
-                    Thread.Sleep(5000);
+				V.SpinLeft(20, 576, true);																	//edit4
+				Thread.Sleep(3000);
 
-                    buts.EnterPressed += () =>
-                    {
-                        fine = true;
-                    };
+				buts.EnterPressed += () => {
+					fine = true;
+				};
 
-                }
-                else
-                {
+			}
 
-                    Sfondamento(650);
-                    SeguiMuro();
+		}
 
-                    buts.EnterPressed += () =>
-                    {
-                        fine = true;
-                    };
+		public static void Sfondamento(int tempo) {
 
-                }
+			if (!fine) {
 
-            }
+				LcdConsole.WriteLine("SFONDANDANDO LA PARETE...");
+				Line();
 
-        }
+				motorA.SetSpeed(40);
+				motorB.SetSpeed(40);
+				Thread.Sleep(tempo);
+				motorA.SetSpeed(-35);
+				motorB.SetSpeed(-35);
+				Thread.Sleep(1000);
+				V.Brake();
+				V.SpinRight(20, 578, true);														//edit5
+				Thread.Sleep(3500);
 
-    }
+				buts.EnterPressed += () => {
+					fine = true;
+				};
+
+			}
+
+		}
+
+		public static void WallFollower() {
+			if (!fine) {
+
+				LcdConsole.WriteLine("SEGUENDO IL MURO...");
+				Line();
+				SeguiMuro();
+
+			}
+
+		}
+
+		public static void SeguiMuro() {
+
+			if (!fine) {
+
+				//int g = 20;
+
+				while (((sensorA.GetDistance() > 117) && (!TouchSensor.IsPressed())) && (sensorB.GetDistance() > 117)) {
+
+					//int correction = (sensorB.ReadDistance() - g) / 2;
+					//LcdConsole.WriteLine ("    " + sensorB.ReadDistance());
+					//Line ();
+					//int speedA = 20 + correction;
+					//int speedB = 20 - correction;
+					//motorA.SetSpeed ((sbyte)speedA);
+					//motorB.SetSpeed ((sbyte)speedB);
+					//Thread.Sleep (45);
+
+					int speedA = 45;
+					int speedB = 45;
+					motorA.SetSpeed((sbyte)speedA);
+					motorB.SetSpeed((sbyte)speedB);
+					Thread.Sleep(45);
+
+
+				}
+
+				buts.EnterPressed += () => {
+					fine = true;
+				};
+
+				FineMuro();
+
+				buts.EnterPressed += () => {
+					fine = true;
+				};
+
+			}
+
+		}
+
+		public static void FineMuro() {
+
+			if (!fine) {
+
+				if ((TouchSensor.IsPressed()) && (!fine)) {
+
+					Line();
+					LcdConsole.WriteLine("TROVATO ANGOLO...");
+					Line();
+
+					motorA.SetSpeed(-45);
+					motorB.SetSpeed(-45);
+					Thread.Sleep(417);
+					V.Brake();
+					V.SpinLeft(20, 1440, true);										//edit6												
+					Thread.Sleep(6500);
+					ApriPinza(4000);
+					Thread.Sleep(2000);
+
+					buts.EnterPressed += () => {
+						fine = true;
+					};
+
+				} else {
+
+					if (!fine) {
+
+						Line();
+						LcdConsole.WriteLine("FINE MURO...");
+						Line();
+
+						Sfondamento(870);
+						SeguiMuro();
+
+						buts.EnterPressed += () => {
+							fine = true;
+						};
+
+					}
+
+				}
+
+			}
+
+		}
+
+	}
 
 }

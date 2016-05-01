@@ -15,7 +15,7 @@ namespace OmegaTeam
 
 		public static bool stop = false;
 		static sbyte green = 0;
-		static bool CheckGreen = true;
+		static sbyte obstacle = 0;
 
 		//################################################################################
 		//################################################################################
@@ -28,14 +28,13 @@ namespace OmegaTeam
 		public Brain() {
 		}
 
-        /// <summary>
-        /// Terminates the program.
-        /// </summary>
-        static void TerminateProgram(){
-            M.Brake();
-            Print("Fine seguilinea");
-            stop = true;
-        }
+		/// <summary>
+		/// Terminates the program.
+		/// </summary>
+		static void TerminateProgram() {
+			M.Brake();
+			stop = true;
+		}
 
 		/// <summary>
 		/// Gets the correction.
@@ -50,7 +49,7 @@ namespace OmegaTeam
 			if (currentColor > Sensors.WHITE[sensor])
 				currentColor = Sensors.WHITE[sensor];
 
-			return Math.Pow (Math.Pow (Sensors.WHITE [sensor] - currentColor, 4), 1.0 / 5);
+			return Math.Pow(Math.Pow(Sensors.WHITE[sensor] - currentColor, 4), 1.0 / 5);
 		}
 
 		static void Print(string a) {
@@ -59,148 +58,94 @@ namespace OmegaTeam
 
 		}
 
-		static void Align(bool direction) {
-
-			Print ("Allineamento");
-
-			if (direction) {
-				if (S.GetState (0) && !S.GetState (1)) {
-					M.GoStraight (M.Speed);
-					while (!S.GetState (1)) {
-					}
-				}
-
-				if (!S.GetState (0) && S.GetState (1)) {
-					M.GoStraight (M.Speed);
-					while (!S.GetState (0)) {
-					}
-					M.Brake ();
-					M.V.SpinRight (30, 500, true).WaitOne ();
-				}
-
-				if (S.GetState (0) && S.GetState (1)) {
-					M.V.SpinRight (30, 500, true).WaitOne ();
-				}
-
-				M.Brake ();
-			} else {
-				if (!S.GetState (0) && S.GetState (1)) {
-					M.GoStraight (M.Speed);
-					while (!S.GetState (0)) {
-					}
-				}
-
-				if (S.GetState (0) && !S.GetState (1)) {
-					M.GoStraight (M.Speed);
-					while (!S.GetState (1)) {
-					}
-					M.Brake ();
-					M.V.SpinLeft (30, 500, true).WaitOne ();
-				}
-
-				if (S.GetState (0) && S.GetState (1)) {
-					M.V.SpinLeft (30, 500, true).WaitOne ();
-				}
-			}
-
-			M.Brake ();
-
-		}
-
 		static void AvoidObstacle() {
 
-			M.V.SpinRight (30, 500, true).WaitOne ();
+			/*M.GoFor(5, false);
+			M.V.SpinRight(30, 500, true).WaitOne();
 
-			if (S.GetDist (1) > 25 * 10) { // Sorpassa l'ostacolo a destra
-				M.GoFor (5);
-				M.SetSpeed ((sbyte)(M.Speed - 10), (sbyte)(M.Speed + 10));
-				while (!S.GetState (0) && !S.GetState (1)) {
+			if (S.GetDist(1) > 25 * 10) { // Sorpassa l'ostacolo a destra
+
+				M.GoFor(5);
+				M.SetSpeed((sbyte)(M.Speed - 10), (sbyte)(M.Speed + 10));
+				while (!S.GetState(0, true) && !S.GetState(1, true)) {
+					Thread.Sleep(10);
 				}
 
-				Align (true);
+				M.V.SpinRight(30, 300, true).WaitOne();
 
 			} else { // Sorpassa l'ostacolo a sinistra
 
-				M.V.SpinLeft (30, 1000, true).WaitOne ();
-				M.GoFor (5);
-				M.SetSpeed ((sbyte)(M.Speed + 10), (sbyte)(M.Speed - 10));
-				while (!S.GetState (0) && !S.GetState (1)) {
+				M.V.SpinLeft(30, 1000, true).WaitOne();
+				M.GoFor(5);
+				M.SetSpeed((sbyte)(M.Speed + 10), (sbyte)(M.Speed - 10));
+				while (!S.GetState(0, true) && !S.GetState(1, true)) {
+					Thread.Sleep(10);
 				}
 
-				Align (false);
+				M.V.SpinLeft(30, 300, true).WaitOne();
 
 			}
 
-			M.Brake ();
+			M.Brake();*/
 
-			/*
-			M.V.SpinRight (30, 500, true).WaitOne ();
-
-			if (S.GetDist (1) > 20 * 10) {
-
-				M.V.TurnLeftForward (30, 66, 2600, false).WaitOne ();
-
-			} else {
-
-				M.V.SpinLeft (30, 1000, true).WaitOne ();
-
-				M.V.TurnRightForward (30, 66, 2600, false).WaitOne ();
-
+			M.GoFor(5, false);
+			M.V.SpinLeft(30, 500, true).WaitOne();
+			M.GoFor(5);
+			M.SetSpeed((sbyte)(M.Speed + 10), (sbyte)(M.Speed - 10));
+			while (!S.GetState(0, true) && !S.GetState(1, true)) {
+				Thread.Sleep(10);
 			}
 
-			M.SetSpeed (20, 20);
+			M.V.SpinLeft(30, 300, true).WaitOne();
 
-			do {
-			} while(!S.GetState (0) || !S.GetState (1));
+			M.GoStraight(M.Speed);
+
+			while (!S.GetState(0)) {
+				Thread.Sleep(10);
+			}
 
 			M.Brake();
-			*/
+
+			Thread.Sleep(500);
 
 		}
 
-		public static void lineFollower() {
+		public static void LineFollower() {
 
 			bool CL = S.GetState(0);
 			bool CR = S.GetState(1);
 
-			bool SILVER = (S.GetColor(0) >= 70 && S.GetColor(1) >= 70); // Da rivisitare con LineLeader
+			bool SILVER = (S.GetColor(0) >= 70 && S.GetColor(1) >= 70);
 
 			if (CL && CR) {
 
-				M.Brake ();
+				M.Brake();
 
-				if (CheckGreen) {
-					switch (S.CheckGreen ()) {
+				switch (S.CheckGreen()) {
 
 					case 0:
-						Print ("Verde sinistra");
-						S.SetSensorsMode (MonoBrickFirmware.Sensors.ColorMode.Reflection);
-						M.SetSpeed (-10, 30, 1, true);
-						CheckGreen = false;
+						Print("Verde sinistra");
+						S.SetSensorsMode(MonoBrickFirmware.Sensors.ColorMode.Reflection);
+						M.SetSpeed(-10, 30, 1, true);
 						break;
 					case 1:
-						Print ("Verde destra");
-						S.SetSensorsMode (MonoBrickFirmware.Sensors.ColorMode.Reflection);
-						M.SetSpeed (30, -10, 1, true);
-						CheckGreen = false;
+						Print("Verde destra");
+						S.SetSensorsMode(MonoBrickFirmware.Sensors.ColorMode.Reflection);
+						M.SetSpeed(30, -10, 1, true);
 						break;
 					case -1:
-						if (green < 5) { // Da confermare
-							Print ("Niente");
-							S.SetSensorsMode (MonoBrickFirmware.Sensors.ColorMode.Reflection);
+						if (green < 5) {
 							green++;
-							M.Turn (0.2);
+							Print("Niente " + green);
+							S.SetSensorsMode(MonoBrickFirmware.Sensors.ColorMode.Reflection);
+							M.Turn(0.4, true);
 						} else {
-							M.SetSpeed (M.Speed, M.Speed, 1.5);
-							S.SetSensorsMode (MonoBrickFirmware.Sensors.ColorMode.Reflection);
+							Print("Avanti");
+							M.GoStraight(M.Speed, 1.5);
+							S.SetSensorsMode(MonoBrickFirmware.Sensors.ColorMode.Reflection);
 						}
 
 						break;
-
-					}
-				} else {
-					M.Turn (0.2);
-					CheckGreen = true;
 				}
 					
 			}
@@ -208,35 +153,44 @@ namespace OmegaTeam
 			if ((CL && !CR) || (!CL && CR)) {
 				
 				M.Turn(0.1);
-                green = 0;
+				green = 0;
 
 			}
 
 			if (!CL && !CR) {
 
 				M.GoStraight(M.Speed, 0.1);
-                green = 0;
+				green = 0;
 
 			}
 
 			if (S.ObstacleNoticed()) {
+				
+				obstacle++;
 
-				Print("Ostacolo");
-				AvoidObstacle();
+				if (obstacle % 3 == 0) {
+					Print("Ostacolo " + obstacle);
+					AvoidObstacle();
+				} else {
+					Print("Ostacolo " + obstacle);
+				}
 
 			}
 
-            if (SILVER||S.Touch.IsPressed ())
-                TerminateProgram ();
+			if (SILVER || S.Touch.IsPressed())
+				TerminateProgram();
             
-			Buttons.EscapePressed += () =>{
+			Buttons.EscapePressed += () => {
 				TerminateProgram();
 			};
-
-
+		
 		}
 
-		public static void rescue() {
+		public static void Rescue() {
+
+			Thread.Sleep(2000);
+
+			Salvataggio.RunSalvataggio();
 
 		}
 

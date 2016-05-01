@@ -13,37 +13,37 @@ namespace OmegaTeam
 		//################################################################################
 		//################################################################################
 
-		const short OBSTACLE_DISTANCE = 12; // Distanza a cui si riconosce un ostacolo, in cm
-		public static sbyte[] BLACK = { 30, 31 }; // Valore per cui viene attivato "nero" -23
-		public static sbyte[] WHITE = { 53, 54 };
+		const short OBSTACLE_DISTANCE = 10;
+		// Distanza a cui si riconosce un ostacolo, in cm
+		public static sbyte[] WHITE = { 48, 48 };
+		public static sbyte[] BLACK = { 30, 30 };
+		public static sbyte[] BLACK2 = { 21, 21 };
 
 		//################################################################################
 		//################################################################################
 
 		public MSSensorMUXBase colL;
-	    public MSSensorMUXBase colR;
-		public MSSensorMUXBase LL; // Doesn't work mother fucker!
+		public MSSensorMUXBase colR;
 
 		public EV3TouchSensor Touch;
 
 		public MSDistanceSensor IR;
 		public MSDistanceSensor IR2;
-        //public MSSensorMUXBase IR;
-        //public MSSensorMUXBase IR2;
+		//public MSSensorMUXBase IR;
+		//public MSSensorMUXBase IR2;
 
 		Motors M = new Motors();
 
 		public Sensors() {
 
-            colL = new MSSensorMUXBase(SensorPort.In4, MSSensorMUXPort.C2, ColorMode.Reflection);
-            colR = new MSSensorMUXBase(SensorPort.In4, MSSensorMUXPort.C1, ColorMode.Reflection);
-			LL = new MSSensorMUXBase (SensorPort.In4, MSSensorMUXPort.C3);
+			colL = new MSSensorMUXBase(SensorPort.In4, MSSensorMUXPort.C2, ColorMode.Reflection);
+			colR = new MSSensorMUXBase(SensorPort.In4, MSSensorMUXPort.C1, ColorMode.Reflection);
 			
-            Touch = new EV3TouchSensor(SensorPort.In3);
+			Touch = new EV3TouchSensor(SensorPort.In3);
 
-            IR = new MSDistanceSensor(SensorPort.In2);
-            IR2 = new MSDistanceSensor(SensorPort.In1);
-            //IR = new MSSensorMUXBase(SensorPort.In4, MSSensorMUXPort.C1, MSDistanceSensor); // Infrarossi anteriore inferiore
+			IR = new MSDistanceSensor(SensorPort.In2);
+			IR2 = new MSDistanceSensor(SensorPort.In1);
+			//IR = new MSSensorMUXBase(SensorPort.In4, MSSensorMUXPort.C1, MSDistanceSensor); // Infrarossi anteriore inferiore
 			//IR2 = new MSSensorMUXBase(SensorPort.In4, MSSensorMUXPort.C2, MSDistanceSensor); // Infrarossi anteriore superiore
 			
 		}
@@ -57,14 +57,14 @@ namespace OmegaTeam
 
 			switch (sensor) {
 
-			case 0:
-				return IR.GetDistance ();
+				case 0:
+					return IR.GetDistance();
 
-			case 1:
-				return IR2.GetDistance ();
+				case 1:
+					return IR2.GetDistance();
 
-			default:
-				return 0;
+				default:
+					return 0;
 
 			}
 
@@ -72,8 +72,8 @@ namespace OmegaTeam
 
 		public void SetSensorsMode(ColorMode Mode) {
 
-            colL = new MSSensorMUXBase(SensorPort.In4, MSSensorMUXPort.C2, Mode);
-            colR = new MSSensorMUXBase(SensorPort.In4, MSSensorMUXPort.C1, Mode);
+			colL = new MSSensorMUXBase(SensorPort.In4, MSSensorMUXPort.C2, Mode);
+			colR = new MSSensorMUXBase(SensorPort.In4, MSSensorMUXPort.C1, Mode);
 
 		}
 
@@ -82,10 +82,15 @@ namespace OmegaTeam
 		/// </summary>
 		public bool ObstacleNoticed() {
 
-			if (GetDist (1) < OBSTACLE_DISTANCE * 10)
+			if (GetDist(1) < OBSTACLE_DISTANCE * 12)
 				return true;
 
 			return false;
+
+			/*if (Touch.IsPressed())
+				return true;
+			
+			return false;*/
 
 		}
 
@@ -98,14 +103,14 @@ namespace OmegaTeam
 
 			switch (sensor) {
 				
-			case 0:
-				return (sbyte)(colL.Read ());
+				case 0:
+					return (sbyte)(colL.Read());
 
-			case 1:
-				return (sbyte)(colR.Read ());
+				case 1:
+					return (sbyte)(colR.Read());
 
-			default:
-				return -1;
+				default:
+					return -1;
 
 			}
 
@@ -116,14 +121,25 @@ namespace OmegaTeam
 		/// </summary>
 		/// <returns><c>true</c>, if sensor is on black, <c>false</c> otherwise.</returns>
 		/// <param name="sensor">Sensor (0: left, 1: right)</param>
-		public bool GetState(sbyte sensor) {
+		public bool GetState(sbyte sensor, bool obstacle = false) {
+			if (!obstacle) {
 
-			sbyte colorValue = GetColor(sensor);
+				sbyte colorValue = GetColor(sensor);
 
-			if (colorValue <= BLACK[sensor])
-				return true; // Sono sul nero, necessito di correzione
+				if (colorValue <= BLACK[sensor])
+					return true; // Sono sul nero, necessito di correzione
 
-			return false; // Sono a metà, non necessito di correzione
+				return false; // Sono a metà, non necessito di correzione
+			} else {
+
+				sbyte colorValue = GetColor(sensor);
+
+				if (colorValue <= BLACK2[sensor])
+					return true;
+
+				return false;
+
+			}
 
 		}
 
@@ -135,8 +151,8 @@ namespace OmegaTeam
 
 			SetSensorsMode(ColorMode.Color);
 
-            bool greenL = colL.Read() == (byte)Color.Green;
-            bool greenR = colR.Read() == (byte)Color.Green;
+			bool greenL = colL.Read() == (byte)Color.Green;
+			bool greenR = colR.Read() == (byte)Color.Green;
 
 			if (greenL)
 				return 0;
@@ -145,8 +161,8 @@ namespace OmegaTeam
 
 			M.GoStraight(M.Speed, 0.3, true);
 
-            greenL = colL.Read() == (byte)Color.Green;
-            greenR = colR.Read() == (byte)Color.Green;
+			greenL = colL.Read() == (byte)Color.Green;
+			greenR = colR.Read() == (byte)Color.Green;
 
 			if (greenL)
 				return 0;
@@ -163,12 +179,11 @@ namespace OmegaTeam
 			if (greenR)
 				return 1;
 
-            M.GoStraight(M.Speed, 0.5, true);
+			M.GoStraight(M.Speed, 0.45, true);
 
 			return -1;
 
 		}
-
 
 		/*
 		/// <summary>
@@ -234,7 +249,6 @@ namespace OmegaTeam
 
 		}
 		*/
-
 
 	}
 }
