@@ -13,166 +13,186 @@ namespace OmegaTeam
 		//################################################################################
 		//################################################################################
 
-		private const sbyte CORRECTION = (sbyte)1;
-		private static sbyte[] BLACK = { 30, 25 }; // Valore per cui viene attivato "nero"
-		private static sbyte[] WHITE = { 80, 60 }; // Valore per cui viene attivato "bianco"
-		private static sbyte BB = 0; // Quante volte ho visto nero nero?
-
-		//################################################################################
-		//################################################################################
-
 		public static bool stop = false;
+		static sbyte green = 0;
+		static sbyte obstacle = 0;
 
-		ButtonEvents buts = new ButtonEvents();
+		//################################################################################
+		//################################################################################
 
-		public Brain () {
+		static Sensors S = new Sensors();
+		static Motors M = new Motors();
+
+		static ButtonEvents Buttons = new ButtonEvents();
+
+		public Brain() {
 		}
+
+		/// <summary>
+		/// Terminates the program.
+		/// </summary>
+		static void TerminateProgram() {
+			M.Brake();
+			stop = true;
+		}
+
+		/// <summary>
+		/// Gets the correction.
+		/// </summary>
+		/// <returns>The correction of the darkest sensor</returns>
+		/// <param name="sensor">Sensor (0: left, 1: right)</param>
+		public static double GetCorrection(sbyte sensor) {
+
+			//return Math.Abs(WHITE[sensor] - S.GetColor(sensor)) * 0.05; // Formula per calcolare la correzione di posizione
+
+			sbyte currentColor = S.GetColor(sensor);
+			if (currentColor > Sensors.WHITE[sensor])
+				currentColor = Sensors.WHITE[sensor];
+
+			return Math.Pow(Math.Pow(Sensors.WHITE[sensor] - currentColor, 4), 1.0 / 5);
+		}
+
+		static void Print(string a) {
 			
-		private static bool state(sbyte sensor) {
-
-			sbyte white = BLACK [sensor];
-			sbyte black = WHITE [sensor];
-
-			sbyte colorValue = Sensors.getColors () [sensor];
-
-			if (colorValue >= white) {
-			
-				return false; // Sono sul bianco o quasi
-			
-			}
-
-			if (colorValue <= black) {
-
-				return true; // Sono sul nero o sulla soglia del nero
-
-			}
-
-			return true; // Sono a metà, non mi correggo
+			LcdConsole.WriteLine(a);
 
 		}
 
-		public static sbyte correction(sbyte sensor) {
+		static void AvoidObstacle() {
 
-			return (sbyte)(Math.Abs ((WHITE [sensor]) - Sensors.getColors () [sensor]) * 0.05); // Formula per calcolare la correzione di posizione
+			/*M.GoFor(5, false);
+			M.V.SpinRight(30, 500, true).WaitOne();
 
-		}
+			if (S.GetDist(1) > 25 * 10) { // Sorpassa l'ostacolo a destra
 
-		public void print(string a) {
-
-			LcdConsole.WriteLine (a);
-
-		}
-
-		public static sbyte[][] verify() {
-
-			Motors.setSpeed (10, -10, 0.1);
-
-			sbyte[] photoLeft = Sensors.getColors ();
-
-			Motors.setSpeed (-10, 10, 0.2);
-
-			sbyte[] photoRight = Sensors.getColors ();
-
-			Motors.setSpeed (10, -10, 0.1);
-
-			sbyte[][] values = { photoLeft, photoRight };
-
-			return values;
-
-
-		}
-
-		public void lineFollower() {
-
-			bool CL = state (0); // Bianco o nero?
-			bool CR = state (1);
-
-			if (!CL && !CR) { // Bianco Bianco
-
-				BB = 0;
-				print ("Bianco Bianco");
-				Motors.goStraight ();
-
-			}
-
-			if (CL && !CR) { //Nero Bianco
-
-				print ("Nero Bianco");
-				Motors.turnLeft ();
-
-			}
-
-			if (!CL && CR) { //Bianco Nero
-
-				print ("Bianco Nero");
-				Motors.turnRight ();
-
-			}
-
-			if (Sensors.obstacle ()) { // Attenzione... Ostacolo rilevato!
-
-				print ("Ostacolo!");
-				Motors.avoidObstacle ();
-
-			}
-
-			if (CL && CR) { // Nero Nero, forse Verde?
-
-				Motors.Brake ();
-
-				bool[] green = Sensors.isGreen ();
-
-				bool GL = green [0];
-				bool GR = green [1];
-
-				if (GL) { // Verde a sinistra
-
-					print ("Verde sinistra");
-					Motors.goStraight (10, 0.2);
-					Motors.setSpeed (-2, 20, 0.5);
-
+				M.GoFor(5);
+				M.SetSpeed((sbyte)(M.Speed - 10), (sbyte)(M.Speed + 10));
+				while (!S.GetState(0, true) && !S.GetState(1, true)) {
+					Thread.Sleep(10);
 				}
 
-				if (GR) { // Verde a destra
+				M.V.SpinRight(30, 300, true).WaitOne();
 
-					print ("Verde sinistra");
-					Motors.goStraight (10, 0.2);
-					Motors.setSpeed (20, -2, 0.5);
+			} else { // Sorpassa l'ostacolo a sinistra
 
+				M.V.SpinLeft(30, 1000, true).WaitOne();
+				M.GoFor(5);
+				M.SetSpeed((sbyte)(M.Speed + 10), (sbyte)(M.Speed - 10));
+				while (!S.GetState(0, true) && !S.GetState(1, true)) {
+					Thread.Sleep(10);
 				}
 
-				if (!GL && !GR) { // Nero nero
+				M.V.SpinLeft(30, 300, true).WaitOne();
 
-					BB++;
-					print ("Nero Nero");
-					if (BB > 3) {
+			}
 
-						if (Sensors.getMaxColor ()) {
-							Motors.turnLeft ();
+			M.Brake();*/
+
+			M.GoFor(5, false);
+			M.V.SpinLeft(30, 500, true).WaitOne();
+			M.GoFor(5);
+			M.SetSpeed((sbyte)(M.Speed + 10), (sbyte)(M.Speed - 10));
+			while (!S.GetState(0, true) && !S.GetState(1, true)) {
+				Thread.Sleep(10);
+			}
+
+			M.V.SpinLeft(30, 300, true).WaitOne();
+
+			M.GoStraight(M.Speed);
+
+			while (!S.GetState(0)) {
+				Thread.Sleep(10);
+			}
+
+			M.Brake();
+
+			Thread.Sleep(500);
+
+		}
+
+		public static void LineFollower() {
+
+			bool CL = S.GetState(0);
+			bool CR = S.GetState(1);
+
+			bool SILVER = (S.GetColor(0) >= 70 && S.GetColor(1) >= 70);
+
+			if (CL && CR) {
+
+				M.Brake();
+
+				switch (S.CheckGreen()) {
+
+					case 0:
+						Print("Verde sinistra");
+						S.SetSensorsMode(MonoBrickFirmware.Sensors.ColorMode.Reflection);
+						M.SetSpeed(-10, 30, 1, true);
+						break;
+					case 1:
+						Print("Verde destra");
+						S.SetSensorsMode(MonoBrickFirmware.Sensors.ColorMode.Reflection);
+						M.SetSpeed(30, -10, 1, true);
+						break;
+					case -1:
+						if (green < 5) {
+							green++;
+							Print("Niente " + green);
+							S.SetSensorsMode(MonoBrickFirmware.Sensors.ColorMode.Reflection);
+							M.Turn(0.4, true);
 						} else {
-							Motors.turnRight ();
+							Print("Avanti");
+							M.GoStraight(M.Speed, 1.5);
+							S.SetSensorsMode(MonoBrickFirmware.Sensors.ColorMode.Reflection);
 						}
 
-					} else {
-						Motors.goStraight (-10); // Forse sono troppo avanti e non vedo il verde...
-					}
-
-
+						break;
 				}
+					
 			}
 
-
-			buts.EscapePressed += () => {
+			if ((CL && !CR) || (!CL && CR)) {
 				
-				LcdConsole.WriteLine ("FINE");
-				stop = true;
-				Motors.Off ();
+				M.Turn(0.1);
+				green = 0;
 
+			}
+
+			if (!CL && !CR) {
+
+				M.GoStraight(M.Speed, 0.1);
+				green = 0;
+
+			}
+
+			if (S.ObstacleNoticed()) {
+				
+				obstacle++;
+
+				if (obstacle % 3 == 0) {
+					Print("Ostacolo " + obstacle);
+					AvoidObstacle();
+				} else {
+					Print("Ostacolo " + obstacle);
+				}
+
+			}
+
+			if (SILVER || S.Touch.IsPressed())
+				TerminateProgram();
+            
+			Buttons.EscapePressed += () => {
+				TerminateProgram();
 			};
+		
+		}
+
+		public static void Rescue() {
+
+			Thread.Sleep(2000);
+
+			Salvataggio.RunSalvataggio();
 
 		}
-			
 
 	}
 }
-

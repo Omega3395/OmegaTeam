@@ -2,32 +2,39 @@
 using System.Threading;
 
 using MonoBrickFirmware;
-using MonoBrickFirmware.Display; // Da rimuovere
-using MonoBrickFirmware.UserInput; // Da rimuovere
+using MonoBrickFirmware.Display;
+using System.ComponentModel.Design;
 
 namespace OmegaTeam
 {
 	class MainClass
 	{
+		
+		//static Sensors S = new Sensors();
+		static Motors M = new Motors();
 
-		public static Motors M = new Motors();
-		public static Sensors S = new Sensors();
-		public static Brain B = new Brain();
+		public static void Main(string[] args) {
+            
+			M.Brake();
 
-		public static void Main (string[] args)
-		{
+			while (!Brain.stop) {
 
-			while (!Brain.stop) { // Quando il sensore di tatto non è premuto, esegui il programma
-
-				B.lineFollower ();
+				//LcdConsole.WriteLine(S.GetColor(0) + " " + S.GetColor(1));
+				//LcdConsole.WriteLine(S.GetDist(0) + "  " + S.GetDist(1));
+				Brain.LineFollower();
 
 			}
 
-			Thread.Sleep (2000);
+			M.Brake();
 
-			Motors.Brake ();
+			LcdConsole.WriteLine("Inizio Rescue");
+
+			Brain.Rescue();
+
+			Thread.Sleep(2000);
+
+			M.Off();
 
 		}
 	}
-
 }
