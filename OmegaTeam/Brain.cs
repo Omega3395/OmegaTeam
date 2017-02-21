@@ -16,6 +16,8 @@ namespace OmegaTeam
 		public static bool stop = false;
 		static sbyte green = 0;
 		static sbyte obstacle = 0;
+        static int t = 0;
+        static TimeSpan diff = new TimeSpan();
 
 		//################################################################################
 		//################################################################################
@@ -49,7 +51,7 @@ namespace OmegaTeam
 			if (currentColor > Sensors.WHITE[sensor])
 				currentColor = Sensors.WHITE[sensor];
 
-			return Math.Pow(Math.Pow(Sensors.WHITE[sensor] - currentColor, 4), 1.0 / 5);
+			return Math.Pow(Math.Pow(Sensors.WHITE[sensor] - currentColor, 6), 1.0 / 7);
 		}
 
 		static void Print(string a) {
@@ -133,8 +135,8 @@ namespace OmegaTeam
 						S.SetSensorsMode(MonoBrickFirmware.Sensors.ColorMode.Reflection);
 						M.SetSpeed(30, -10, 1, true);
 						break;
-					case -1:
-						if (green < 5) {
+					case -2:
+						if (green < 4) {
 							green++;
 							Print("Niente " + green);
 							S.SetSensorsMode(MonoBrickFirmware.Sensors.ColorMode.Reflection);
@@ -146,6 +148,25 @@ namespace OmegaTeam
 						}
 
 						break;
+                    case -1:
+                        if (green < 1)
+                            t = DateTime.Now.Second;
+
+                        if (DateTime.Now.Second - t < 5)
+                        {
+                            green++;
+                            Print("Niente " + green);
+                            S.SetSensorsMode(MonoBrickFirmware.Sensors.ColorMode.Reflection);
+                            M.Turn(0.4, true);
+                        }
+                        else
+                        {
+                            Print("Avanti");
+                            M.GoStraight(M.Speed, 1.5);
+                            S.SetSensorsMode(MonoBrickFirmware.Sensors.ColorMode.Reflection);
+                        }
+
+                        break;
 				}
 					
 			}
@@ -159,12 +180,12 @@ namespace OmegaTeam
 
 			if (!CL && !CR) {
 
-				M.GoStraight(M.Speed, 0.1);
+				M.GoStraight(M.Speed, 0.03);
 				green = 0;
 
 			}
 
-			if (S.ObstacleNoticed()) {
+			/*if (S.ObstacleNoticed()) {
 				
 				obstacle++;
 
@@ -175,10 +196,10 @@ namespace OmegaTeam
 					Print("Ostacolo " + obstacle);
 				}
 
-			}
+			}*/
 
-			if (SILVER || S.Touch.IsPressed())
-				TerminateProgram();
+			/*if (SILVER || S.Touch.IsPressed())
+				TerminateProgram();*/
             
 			Buttons.EscapePressed += () => {
 				TerminateProgram();

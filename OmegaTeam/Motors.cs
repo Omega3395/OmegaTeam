@@ -18,7 +18,7 @@ namespace OmegaTeam
 
 		static Sensors S = new Sensors();
 
-		const sbyte SPEED = 20;
+		const sbyte SPEED = 30;
 		const double REVERSE_CORRECTION = 3;
 		const double CENTIMETERS_CONST = 34.61;
 		const double TURN_CONST = 14;

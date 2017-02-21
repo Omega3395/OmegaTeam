@@ -22,31 +22,32 @@ namespace OmegaTeam
 		//################################################################################
 		//################################################################################
 
-		public MSSensorMUXBase colL;
-		public MSSensorMUXBase colR;
+        public EV3ColorSensor colL;
+        public EV3ColorSensor colR;
 
-		public EV3TouchSensor Touch;
+        public EV3TouchSensor Touch;
 
-		public MSDistanceSensor IR;
-		public MSDistanceSensor IR2;
-		//public MSSensorMUXBase IR;
-		//public MSSensorMUXBase IR2;
+        public MSDistanceSensor IR;
+        public MSDistanceSensor IR2;
+        //public MSSensorMUXBase IR;
+        //public MSSensorMUXBase IR2;
 
-		Motors M = new Motors();
+        Motors M = new Motors();
 
-		public Sensors() {
+        public Sensors()
+        {
 
-			colL = new MSSensorMUXBase(SensorPort.In4, MSSensorMUXPort.C2, ColorMode.Reflection);
-			colR = new MSSensorMUXBase(SensorPort.In4, MSSensorMUXPort.C1, ColorMode.Reflection);
-			
-			Touch = new EV3TouchSensor(SensorPort.In3);
+            colL = new EV3ColorSensor(SensorPort.In4, ColorMode.Reflection);
+            colR = new EV3ColorSensor(SensorPort.In3, ColorMode.Reflection);
 
-			IR = new MSDistanceSensor(SensorPort.In2);
-			IR2 = new MSDistanceSensor(SensorPort.In1);
-			//IR = new MSSensorMUXBase(SensorPort.In4, MSSensorMUXPort.C1, MSDistanceSensor); // Infrarossi anteriore inferiore
-			//IR2 = new MSSensorMUXBase(SensorPort.In4, MSSensorMUXPort.C2, MSDistanceSensor); // Infrarossi anteriore superiore
-			
-		}
+            //Touch = new EV3TouchSensor(SensorPort.In3);
+
+            //IR = new MSDistanceSensor(SensorPort.In2);
+            //IR2 = new MSDistanceSensor(SensorPort.In1);
+            //IR = new MSSensorMUXBase(SensorPort.In4, MSSensorMUXPort.C1, MSDistanceSensor); // Infrarossi anteriore inferiore
+            //IR2 = new MSSensorMUXBase(SensorPort.In4, MSSensorMUXPort.C2, MSDistanceSensor); // Infrarossi anteriore superiore
+
+        }
 
 		/// <summary>
 		/// Gets the distance value of a specified sensor.
@@ -72,8 +73,8 @@ namespace OmegaTeam
 
 		public void SetSensorsMode(ColorMode Mode) {
 
-			colL = new MSSensorMUXBase(SensorPort.In4, MSSensorMUXPort.C2, Mode);
-			colR = new MSSensorMUXBase(SensorPort.In4, MSSensorMUXPort.C1, Mode);
+            colL = new EV3ColorSensor(SensorPort.In4, Mode);
+            colR = new EV3ColorSensor(SensorPort.In3, Mode);
 
 		}
 
