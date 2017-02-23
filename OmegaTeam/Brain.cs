@@ -117,54 +117,78 @@ namespace OmegaTeam {
 
 			bool SILVER = (S.GetColor (0) >= 70 && S.GetColor (1) >= 70);
 
-			if (CL && CR) {
+            if (CL && CR)
+            {
 
-				M.Brake ();
+                M.Brake();
 
-				switch (S.CheckGreen ()) {
+                switch (S.CheckGreen())
+                {
 
-				case 0:
-					Print ("Verde sinistra");
-					S.SetSensorsMode (MonoBrickFirmware.Sensors.ColorMode.Reflection);
-					M.SetSpeed (-10, 30, 1, true);
-					break;
-				case 1:
-					Print ("Verde destra");
-					S.SetSensorsMode (MonoBrickFirmware.Sensors.ColorMode.Reflection);
-					M.SetSpeed (30, -10, 1, true);
-					break;
-				case -1:
-					if (green < 4) {
-						green++;
-						Print ("Niente " + green);
-						S.SetSensorsMode (MonoBrickFirmware.Sensors.ColorMode.Reflection);
-						M.Turn (0.4, true);
-					} else {
-						Print ("Avanti");
-						M.GoStraight (M.Speed, 1.5);
-						S.SetSensorsMode (MonoBrickFirmware.Sensors.ColorMode.Reflection);
-					}
+                    case 0:
+                        Print("Verde sinistra");
+                        S.SetSensorsMode(MonoBrickFirmware.Sensors.ColorMode.Reflection);
+                        M.SetSpeed(-10, 30, 1, true);
+                        break;
+                    case 1:
+                        Print("Verde destra");
+                        S.SetSensorsMode(MonoBrickFirmware.Sensors.ColorMode.Reflection);
+                        M.SetSpeed(30, -10, 1, true);
+                        break;
+                    case -3:
+                        if (green < 4)
+                        {
+                            green++;
+                            Print("Niente " + green);
+                            S.SetSensorsMode(MonoBrickFirmware.Sensors.ColorMode.Reflection);
+                            M.Turn(0.4, true);
+                        }
+                        else
+                        {
+                            Print("Avanti");
+                            M.GoStraight(M.Speed, 1.5);
+                            S.SetSensorsMode(MonoBrickFirmware.Sensors.ColorMode.Reflection);
+                        }
 
-					break;
-				case -2:
-					if (green < 1)
-						t = DateTime.Now.Second;
+                        break;
+                    case -2:
+                        if (green < 1)
+                            t = DateTime.Now.Second;
 
-					if (DateTime.Now.Second - t < 5) {
-						green++;
-						Print ("Niente " + green);
-						S.SetSensorsMode (MonoBrickFirmware.Sensors.ColorMode.Reflection);
-						M.Turn (0.4, true);
-					} else {
-						Print ("Avanti");
-						M.GoStraight (M.Speed, 1.5);
-						S.SetSensorsMode (MonoBrickFirmware.Sensors.ColorMode.Reflection);
-					}
+                        if (DateTime.Now.Second - t < 5)
+                        {
+                            green++;
+                            Print("Niente " + green);
+                            S.SetSensorsMode(MonoBrickFirmware.Sensors.ColorMode.Reflection);
+                            M.Turn(0.4, true);
+                        }
+                        else
+                        {
+                            Print("Avanti");
+                            M.GoStraight(M.Speed, 1.5);
+                            S.SetSensorsMode(MonoBrickFirmware.Sensors.ColorMode.Reflection);
+                        }
 
-					break;
-				}
+                        break;
+                    case -1:
+                        if (Math.Abs(S.GetAngle()) < 10)
+                        {
+                            green++;
+                            Print("Niente " + green);
+                            S.SetSensorsMode(MonoBrickFirmware.Sensors.ColorMode.Reflection);
+                            M.Turn(0.4, true);
+                        }
+                        else
+                        {
+                            Print("Avanti");
+                            M.GoStraight(M.Speed, 1.5);
+                            S.SetSensorsMode(MonoBrickFirmware.Sensors.ColorMode.Reflection);
+                        }
 
-			}
+                        break;
+                }
+            }
+
 
 			if ((CL && !CR) || (!CL && CR)) {
 

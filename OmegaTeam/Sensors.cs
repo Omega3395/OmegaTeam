@@ -23,26 +23,33 @@ namespace OmegaTeam {
 		public EV3ColorSensor colL;
 		public EV3ColorSensor colR;
 
+        public EV3GyroSensor gyro;
+
 		public EV3TouchSensor Touch;
 
-		public MSDistanceSensor IR;
-		public MSDistanceSensor IR2;
-		//public MSSensorMUXBase IR;
-		//public MSSensorMUXBase IR2;
+		//public MSDistanceSensor IR;
+		//public MSDistanceSensor IR2;
+		public MSSensorMUXBase IR;
+		public MSSensorMUXBase IR2;
+        public MSSensorMUXBase IR3;
 
 		Motors M = new Motors ();
 
 		public Sensors () {
 
-			colL = new EV3ColorSensor (SensorPort.In4, ColorMode.Reflection);
-			colR = new EV3ColorSensor (SensorPort.In3, ColorMode.Reflection);
+			colL = new EV3ColorSensor (SensorPort.In2, ColorMode.Reflection);
+			colR = new EV3ColorSensor (SensorPort.In1, ColorMode.Reflection);
+
+            gyro = new EV3GyroSensor(SensorPort.In3, GyroMode.AngularVelocity);
 
 			//Touch = new EV3TouchSensor(SensorPort.In3);
 
 			//IR = new MSDistanceSensor(SensorPort.In2);
 			//IR2 = new MSDistanceSensor(SensorPort.In1);
-			//IR = new MSSensorMUXBase(SensorPort.In4, MSSensorMUXPort.C1, MSDistanceSensor); // Infrarossi anteriore inferiore
-			//IR2 = new MSSensorMUXBase(SensorPort.In4, MSSensorMUXPort.C2, MSDistanceSensor); // Infrarossi anteriore superiore
+
+			/*IR = new MSSensorMUXBase(SensorPort.In4, MSSensorMUXPort.C1, IRMode.Proximity);
+			IR2 = new MSSensorMUXBase(SensorPort.In4, MSSensorMUXPort.C2, IRMode.Proximity);
+            IR3 = new MSSensorMUXBase(SensorPort.In4, MSSensorMUXPort.C3, IRMode.Proximity);*/
 
 		}
 
@@ -53,25 +60,29 @@ namespace OmegaTeam {
 		/// <param name="sensor">Sensor (0: down, 1: up)</param>
 		public int GetDist (sbyte sensor) {
 
-			switch (sensor) {
+            switch (sensor)
+            {
 
-			case 0:
-				return IR.GetDistance ();
+                case 1:
+                    return IR.Read();
 
-			case 1:
-				return IR2.GetDistance ();
+                case 2:
+                    return IR2.Read();
 
-			default:
-				return 0;
+                case 3:
+                    return IR3.Read();
 
-			}
+                default:
+                    return 0;
+
+            }
 
 		}
 
 		public void SetSensorsMode (ColorMode Mode) {
 
-			colL = new EV3ColorSensor (SensorPort.In4, Mode);
-			colR = new EV3ColorSensor (SensorPort.In3, Mode);
+			colL = new EV3ColorSensor (SensorPort.In2, Mode);
+			colR = new EV3ColorSensor (SensorPort.In1, Mode);
 
 		}
 
@@ -113,6 +124,16 @@ namespace OmegaTeam {
 			}
 
 		}
+
+        public int GetAngle()
+        {
+            return gyro.Read();
+        }
+
+        public void ResetGyro()
+        {
+            gyro.Reset();
+        }
 
 		/// <summary>
 		/// Gets the state of a specified sensor.

@@ -30,11 +30,11 @@ namespace OmegaTeam {
 
 		public Motors () {
 
-			motL = new Motor (MotorPort.OutA);
-			motR = new Motor (MotorPort.OutB);
+			motL = new Motor (MotorPort.OutD);
+			motR = new Motor (MotorPort.OutA);
 			motP = new Motor (MotorPort.OutC);
 
-			V = new Vehicle (MotorPort.OutA, MotorPort.OutB);
+			V = new Vehicle (MotorPort.OutD, MotorPort.OutA);
 
 		}
 

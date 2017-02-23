@@ -8,7 +8,7 @@ using System.ComponentModel.Design;
 namespace OmegaTeam {
 	class MainClass {
 
-		//static Sensors S = new Sensors();
+		static Sensors S = new Sensors();
 		static Motors M = new Motors ();
 
 		public static void Main (string [] args) {
@@ -19,6 +19,7 @@ namespace OmegaTeam {
 
 				//LcdConsole.WriteLine(S.GetColor(0) + " " + S.GetColor(1));
 				//LcdConsole.WriteLine(S.GetDist(0) + "  " + S.GetDist(1));
+                LcdConsole.WriteLine(S.GetAngle() + "");
 				Brain.LineFollower ();
 
 			}
