@@ -117,6 +117,8 @@ namespace OmegaTeam {
 
 			bool SILVER = (S.GetColor (0) >= 70 && S.GetColor (1) >= 70);
 
+            int Angle = S.GetAngle();
+
             if (CL && CR)
             {
 
@@ -128,14 +130,14 @@ namespace OmegaTeam {
                     case 0:
                         Print("Verde sinistra");
                         S.SetSensorsMode(MonoBrickFirmware.Sensors.ColorMode.Reflection);
-                        M.SetSpeed(-10, 30, 1, true);
+                        M.SetSpeed(-15, 45, 1, true);
                         break;
                     case 1:
                         Print("Verde destra");
                         S.SetSensorsMode(MonoBrickFirmware.Sensors.ColorMode.Reflection);
-                        M.SetSpeed(30, -10, 1, true);
+                        M.SetSpeed(45, -15, 1, true);
                         break;
-                    case -3:
+                    case -2:
                         if (green < 4)
                         {
                             green++;
@@ -151,7 +153,7 @@ namespace OmegaTeam {
                         }
 
                         break;
-                    case -2:
+                    case -3:
                         if (green < 1)
                             t = DateTime.Now.Second;
 
@@ -171,18 +173,17 @@ namespace OmegaTeam {
 
                         break;
                     case -1:
-                        if (Math.Abs(S.GetAngle()) < 10)
+                        if (Math.Abs(Angle) > 15 && Angle < 100)
                         {
-                            green++;
-                            Print("Niente " + green);
+                            Print("Avanti " + Angle);
+                            M.GoStraight(M.Speed, 1);
                             S.SetSensorsMode(MonoBrickFirmware.Sensors.ColorMode.Reflection);
-                            M.Turn(0.4, true);
                         }
                         else
                         {
-                            Print("Avanti");
-                            M.GoStraight(M.Speed, 1.5);
+                            Print("Niente " + Angle);
                             S.SetSensorsMode(MonoBrickFirmware.Sensors.ColorMode.Reflection);
+                            M.Turn(0.4, true);
                         }
 
                         break;

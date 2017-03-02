@@ -20,36 +20,38 @@ namespace OmegaTeam {
 		//################################################################################
 		//################################################################################
 
-		public EV3ColorSensor colL;
-		public EV3ColorSensor colR;
+		//public EV3ColorSensor colL;
+		//public EV3ColorSensor colR;
 
-        public EV3GyroSensor gyro;
+        public MSSensorMUXBase colL;
+        public MSSensorMUXBase colR;
 
-		public EV3TouchSensor Touch;
+        public MSSensorMUXBase gyro;
 
-		//public MSDistanceSensor IR;
-		//public MSDistanceSensor IR2;
-		public MSSensorMUXBase IR;
-		public MSSensorMUXBase IR2;
-        public MSSensorMUXBase IR3;
+		//public MSSensorMUXBase IR;
+		//public MSSensorMUXBase IR2;
+        //public MSSensorMUXBase IR3;
+
+        public EV3UltrasonicSensor IR;
+        public EV3UltrasonicSensor IR2;
+        public EV3UltrasonicSensor IR3;
 
 		Motors M = new Motors ();
 
 		public Sensors () {
 
-			colL = new EV3ColorSensor (SensorPort.In2, ColorMode.Reflection);
-			colR = new EV3ColorSensor (SensorPort.In1, ColorMode.Reflection);
+			colL = new MSSensorMUXBase(SensorPort.In4,MSSensorMUXPort.C1,ColorMode.Reflection);
+			colR = new MSSensorMUXBase(SensorPort.In4,MSSensorMUXPort.C2,ColorMode.Reflection);
 
-            gyro = new EV3GyroSensor(SensorPort.In3, GyroMode.AngularVelocity);
-
-			//Touch = new EV3TouchSensor(SensorPort.In3);
-
-			//IR = new MSDistanceSensor(SensorPort.In2);
-			//IR2 = new MSDistanceSensor(SensorPort.In1);
+            gyro = new MSSensorMUXBase(SensorPort.In4, MSSensorMUXPort.C3, GyroMode.AngularVelocity);
 
 			/*IR = new MSSensorMUXBase(SensorPort.In4, MSSensorMUXPort.C1, IRMode.Proximity);
 			IR2 = new MSSensorMUXBase(SensorPort.In4, MSSensorMUXPort.C2, IRMode.Proximity);
             IR3 = new MSSensorMUXBase(SensorPort.In4, MSSensorMUXPort.C3, IRMode.Proximity);*/
+
+            IR = new EV3UltrasonicSensor(SensorPort.In1, UltraSonicMode.Centimeter);
+            IR2 = new EV3UltrasonicSensor(SensorPort.In2, UltraSonicMode.Centimeter);
+            IR3 = new EV3UltrasonicSensor(SensorPort.In3, UltraSonicMode.Centimeter);
 
 		}
 
@@ -57,7 +59,7 @@ namespace OmegaTeam {
 		/// Gets the distance value of a specified sensor.
 		/// </summary>
 		/// <returns>The distance in centimeters.</returns>
-		/// <param name="sensor">Sensor (0: down, 1: up)</param>
+		/// <param name="sensor">Sensor (1: left, 2: right, 3: center)</param>
 		public int GetDist (sbyte sensor) {
 
             switch (sensor)
@@ -81,8 +83,11 @@ namespace OmegaTeam {
 
 		public void SetSensorsMode (ColorMode Mode) {
 
-			colL = new EV3ColorSensor (SensorPort.In2, Mode);
-			colR = new EV3ColorSensor (SensorPort.In1, Mode);
+			//colL = new EV3ColorSensor (SensorPort.In2, Mode);
+			//colR = new EV3ColorSensor (SensorPort.In1, Mode);
+
+            colL = new MSSensorMUXBase(SensorPort.In4, MSSensorMUXPort.C1, Mode);
+            colR = new MSSensorMUXBase(SensorPort.In4, MSSensorMUXPort.C2, Mode);
 
 		}
 
@@ -91,7 +96,7 @@ namespace OmegaTeam {
 		/// </summary>
 		public bool ObstacleNoticed () {
 
-			if (GetDist (1) < OBSTACLE_DISTANCE * 12)
+			if (GetDist (3) < OBSTACLE_DISTANCE * 12)
 				return true;
 
 			return false;
@@ -110,10 +115,12 @@ namespace OmegaTeam {
 		/// <param name="sensor">Sensor (0: left, 1: right)</param>
 		public sbyte GetColor (sbyte sensor) {
 
+            Thread.Sleep(20);
+
 			switch (sensor) {
 
 			case 0:
-				return (sbyte)(colL.Read ());
+				return (sbyte)(colL.Read());
 
 			case 1:
 				return (sbyte)(colR.Read ());
@@ -128,11 +135,6 @@ namespace OmegaTeam {
         public int GetAngle()
         {
             return gyro.Read();
-        }
-
-        public void ResetGyro()
-        {
-            gyro.Reset();
         }
 
 		/// <summary>
@@ -198,7 +200,7 @@ namespace OmegaTeam {
 			if (greenR)
 				return 1;
 
-			M.GoStraight (M.Speed, 0.45, true);
+			M.GoStraight (M.Speed, 0.375, true);
 
 			return -1;
 

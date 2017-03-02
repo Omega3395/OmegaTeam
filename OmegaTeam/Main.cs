@@ -19,7 +19,6 @@ namespace OmegaTeam {
 
 				//LcdConsole.WriteLine(S.GetColor(0) + " " + S.GetColor(1));
 				//LcdConsole.WriteLine(S.GetDist(0) + "  " + S.GetDist(1));
-                LcdConsole.WriteLine(S.GetAngle() + "");
 				Brain.LineFollower ();
 
 			}
