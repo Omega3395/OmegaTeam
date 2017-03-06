@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading;
 
-using MonoBrickFirmware;
 using MonoBrickFirmware.Display;
 using MonoBrickFirmware.UserInput;
 
@@ -12,10 +11,7 @@ namespace OmegaTeam {
 		//################################################################################
 
 		public static bool stop = false;
-		static sbyte green = 0;
-		static sbyte obstacle = 0;
-		static int t = 0;
-		static TimeSpan diff = new TimeSpan ();
+		static int ANGLE = 20;
 
 		//################################################################################
 		//################################################################################
@@ -23,15 +19,14 @@ namespace OmegaTeam {
 		static Sensors S = new Sensors ();
 		static Motors M = new Motors ();
 
-		static ButtonEvents Buttons = new ButtonEvents ();
+		public static int AngleDiff;
 
-		public Brain () {
-		}
+		static ButtonEvents Buttons = new ButtonEvents ();
 
 		/// <summary>
 		/// Terminates the program.
 		/// </summary>
-		static void TerminateProgram () {
+		public static void TerminateProgram () {
 			M.Brake ();
 			stop = true;
 		}
@@ -60,47 +55,24 @@ namespace OmegaTeam {
 
 		static void AvoidObstacle () {
 
-			/*M.GoFor(5, false);
-			M.V.SpinRight(30, 500, true).WaitOne();
+			M.GoStraight ((sbyte)-M.Speed, 0.5, true);
+			Print ("fine 02");
 
-			if (S.GetDist(1) > 25 * 10) { // Sorpassa l'ostacolo a destra
+			M.V.SpinLeft (M.Speed, 500, true).WaitOne ();
 
-				M.GoFor(5);
-				M.SetSpeed((sbyte)(M.Speed - 10), (sbyte)(M.Speed + 10));
-				while (!S.GetState(0, true) && !S.GetState(1, true)) {
-					Thread.Sleep(10);
-				}
+			M.GoStraight (M.Speed, 0.5, true);
 
-				M.V.SpinRight(30, 300, true).WaitOne();
+			M.SetSpeed ((sbyte)(M.Speed + 15), (sbyte)(M.Speed - 15));
 
-			} else { // Sorpassa l'ostacolo a sinistra
-
-				M.V.SpinLeft(30, 1000, true).WaitOne();
-				M.GoFor(5);
-				M.SetSpeed((sbyte)(M.Speed + 10), (sbyte)(M.Speed - 10));
-				while (!S.GetState(0, true) && !S.GetState(1, true)) {
-					Thread.Sleep(10);
-				}
-
-				M.V.SpinLeft(30, 300, true).WaitOne();
-
-			}
-
-			M.Brake();*/
-
-			M.GoFor (5, false);
-			M.V.SpinLeft (30, 500, true).WaitOne ();
-			M.GoFor (5);
-			M.SetSpeed ((sbyte)(M.Speed + 10), (sbyte)(M.Speed - 10));
 			while (!S.GetState (0, true) && !S.GetState (1, true)) {
 				Thread.Sleep (10);
 			}
 
-			M.V.SpinLeft (30, 300, true).WaitOne ();
+			M.V.SpinLeft (30, 150, true).WaitOne ();
 
 			M.GoStraight (M.Speed);
 
-			while (!S.GetState (0)) {
+			while (!S.GetState (0, true)) {
 				Thread.Sleep (10);
 			}
 
@@ -117,106 +89,58 @@ namespace OmegaTeam {
 
 			bool SILVER = (S.GetColor (0) >= 70 && S.GetColor (1) >= 70);
 
-            int Angle = S.GetAngle();
+			int Angle = S.GetAngle ();
+			AngleDiff = Math.Abs (Angle) - Math.Abs (MainClass.Angle);
 
-            if (CL && CR)
-            {
+			if (CL && CR) {
 
-                M.Brake();
+				M.Brake ();
 
-                switch (S.CheckGreen())
-                {
+				switch (S.CheckGreen ()) {
 
-                    case 0:
-                        Print("Verde sinistra");
-                        S.SetSensorsMode(MonoBrickFirmware.Sensors.ColorMode.Reflection);
-                        M.SetSpeed(-15, 45, 1, true);
-                        break;
-                    case 1:
-                        Print("Verde destra");
-                        S.SetSensorsMode(MonoBrickFirmware.Sensors.ColorMode.Reflection);
-                        M.SetSpeed(45, -15, 1, true);
-                        break;
-                    case -2:
-                        if (green < 4)
-                        {
-                            green++;
-                            Print("Niente " + green);
-                            S.SetSensorsMode(MonoBrickFirmware.Sensors.ColorMode.Reflection);
-                            M.Turn(0.4, true);
-                        }
-                        else
-                        {
-                            Print("Avanti");
-                            M.GoStraight(M.Speed, 1.5);
-                            S.SetSensorsMode(MonoBrickFirmware.Sensors.ColorMode.Reflection);
-                        }
+				case 0:
+					Print ("Verde sinistra");
+					S.SetSensorsMode (MonoBrickFirmware.Sensors.ColorMode.Reflection);
+					M.SetSpeed (-15, 45, 1, true);
+					break;
+				case 1:
+					Print ("Verde destra");
+					S.SetSensorsMode (MonoBrickFirmware.Sensors.ColorMode.Reflection);
+					M.SetSpeed (45, -15, 1, true);
+					break;
+				case -1:
+					if (AngleDiff > ANGLE && AngleDiff < (255 - ANGLE)) {
+						Print ("Avanti " + AngleDiff);
+						M.GoStraight (M.Speed, 0.5);
+						S.SetSensorsMode (MonoBrickFirmware.Sensors.ColorMode.Reflection);
+					} else {
+						Print ("Niente " + AngleDiff);
+						S.SetSensorsMode (MonoBrickFirmware.Sensors.ColorMode.Reflection);
+						M.Turn (0.5, true);
+					}
 
-                        break;
-                    case -3:
-                        if (green < 1)
-                            t = DateTime.Now.Second;
-
-                        if (DateTime.Now.Second - t < 5)
-                        {
-                            green++;
-                            Print("Niente " + green);
-                            S.SetSensorsMode(MonoBrickFirmware.Sensors.ColorMode.Reflection);
-                            M.Turn(0.4, true);
-                        }
-                        else
-                        {
-                            Print("Avanti");
-                            M.GoStraight(M.Speed, 1.5);
-                            S.SetSensorsMode(MonoBrickFirmware.Sensors.ColorMode.Reflection);
-                        }
-
-                        break;
-                    case -1:
-                        if (Math.Abs(Angle) > 15 && Angle < 100)
-                        {
-                            Print("Avanti " + Angle);
-                            M.GoStraight(M.Speed, 1);
-                            S.SetSensorsMode(MonoBrickFirmware.Sensors.ColorMode.Reflection);
-                        }
-                        else
-                        {
-                            Print("Niente " + Angle);
-                            S.SetSensorsMode(MonoBrickFirmware.Sensors.ColorMode.Reflection);
-                            M.Turn(0.4, true);
-                        }
-
-                        break;
-                }
-            }
+					break;
+				}
+			}
 
 
 			if ((CL && !CR) || (!CL && CR)) {
 
 				M.Turn (0.05); // 0.1
-				green = 0;
 
 			}
 
 			if (!CL && !CR) {
 
 				M.GoStraight (M.Speed, 0.01); // 0.05
-				green = 0;
 
 			}
 
-			/*if (S.ObstacleNoticed()) {
-				
-				obstacle++;
+			if (S.ObstacleNoticed ()) {
 
-				if (obstacle % 3 == 0) {
-					Print("Ostacolo " + obstacle);
-					AvoidObstacle();
-				} else {
-					Print("Ostacolo " + obstacle);
-				}
+				AvoidObstacle ();
 
-			}*/
+			}
 
 			/*if (SILVER || S.Touch.IsPressed())
 				TerminateProgram();*/

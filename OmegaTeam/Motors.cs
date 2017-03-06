@@ -1,12 +1,5 @@
-﻿using System;
-using System.Threading;
-
-using MonoBrickFirmware;
+﻿using System.Threading;
 using MonoBrickFirmware.Movement;
-
-using MonoBrickFirmware.Display;
-using System.Security.Cryptography;
-using System.Collections.ObjectModel;
 
 namespace OmegaTeam {
 	public class Motors {
@@ -16,8 +9,6 @@ namespace OmegaTeam {
 
 		const sbyte SPEED = 30;
 		const double REVERSE_CORRECTION = 3;
-		const double CENTIMETERS_CONST = 34.61;
-		const double TURN_CONST = 14;
 
 		//################################################################################
 		//################################################################################
@@ -34,7 +25,7 @@ namespace OmegaTeam {
 			motR = new Motor (MotorPort.OutB);
 			motP = new Motor (MotorPort.OutC);
 
-			V = new Vehicle (MotorPort.OutD, MotorPort.OutA);
+			V = new Vehicle (MotorPort.OutA, MotorPort.OutB);
 
 		}
 
@@ -120,21 +111,6 @@ namespace OmegaTeam {
 		/// <param name="timeout">Timeout at the end of the action.</param>
 		public void Turn (double timeout = 0, bool black = false) {
 
-			/*int colL = S.GetColor(0);
-			int colR = S.GetColor(1);
-
-			if (black && Math.Abs(colL - colR) <= 2) {
-
-				LcdConsole.WriteLine("Incrocio / Bacchetta / Salita");
-
-				GoStraight(SPEED, 1);
-
-				while (!S.GetState(0) && !S.GetState(1)) {
-					Thread.Sleep(10);
-				}
-
-			} else {*/
-
 			double correctionL = Brain.GetCorrection (0);
 			double correctionR = Brain.GetCorrection (1);
 
@@ -150,83 +126,8 @@ namespace OmegaTeam {
 
 			}
 
-			//}
-
 			Thread.Sleep ((int)(timeout * 1000));
 		}
 
-		/// <summary>
-		/// Moves forward by a fixed amount of centimeters.
-		/// </summary>
-		/// <param name="centimeters">Amount of entimeters.</param>
-		/// <param name="forward">If set to <c>true</c> goes forward, if set to false goes backward.</param>
-		/// <param name="timeout">Timeout at the end of the action.</param>
-		public void GoFor (int centimeters, bool forward = true) {
-
-			bool l = true, r = true;
-
-			ResetTacho ();
-			DateTime TIni = DateTime.Now;
-
-			if (forward) {
-
-				SetSpeed (SPEED, SPEED);
-
-				do {
-
-					TimeSpan t = DateTime.Now - TIni;
-
-					if (t.Seconds > 20) {
-
-						Brake ();
-						return;
-
-					}
-
-					if (motL.GetTachoCount () >= centimeters * CENTIMETERS_CONST) {
-
-						motL.Brake ();
-						l = false;
-
-					}
-					if (motR.GetTachoCount () >= centimeters * CENTIMETERS_CONST) {
-
-						motR.Brake ();
-						r = false;
-
-					}
-
-				} while (l || r);
-
-			} else {
-
-				SetSpeed (-SPEED, -SPEED);
-
-				do {
-
-					TimeSpan t = DateTime.Now - TIni;
-
-					if (t.Seconds > 20) {
-
-						Brake ();
-						return;
-
-					}
-					if (motL.GetTachoCount () <= -centimeters * CENTIMETERS_CONST) {
-
-						motL.Brake ();
-						l = false;
-
-					}
-					if (motR.GetTachoCount () <= -centimeters * CENTIMETERS_CONST) {
-
-						motR.Brake ();
-						r = false;
-
-					}
-
-				} while (l || r);
-			}
-		}
 	}
 }

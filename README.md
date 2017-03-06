@@ -22,6 +22,3 @@ v3: Version used in national finals (2016)
 
 ##ToDo:
 - Improve intersections management
-- Improve speed
-- Improve obstacle-avoiding
-- Rewrite rescue
