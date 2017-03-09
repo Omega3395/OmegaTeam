@@ -11,7 +11,7 @@ namespace OmegaTeam {
 		//################################################################################
 
 		public static bool stop = false;
-		static int ANGLE = 20;
+		static int ANGLE = 5;
 
 		//################################################################################
 		//################################################################################
@@ -56,7 +56,6 @@ namespace OmegaTeam {
 		static void AvoidObstacle () {
 
 			M.GoStraight ((sbyte)-M.Speed, 0.5, true);
-			Print ("fine 02");
 
 			M.V.SpinLeft (M.Speed, 500, true).WaitOne ();
 
@@ -87,7 +86,7 @@ namespace OmegaTeam {
 			bool CL = S.GetState (0);
 			bool CR = S.GetState (1);
 
-			bool SILVER = (S.GetColor (0) >= 70 && S.GetColor (1) >= 70);
+			bool SILVER = (S.GetColor (0) >= 80 && S.GetColor (1) >= 80);
 
 			int Angle = S.GetAngle ();
 			AngleDiff = Math.Abs (Angle) - Math.Abs (MainClass.Angle);
@@ -142,8 +141,8 @@ namespace OmegaTeam {
 
 			}
 
-			/*if (SILVER || S.Touch.IsPressed())
-				TerminateProgram();*/
+			if (SILVER)
+				TerminateProgram();
 
 			Buttons.EscapePressed += () => {
 				TerminateProgram ();
