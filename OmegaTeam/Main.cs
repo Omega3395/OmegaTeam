@@ -27,9 +27,7 @@ namespace OmegaTeam {
 
 			M.Brake ();
 
-			LcdConsole.WriteLine ("Inizio Rescue");
-
-			//Brain.Rescue();
+			Brain.Rescue ();
 
 			Thread.Sleep (2000);
 

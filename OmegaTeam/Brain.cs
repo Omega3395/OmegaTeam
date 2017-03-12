@@ -3,9 +3,10 @@ using System.Threading;
 
 using MonoBrickFirmware.Display;
 using MonoBrickFirmware.UserInput;
+using System.Collections.Generic;
 
 namespace OmegaTeam {
-	public class Brain {
+	public static class Brain {
 
 		//################################################################################
 		//################################################################################
@@ -20,6 +21,7 @@ namespace OmegaTeam {
 		static Motors M = new Motors ();
 
 		public static int AngleDiff;
+		public static List<int> Angles = new List<int> ();
 
 		static ButtonEvents Buttons = new ButtonEvents ();
 
@@ -89,7 +91,9 @@ namespace OmegaTeam {
 			bool SILVER = (S.GetColor (0) >= 80 && S.GetColor (1) >= 80);
 
 			int Angle = S.GetAngle ();
-			AngleDiff = Math.Abs (Angle) - Math.Abs (MainClass.Angle);
+			AngleDiff = Math.Abs (Math.Abs (Angle) - Math.Abs (MainClass.Angle));
+			Print (AngleDiff.ToString ());
+			Angles.Add (Math.Abs (Math.Abs (Angle) - Math.Abs (MainClass.Angle)));
 
 			if (CL && CR) {
 
@@ -108,7 +112,7 @@ namespace OmegaTeam {
 					M.SetSpeed (45, -15, 1, true);
 					break;
 				case -1:
-					if (AngleDiff > ANGLE && AngleDiff < (255 - ANGLE)) {
+					if ((Angles.Count > 5) && (CheckAngle (Angles [Angles.Count - 1]) || CheckAngle (Angles [Angles.Count - 2]) || CheckAngle (Angles [Angles.Count - 3]))) {
 						Print ("Avanti " + AngleDiff);
 						M.GoStraight (M.Speed, 0.5);
 						S.SetSensorsMode (MonoBrickFirmware.Sensors.ColorMode.Reflection);
@@ -142,19 +146,31 @@ namespace OmegaTeam {
 			}
 
 			if (SILVER)
-				TerminateProgram();
+				TerminateProgram ();
 
 			Buttons.EscapePressed += () => {
 				TerminateProgram ();
 			};
 
+			Buttons.UpPressed += () => {
+				Buttons.DownPressed += () => {
+					MainClass.Angle = S.GetAngle ();
+				};
+			};
+
+		}
+
+		static bool CheckAngle (int val) {
+			return (val > ANGLE) && (val < (255 - ANGLE));
 		}
 
 		public static void Rescue () {
 
+			LcdConsole.WriteLine ("Inizio Rescue");
+
 			Thread.Sleep (2000);
 
-			Salvataggio.RunSalvataggio ();
+			Salvataggio.RunRescue ();
 
 		}
 

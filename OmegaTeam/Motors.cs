@@ -37,11 +37,14 @@ namespace OmegaTeam {
 		/// <summary>
 		/// Brakes all motors.
 		/// </summary>
-		public void Brake () {
+		public void Brake (int timeout = 0) {
 
 			motL.Brake ();
 			motR.Brake ();
 			motP.Brake ();
+
+			Thread.Sleep (timeout);
+
 		}
 
 		/// <summary>

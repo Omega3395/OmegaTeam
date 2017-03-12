@@ -1,4 +1,5 @@
-﻿using MonoBrickFirmware.Sensors;
+﻿using System;
+using MonoBrickFirmware.Sensors;
 
 namespace OmegaTeam {
 	public class Sensors {
@@ -161,6 +162,7 @@ namespace OmegaTeam {
 
 			M.GoStraight (M.Speed, 0.3, true);
 
+			Brain.Angles.Add (Math.Abs (Math.Abs (GetAngle ()) - Math.Abs (MainClass.Angle)));
 			greenL = colL.Read () == (byte)Color.Green;
 			greenR = colR.Read () == (byte)Color.Green;
 
