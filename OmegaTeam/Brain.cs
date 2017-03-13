@@ -93,7 +93,7 @@ namespace OmegaTeam {
 			int Angle = S.GetAngle ();
 			AngleDiff = Math.Abs (Math.Abs (Angle) - Math.Abs (MainClass.Angle));
 			Print (AngleDiff.ToString ());
-			Angles.Add (Math.Abs (Math.Abs (Angle) - Math.Abs (MainClass.Angle)));
+			Angles.Add (AngleDiff);
 
 			if (CL && CR) {
 
@@ -112,14 +112,20 @@ namespace OmegaTeam {
 					M.SetSpeed (45, -15, 1, true);
 					break;
 				case -1:
-					if ((Angles.Count > 5) && (CheckAngle (Angles [Angles.Count - 1]) || CheckAngle (Angles [Angles.Count - 2]) || CheckAngle (Angles [Angles.Count - 3]))) {
-						Print ("Avanti " + AngleDiff);
+					int angle1 = Angles [Angles.Count - 1];
+					int angle2 = Angles [Angles.Count - 2];
+					int angle3 = Angles [Angles.Count - 3];
+					int der1 = Math.Abs (angle1 - angle2);
+					int der2 = Math.Abs (angle2 - angle3);
+					bool CheckEquals = (angle1 == angle2 || (angle1 == angle3) || (angle2 == angle3));
+					if ((Angles.Count > 5) && ((CheckAngle (angle1) || CheckAngle (angle2) || CheckAngle (angle3))) && !CheckEquals && (der1 > 2 || der2 > 2)) {
+						Print ("Avanti " + angle1 + " " + angle2 + " " + angle3);
 						M.GoStraight (M.Speed, 0.5);
 						S.SetSensorsMode (MonoBrickFirmware.Sensors.ColorMode.Reflection);
 					} else {
-						Print ("Niente " + AngleDiff);
+						Print ("Niente " + angle1 + " " + angle2 + " " + angle3 + "     " + der1 + " " + der2);
 						S.SetSensorsMode (MonoBrickFirmware.Sensors.ColorMode.Reflection);
-						M.Turn (0.5, true);
+						M.Turn (0.4);
 					}
 
 					break;
@@ -141,6 +147,7 @@ namespace OmegaTeam {
 
 			if (S.ObstacleNoticed ()) {
 
+				Print ("Ostacolo!");
 				AvoidObstacle ();
 
 			}
@@ -153,9 +160,7 @@ namespace OmegaTeam {
 			};
 
 			Buttons.UpPressed += () => {
-				Buttons.DownPressed += () => {
-					MainClass.Angle = S.GetAngle ();
-				};
+				MainClass.Angle = S.GetAngle ();
 			};
 
 		}

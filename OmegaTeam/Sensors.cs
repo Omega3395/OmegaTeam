@@ -152,6 +152,7 @@ namespace OmegaTeam {
 
 			SetSensorsMode (ColorMode.Color);
 
+            Brain.Angles.Add(Math.Abs(Math.Abs(GetAngle()) - Math.Abs(MainClass.Angle)));
 			bool greenL = colL.Read () == (byte)Color.Green;
 			bool greenR = colR.Read () == (byte)Color.Green;
 
@@ -162,7 +163,7 @@ namespace OmegaTeam {
 
 			M.GoStraight (M.Speed, 0.3, true);
 
-			Brain.Angles.Add (Math.Abs (Math.Abs (GetAngle ()) - Math.Abs (MainClass.Angle)));
+            Brain.Angles.Add(Math.Abs(Math.Abs(GetAngle()) - Math.Abs(MainClass.Angle)));
 			greenL = colL.Read () == (byte)Color.Green;
 			greenR = colR.Read () == (byte)Color.Green;
 
@@ -173,6 +174,7 @@ namespace OmegaTeam {
 
 			M.GoStraight ((sbyte)-M.Speed, 0.6, true);
 
+            Brain.Angles.Add(Math.Abs(Math.Abs(GetAngle()) - Math.Abs(MainClass.Angle)));
 			greenL = colL.Read () == (byte)Color.Green;
 			greenR = colR.Read () == (byte)Color.Green;
 

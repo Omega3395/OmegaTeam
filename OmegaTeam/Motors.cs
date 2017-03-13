@@ -8,7 +8,7 @@ namespace OmegaTeam {
 		//################################################################################
 
 		const sbyte SPEED = 30;
-		const double REVERSE_CORRECTION = 3;
+		const float REVERSE_CORRECTION = 3;
 
 		//################################################################################
 		//################################################################################
@@ -112,7 +112,7 @@ namespace OmegaTeam {
 		/// Turn with a fixed correction given by the sensor readings.
 		/// </summary>
 		/// <param name="timeout">Timeout at the end of the action.</param>
-		public void Turn (double timeout = 0, bool black = false) {
+		public void Turn (double timeout = 0) {
 
 			double correctionL = Brain.GetCorrection (0);
 			double correctionR = Brain.GetCorrection (1);
@@ -130,6 +130,7 @@ namespace OmegaTeam {
 			}
 
 			Thread.Sleep ((int)(timeout * 1000));
+
 		}
 
 	}
