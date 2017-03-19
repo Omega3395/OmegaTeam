@@ -1,8 +1,6 @@
-﻿using MonoBrickFirmware.Display;
+﻿using System.Threading;
+using MonoBrickFirmware.Display;
 using MonoBrickFirmware.Movement;
-using MonoBrickFirmware.Sensors;
-using System.Threading;
-using MonoBrickFirmware.UserInput;
 
 namespace OmegaTeam {
 	class Salvataggio {
@@ -104,7 +102,7 @@ namespace OmegaTeam {
 			M.SetSpeed (50, 50);
 			Thread.Sleep (1000);
 
-			LcdConsole.WriteLine ("");
+			/*LcdConsole.WriteLine ("");
 			LcdConsole.WriteLine (S.GetDist (2) + "    " + S.GetDist (1) + "    " + S.GetDist (3));
 
 			Thread.Sleep (3000);
@@ -125,17 +123,23 @@ namespace OmegaTeam {
 						GoToAngle (3);
 					}
 				}
-			}
+			}*/
+
+			GoToAngle (1);
+
 		}
 
 		static void PosizionaRobot () {
 
-			Go (2.3);
+
+			Go (2.9);
 			GoTacho (M.motP, RELEASE);
 			turn90 (true, true);
-			Go (3.5);
+			Go (1.5, -30, -30);
+			Go (3.525);
+
 			turn90 (false, true);
-			Go (2.5, -30, -30);
+			Go (3.17, -30, -30);
 			Go (1.15);
 			GoTacho (M.motP, UP);
 			Thread.Sleep (250);
@@ -153,7 +157,7 @@ namespace OmegaTeam {
 			switch (Position) {
 			case (1): {
 
-					Go (0.45, -30, -30);
+					Go (0.8, -30, -30);
 					turn90 (false);
 					Go (0.85, 90, 90);
 					Go (0.8, 50, -50);
@@ -164,7 +168,7 @@ namespace OmegaTeam {
 				}
 			case (2): {
 
-					Go (0.45, -30, -30);
+					Go (0.8, -30, -30);
 					turn90 (true);
 					Go (0.85, 90, 90);
 					Go (0.8, -50, 50);
@@ -237,7 +241,10 @@ namespace OmegaTeam {
 		static void CrawAction () {
 
 			M.motP.SetSpeed (127);
-			Thread.Sleep (1500);
+			Thread.Sleep (300);                 //ferma i motori mentre va la pinza si abbassa
+			M.motL.Brake ();
+			M.motR.Brake ();
+			Thread.Sleep (1200);
 			M.motL.Brake ();
 			Thread.Sleep (50);
 			GoTacho (M.motP, UP);
@@ -247,10 +254,12 @@ namespace OmegaTeam {
 
 			turn90 (right1);
 
-			Go (1.6, -50, -50);
-			Thread.Sleep (50);
+			M.SetSpeed (-50, -50);
+			Thread.Sleep (1300);
 
-			CrawAction ();
+			CrawAction ();                              //i motori stanno ancora andando
+
+			M.Brake ();
 
 			Thread.Sleep (50);
 			Go (1.6, 50, 50);
