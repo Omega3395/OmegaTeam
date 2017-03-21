@@ -1,38 +1,33 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 
-using MonoBrickFirmware;
 using MonoBrickFirmware.Display;
+using MonoBrickFirmware.Sensors;
 using MonoBrickFirmware.UserInput;
 
-namespace OmegaTeam
-{
-	public class Brain
-	{
+namespace OmegaTeam {
+	public static class Brain {
 
 		//################################################################################
 		//################################################################################
 
 		public static bool stop = false;
-		static sbyte green = 0;
-		static sbyte obstacle = 0;
+		static int SILVER_VALUE = 70;
 
 		//################################################################################
 		//################################################################################
 
-		static Sensors S = new Sensors();
-		static Motors M = new Motors();
+		static Sensors S = new Sensors ();
+		static Motors M = new Motors ();
 
-		static ButtonEvents Buttons = new ButtonEvents();
-
-		public Brain() {
-		}
+		static ButtonEvents Buttons = new ButtonEvents ();
 
 		/// <summary>
 		/// Terminates the program.
 		/// </summary>
-		static void TerminateProgram() {
-			M.Brake();
+		public static void TerminateProgram () {
+			M.Brake ();
 			stop = true;
 		}
 
@@ -41,156 +36,133 @@ namespace OmegaTeam
 		/// </summary>
 		/// <returns>The correction of the darkest sensor</returns>
 		/// <param name="sensor">Sensor (0: left, 1: right)</param>
-		public static double GetCorrection(sbyte sensor) {
+		public static double GetCorrection (sbyte sensor) {
 
-			//return Math.Abs(WHITE[sensor] - S.GetColor(sensor)) * 0.05; // Formula per calcolare la correzione di posizione
+			sbyte currentColor = S.GetColor (sensor);
+			if (currentColor > Sensors.WHITE [sensor])
+				currentColor = Sensors.WHITE [sensor];
 
-			sbyte currentColor = S.GetColor(sensor);
-			if (currentColor > Sensors.WHITE[sensor])
-				currentColor = Sensors.WHITE[sensor];
-
-			return Math.Pow(Math.Pow(Sensors.WHITE[sensor] - currentColor, 4), 1.0 / 5);
+			return Math.Pow (Math.Pow (Sensors.WHITE [sensor] - currentColor, 6), 1.0 / 7); // Formula per calcolare la correzione di posizione
 		}
 
-		static void Print(string a) {
-			
-			LcdConsole.WriteLine(a);
+		static void Print (string a) {
 
-		}
-
-		static void AvoidObstacle() {
-
-			/*M.GoFor(5, false);
-			M.V.SpinRight(30, 500, true).WaitOne();
-
-			if (S.GetDist(1) > 25 * 10) { // Sorpassa l'ostacolo a destra
-
-				M.GoFor(5);
-				M.SetSpeed((sbyte)(M.Speed - 10), (sbyte)(M.Speed + 10));
-				while (!S.GetState(0, true) && !S.GetState(1, true)) {
-					Thread.Sleep(10);
-				}
-
-				M.V.SpinRight(30, 300, true).WaitOne();
-
-			} else { // Sorpassa l'ostacolo a sinistra
-
-				M.V.SpinLeft(30, 1000, true).WaitOne();
-				M.GoFor(5);
-				M.SetSpeed((sbyte)(M.Speed + 10), (sbyte)(M.Speed - 10));
-				while (!S.GetState(0, true) && !S.GetState(1, true)) {
-					Thread.Sleep(10);
-				}
-
-				M.V.SpinLeft(30, 300, true).WaitOne();
-
-			}
-
-			M.Brake();*/
-
-			M.GoFor(5, false);
-			M.V.SpinLeft(30, 500, true).WaitOne();
-			M.GoFor(5);
-			M.SetSpeed((sbyte)(M.Speed + 10), (sbyte)(M.Speed - 10));
-			while (!S.GetState(0, true) && !S.GetState(1, true)) {
-				Thread.Sleep(10);
-			}
-
-			M.V.SpinLeft(30, 300, true).WaitOne();
-
-			M.GoStraight(M.Speed);
-
-			while (!S.GetState(0)) {
-				Thread.Sleep(10);
-			}
-
-			M.Brake();
-
-			Thread.Sleep(500);
+			LcdConsole.WriteLine (a);
 
 		}
 
-		public static void LineFollower() {
+		static void AvoidObstacle () {
 
-			bool CL = S.GetState(0);
-			bool CR = S.GetState(1);
+			M.GoStraight ((sbyte)-M.Speed, 0.5, true);
 
-			bool SILVER = (S.GetColor(0) >= 70 && S.GetColor(1) >= 70);
+			M.V.SpinRight (M.Speed, 500, true).WaitOne ();
 
-			if (CL && CR) {
+			M.GoStraight (M.Speed, 0.7, true);
 
-				M.Brake();
+			M.SetSpeed ((sbyte)(M.Speed - 15), (sbyte)(M.Speed + 15));
 
-				switch (S.CheckGreen()) {
+			while (!S.GetState (0, true) && !S.GetState (1, true)) {
+				Thread.Sleep (10);
+			}
 
-					case 0:
-						Print("Verde sinistra");
-						S.SetSensorsMode(MonoBrickFirmware.Sensors.ColorMode.Reflection);
-						M.SetSpeed(-10, 30, 1, true);
-						break;
-					case 1:
-						Print("Verde destra");
-						S.SetSensorsMode(MonoBrickFirmware.Sensors.ColorMode.Reflection);
-						M.SetSpeed(30, -10, 1, true);
-						break;
-					case -1:
-						if (green < 5) {
-							green++;
-							Print("Niente " + green);
-							S.SetSensorsMode(MonoBrickFirmware.Sensors.ColorMode.Reflection);
-							M.Turn(0.4, true);
-						} else {
-							Print("Avanti");
-							M.GoStraight(M.Speed, 1.5);
-							S.SetSensorsMode(MonoBrickFirmware.Sensors.ColorMode.Reflection);
-						}
+			M.V.SpinRight (30, 150, true).WaitOne ();
 
-						break;
+			M.GoStraight (M.Speed);
+
+			while (!S.GetState (1, true)) {
+				Thread.Sleep (10);
+			}
+
+			M.Brake ();
+
+			Thread.Sleep (500);
+
+		}
+
+		public static void LineFollower () {
+
+			bool CL = S.GetState (0);
+			bool CR = S.GetState (1);
+
+			bool SILVER = (S.GetColor (0) >= SILVER_VALUE && S.GetColor (1) >= SILVER_VALUE);
+
+			if (CL && CR) { // Nero Nero
+
+				M.Brake ();
+
+				switch (S.CheckGreen2 ()) {
+
+				case 0:
+					M.Brake ();
+					Print ("Verde sinistra");
+					S.SetSensorsMode (ColorMode.Reflection);
+					M.SetSpeed (-15, 45, 1, true);
+					break;
+				case 1:
+					M.Brake ();
+					Print ("Verde destra");
+					S.SetSensorsMode (ColorMode.Reflection);
+					M.SetSpeed (45, -15, 1, true);
+					break;
+				case -1:
+
+					M.Brake ();
+					Print ("Niente");
+					S.SetSensorsMode (ColorMode.Reflection);
+					for (int i = 0; i < 8; i++)
+						M.Turn (0.05);
+
+					break;
+
+				case -2:
+					M.Brake ();
+					S.SetSensorsMode (ColorMode.Reflection);
+					Print ("NERO NERO");
+					M.GoStraight (M.Speed, 0.5);
+
+					break;
 				}
-					
-			}
-
-			if ((CL && !CR) || (!CL && CR)) {
-				
-				M.Turn(0.1);
-				green = 0;
 
 			}
 
-			if (!CL && !CR) {
 
-				M.GoStraight(M.Speed, 0.1);
-				green = 0;
+			if ((CL && !CR) || (!CL && CR)) { // Bianco Nero / Nero Bianco
 
-			}
-
-			if (S.ObstacleNoticed()) {
-				
-				obstacle++;
-
-				if (obstacle % 3 == 0) {
-					Print("Ostacolo " + obstacle);
-					AvoidObstacle();
-				} else {
-					Print("Ostacolo " + obstacle);
-				}
+				M.Turn (0.05); // 0.1
 
 			}
 
-			if (SILVER || S.Touch.IsPressed())
-				TerminateProgram();
-            
+			if (!CL && !CR) { // Bianco Bianco
+
+				M.GoStraight (M.Speed, 0.01); // 0.05
+
+			}
+
+			if (S.ObstacleNoticed ()) {
+
+				Print ("Ostacolo!");
+				AvoidObstacle ();
+
+			}
+
+			if (SILVER) {
+				Print ("SILVER");
+				TerminateProgram ();
+			}
+
 			Buttons.EscapePressed += () => {
-				TerminateProgram();
+				TerminateProgram ();
 			};
-		
+
 		}
 
-		public static void Rescue() {
+		public static void Rescue () {
 
-			Thread.Sleep(2000);
+			LcdConsole.WriteLine ("Inizio Rescue");
 
-			Salvataggio.RunSalvataggio();
+			Thread.Sleep (2000);
+
+			Salvataggio.RunRescue ();
 
 		}
 

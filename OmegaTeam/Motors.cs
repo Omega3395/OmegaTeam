@@ -1,27 +1,14 @@
-﻿using System;
-using System.Threading;
-
-using MonoBrickFirmware;
+﻿using System.Threading;
 using MonoBrickFirmware.Movement;
 
-using MonoBrickFirmware.Display;
-using System.Security.Cryptography;
-using System.Collections.ObjectModel;
-
-namespace OmegaTeam
-{
-	public class Motors
-	{
+namespace OmegaTeam {
+	public class Motors {
 
 		//################################################################################
 		//################################################################################
 
-		static Sensors S = new Sensors();
-
-		const sbyte SPEED = 20;
-		const double REVERSE_CORRECTION = 3;
-		const double CENTIMETERS_CONST = 34.61;
-		const double TURN_CONST = 14;
+		const sbyte SPEED = 30;
+		const float REVERSE_CORRECTION = 3;
 
 		//################################################################################
 		//################################################################################
@@ -32,14 +19,14 @@ namespace OmegaTeam
 
 		public Vehicle V;
 
-		public Motors() {
+		public Motors () {
 
-			motL = new Motor(MotorPort.OutA);
-			motR = new Motor(MotorPort.OutB);
-			motP = new Motor(MotorPort.OutC);
+			motL = new Motor (MotorPort.OutA);
+			motR = new Motor (MotorPort.OutB);
+			motP = new Motor (MotorPort.OutC);
 
-			V = new Vehicle(MotorPort.OutA, MotorPort.OutB);
-		
+			V = new Vehicle (MotorPort.OutA, MotorPort.OutB);
+
 		}
 
 		/// <summary>
@@ -50,35 +37,38 @@ namespace OmegaTeam
 		/// <summary>
 		/// Brakes all motors.
 		/// </summary>
-		public void Brake() {
+		public void Brake (int timeout = 0) {
 
-			motL.Brake();
-			motR.Brake();
-			motP.Brake();
+			motL.Brake ();
+			motR.Brake ();
+			motP.Brake ();
+
+			Thread.Sleep (timeout);
+
 		}
 
 		/// <summary>
 		/// Turns all motors off.
 		/// </summary>
-		public void Off() {
+		public void Off () {
 
-			motL.Off();
-			motR.Off();
-			motP.Off();
+			motL.Off ();
+			motR.Off ();
+			motP.Off ();
 
 		}
 
 		/// <summary>
 		/// Resets the tacho.
 		/// </summary>
-		public void ResetTacho(bool motL = true, bool motR = true, bool motP = true) {
+		public void ResetTacho (bool motL = true, bool motR = true, bool motP = true) {
 
 			if (motL)
-				this.motL.ResetTacho();
+				this.motL.ResetTacho ();
 			if (motR)
-				this.motR.ResetTacho();
+				this.motR.ResetTacho ();
 			if (motP)
-				this.motP.ResetTacho();
+				this.motP.ResetTacho ();
 
 		}
 
@@ -89,15 +79,15 @@ namespace OmegaTeam
 		/// <param name="speedRight">Speed right.</param>
 		/// <param name="timeout">Amount of time the speed is ran for.</param>
 		/// <param name="brake">If set to <c>true</c> motors will brake.</param>
-		public void SetSpeed(sbyte speedLeft, sbyte speedRight, double timeout = 0, bool brake = false) {
+		public void SetSpeed (sbyte speedLeft, sbyte speedRight, double timeout = 0, bool brake = false) {
 
-			motL.SetSpeed(speedLeft);
-			motR.SetSpeed(speedRight);
+			motL.SetSpeed (speedLeft);
+			motR.SetSpeed (speedRight);
 
-			Thread.Sleep((int)(timeout * 1000));
+			Thread.Sleep ((int)(timeout * 1000));
 
 			if (brake)
-				Brake();
+				Brake ();
 
 		}
 
@@ -107,14 +97,14 @@ namespace OmegaTeam
 		/// <param name="speed">Speed.</param>
 		/// <param name="timeout">Amount of time the speed is ran for.</param>
 		/// <param name="brake">If set to <c>true</c> motors will brake.</param>
-		public void GoStraight(sbyte speed, double timeout = 0, bool brake = false) {
+		public void GoStraight (sbyte speed, double timeout = 0, bool brake = false) {
 
-			SetSpeed(speed, speed);
+			SetSpeed (speed, speed);
 
-			Thread.Sleep((int)(timeout * 1000));
+			Thread.Sleep ((int)(timeout * 1000));
 
 			if (brake)
-				Brake();
+				Brake ();
 
 		}
 
@@ -122,115 +112,26 @@ namespace OmegaTeam
 		/// Turn with a fixed correction given by the sensor readings.
 		/// </summary>
 		/// <param name="timeout">Timeout at the end of the action.</param>
-		public void Turn(double timeout = 0, bool black = false) {
+		public void Turn (double timeout = 0) {
 
-			/*int colL = S.GetColor(0);
-			int colR = S.GetColor(1);
-
-			if (black && Math.Abs(colL - colR) <= 2) {
-
-				LcdConsole.WriteLine("Incrocio / Bacchetta / Salita");
-
-				GoStraight(SPEED, 1);
-
-				while (!S.GetState(0) && !S.GetState(1)) {
-					Thread.Sleep(10);
-				}
-
-			} else {*/
-
-			double correctionL = Brain.GetCorrection(0);
-			double correctionR = Brain.GetCorrection(1);
+			double correctionL = Brain.GetCorrection (0);
+			double correctionR = Brain.GetCorrection (1);
 
 			if (correctionL <= correctionR) {
-				
-				motL.SetSpeed((sbyte)(SPEED + correctionR));
-				motR.SetSpeed((sbyte)(SPEED - REVERSE_CORRECTION * correctionR));
 
-			} else {
-				
-				motL.SetSpeed((sbyte)(SPEED - REVERSE_CORRECTION * correctionL));
-				motR.SetSpeed((sbyte)(SPEED + correctionL));
-
-			}
-
-			//}
-
-			Thread.Sleep((int)(timeout * 1000));
-		}
-
-		/// <summary>
-		/// Moves forward by a fixed amount of centimeters.
-		/// </summary>
-		/// <param name="centimeters">Amount of entimeters.</param>
-		/// <param name="forward">If set to <c>true</c> goes forward, if set to false goes backward.</param>
-		/// <param name="timeout">Timeout at the end of the action.</param>
-		public void GoFor(int centimeters, bool forward = true) {
-
-			bool l = true, r = true;
-
-			ResetTacho();
-			DateTime TIni = DateTime.Now;
-
-			if (forward) {
-
-				SetSpeed(SPEED, SPEED);
-
-				do {
-
-					TimeSpan t = DateTime.Now - TIni;
-
-					if (t.Seconds > 20) {
-
-						Brake();
-						return;
-
-					}
-
-					if (motL.GetTachoCount() >= centimeters * CENTIMETERS_CONST) {
-
-						motL.Brake();
-						l = false;
-
-					}
-					if (motR.GetTachoCount() >= centimeters * CENTIMETERS_CONST) {
-
-						motR.Brake();
-						r = false;
-
-					}
-
-				} while(l || r);
+				motL.SetSpeed ((sbyte)(SPEED + correctionR));
+				motR.SetSpeed ((sbyte)(SPEED - REVERSE_CORRECTION * correctionR));
 
 			} else {
 
-				SetSpeed(-SPEED, -SPEED);
+				motL.SetSpeed ((sbyte)(SPEED - REVERSE_CORRECTION * correctionL));
+				motR.SetSpeed ((sbyte)(SPEED + correctionL));
 
-				do {
-
-					TimeSpan t = DateTime.Now - TIni;
-
-					if (t.Seconds > 20) {
-
-						Brake();
-						return;
-
-					}
-					if (motL.GetTachoCount() <= -centimeters * CENTIMETERS_CONST) {
-
-						motL.Brake();
-						l = false;
-
-					}
-					if (motR.GetTachoCount() <= -centimeters * CENTIMETERS_CONST) {
-
-						motR.Brake();
-						r = false;
-
-					}
-
-				} while(l || r);
 			}
+
+			Thread.Sleep ((int)(timeout * 1000));
+
 		}
+
 	}
 }
