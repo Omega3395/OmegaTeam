@@ -2,46 +2,43 @@
 using MonoBrickFirmware.Movement;
 
 namespace OmegaTeam {
-	public class Motors {
+	public class M {
 
 		//################################################################################
 		//################################################################################
 
-		const sbyte SPEED = 30;
-		const float REVERSE_CORRECTION = 3;
+
 
 		//################################################################################
 		//################################################################################
 
-		public Motor motL;
-		public Motor motR;
-		public Motor motP;
+		public static Motor motL;
+		public static Motor motR;
+		public static Motor motP;
 
-		public Vehicle V;
+		public static Vehicle V;
 
-		public Motors () {
+		public M () {
 
-			motL = new Motor (MotorPort.OutA);
-			motR = new Motor (MotorPort.OutB);
-			motP = new Motor (MotorPort.OutC);
+			motL = new Motor (MotorPort.OutA); // Motore sinistro
+			motR = new Motor (MotorPort.OutB); // Motore destro
+			motP = new Motor (MotorPort.OutC); // Motore pinza
 
-			V = new Vehicle (MotorPort.OutA, MotorPort.OutB);
+			V = new Vehicle (MotorPort.OutA, MotorPort.OutB); // Classe helper
 
 		}
 
 		/// <summary>
-		/// Gets the fixed default speed value.
+		/// Brakes motors.
 		/// </summary>
-		public sbyte Speed { get { return SPEED; } }
+		public static void Brake (int timeout = 0,bool motL = true, bool motR = true, bool motP = true) {
 
-		/// <summary>
-		/// Brakes all motors.
-		/// </summary>
-		public void Brake (int timeout = 0) {
-
-			motL.Brake ();
-			motR.Brake ();
-			motP.Brake ();
+            if (motL)
+				M.motL.Brake ();
+            if (motR)
+				M.motR.Brake ();
+            if (motP)
+				M.motP.Brake ();
 
 			Thread.Sleep (timeout);
 
@@ -50,7 +47,7 @@ namespace OmegaTeam {
 		/// <summary>
 		/// Turns all motors off.
 		/// </summary>
-		public void Off () {
+		public static void Off () {
 
 			motL.Off ();
 			motR.Off ();
@@ -61,14 +58,14 @@ namespace OmegaTeam {
 		/// <summary>
 		/// Resets the tacho.
 		/// </summary>
-		public void ResetTacho (bool motL = true, bool motR = true, bool motP = true) {
+		public static void ResetTacho (bool motL = true, bool motR = true, bool motP = true) {
 
 			if (motL)
-				this.motL.ResetTacho ();
+				M.motL.ResetTacho ();
 			if (motR)
-				this.motR.ResetTacho ();
+				M.motR.ResetTacho ();
 			if (motP)
-				this.motP.ResetTacho ();
+				M.motP.ResetTacho ();
 
 		}
 
@@ -79,7 +76,7 @@ namespace OmegaTeam {
 		/// <param name="speedRight">Speed right.</param>
 		/// <param name="timeout">Amount of time the speed is ran for.</param>
 		/// <param name="brake">If set to <c>true</c> motors will brake.</param>
-		public void SetSpeed (sbyte speedLeft, sbyte speedRight, double timeout = 0, bool brake = false) {
+		public static void SetSpeed (sbyte speedLeft, sbyte speedRight, double timeout = 0, bool brake = false) {
 
 			motL.SetSpeed (speedLeft);
 			motR.SetSpeed (speedRight);
@@ -97,7 +94,7 @@ namespace OmegaTeam {
 		/// <param name="speed">Speed.</param>
 		/// <param name="timeout">Amount of time the speed is ran for.</param>
 		/// <param name="brake">If set to <c>true</c> motors will brake.</param>
-		public void GoStraight (sbyte speed, double timeout = 0, bool brake = false) {
+		public static void GoStraight (sbyte speed, double timeout = 0, bool brake = false) {
 
 			SetSpeed (speed, speed);
 
@@ -107,31 +104,5 @@ namespace OmegaTeam {
 				Brake ();
 
 		}
-
-		/// <summary>
-		/// Turn with a fixed correction given by the sensor readings.
-		/// </summary>
-		/// <param name="timeout">Timeout at the end of the action.</param>
-		public void Turn (double timeout = 0) {
-
-			double correctionL = Brain.GetCorrection (0);
-			double correctionR = Brain.GetCorrection (1);
-
-			if (correctionL <= correctionR) {
-
-				motL.SetSpeed ((sbyte)(SPEED + correctionR));
-				motR.SetSpeed ((sbyte)(SPEED - REVERSE_CORRECTION * correctionR));
-
-			} else {
-
-				motL.SetSpeed ((sbyte)(SPEED - REVERSE_CORRECTION * correctionL));
-				motR.SetSpeed ((sbyte)(SPEED + correctionL));
-
-			}
-
-			Thread.Sleep ((int)(timeout * 1000));
-
-		}
-
 	}
 }

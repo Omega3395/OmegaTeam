@@ -4,7 +4,6 @@ using MonoBrickFirmware.UserInput;
 namespace OmegaTeam {
 	class MainClass {
 
-		static readonly Motors M = new Motors ();
 		static readonly ButtonEvents Buttons = new ButtonEvents ();
 
 		public static void Main (string [] args) {

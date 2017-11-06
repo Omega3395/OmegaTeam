@@ -5,9 +5,6 @@ using MonoBrickFirmware.Movement;
 namespace OmegaTeam {
 	class Salvataggio {
 
-		static Sensors S = new Sensors ();
-		static Motors M = new Motors ();
-
 		public const int CONST = -5;
 		public const int BALL_DIST = 300;
 		public const sbyte CRAW_SPEED = 127;
@@ -18,7 +15,7 @@ namespace OmegaTeam {
 		public static int Number_of_check = 0;
 		public static bool fine = false;
 
-		public static void RunRescue () {
+		public static void RunRescue () { // Obrobrio, da riscrivere!!!
 
 			M.motP.ResetTacho ();                                 //IL MOTORE DEVE TROVARSI NELLO STATO "UP" A INIZIO RESCUE
 

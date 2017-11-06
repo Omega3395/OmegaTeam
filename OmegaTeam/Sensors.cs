@@ -2,7 +2,7 @@
 using System.Threading;
 
 namespace OmegaTeam {
-	public class Sensors {
+	public class S {
 
 		//################################################################################
 		//################################################################################
@@ -15,18 +15,16 @@ namespace OmegaTeam {
 		//################################################################################
 		//################################################################################
 
-		public MSSensorMUXBase colL;
-		public MSSensorMUXBase colR;
+		public static MSSensorMUXBase colL;
+		public static MSSensorMUXBase colR;
 
-		public MSSensorMUXBase gyro;
+		public static MSSensorMUXBase gyro;
 
-		public EV3UltrasonicSensor IR;
-		public EV3UltrasonicSensor IR2;
-		public EV3UltrasonicSensor IR3;
+		public static EV3UltrasonicSensor IR;
+		public static EV3UltrasonicSensor IR2;
+		public static EV3UltrasonicSensor IR3;
 
-		Motors M = new Motors ();
-
-		public Sensors () {
+		public S () {
 
 			colL = new MSSensorMUXBase (SensorPort.In4, MSSensorMUXPort.C1, ColorMode.Reflection);
 			colR = new MSSensorMUXBase (SensorPort.In4, MSSensorMUXPort.C2, ColorMode.Reflection);
@@ -42,7 +40,7 @@ namespace OmegaTeam {
 		/// </summary>
 		/// <returns>The distance in centimeters.</returns>
 		/// <param name="sensor">Sensor (1: left, 2: right, 3: center)</param>
-		public int GetDist (sbyte sensor) {
+		public static int GetDist (sbyte sensor) {
 
 			switch (sensor) {
 
@@ -62,7 +60,7 @@ namespace OmegaTeam {
 
 		}
 
-		public void SetSensorsMode (ColorMode Mode) {
+		public static void SetSensorsMode (ColorMode Mode) {
 
 			//colL = new EV3ColorSensor (SensorPort.In2, Mode);
 			//colR = new EV3ColorSensor (SensorPort.In1, Mode);
@@ -75,7 +73,7 @@ namespace OmegaTeam {
 		/// <summary>
 		/// Notices obstacles.
 		/// </summary>
-		public bool ObstacleNoticed () {
+		public static bool ObstacleNoticed () {
 
 			if (GetDist (3) < OBSTACLE_DISTANCE * 10)
 				return true;
@@ -94,7 +92,7 @@ namespace OmegaTeam {
 		/// </summary>
 		/// <returns>The color value.</returns>
 		/// <param name="sensor">Sensor (0: left, 1: right)</param>
-		public sbyte GetColor (sbyte sensor) {
+		public static sbyte GetColor (sbyte sensor) {
 
 			switch (sensor) {
 
@@ -111,7 +109,7 @@ namespace OmegaTeam {
 
 		}
 
-		public byte GetAngle () {
+		public static byte GetAngle () {
 			return gyro.Read ();
 		}
 
@@ -120,125 +118,28 @@ namespace OmegaTeam {
 		/// </summary>
 		/// <returns><c>true</c>, if sensor is on black, <c>false</c> otherwise.</returns>
 		/// <param name="sensor">Sensor (0: left, 1: right)</param>
-		public bool GetState (sbyte sensor, bool obstacle = false) {
-			if (!obstacle) {
+		public static bool GetState (sbyte sensor, bool obstacle = false) {
+
+			if (!obstacle) { // Caso qualunque
 
 				sbyte colorValue = GetColor (sensor);
 
 				if (colorValue <= BLACK [sensor])
-					return true; // Sono sul nero, necessito di correzione
+					return true; // Sono sul nero
 
-				return false; // Sono a metà, non necessito di correzione
-			} else {
+				return false; // Sono a metà, non mi si può considerare nero
+
+			} else { // Sto cercando il nero dopo l'ostacolo
 
 				sbyte colorValue = GetColor (sensor);
 
+				// Voglio essere sicuro di essere bene sul nero, in modo da correggermi in modo appropriato
 				if (colorValue <= BLACK_OBSTACLE [sensor])
 					return true;
 
 				return false;
 
 			}
-
-		}
-
-		/// <summary>
-		/// Notices the green.
-		/// </summary>
-		/// <returns>The green.</returns>
-		public int CheckGreen () {
-
-			SetSensorsMode (ColorMode.Color);
-
-			//Brain.Angles.Add (Math.Abs (Math.Abs (GetAngle ()) - Math.Abs (MainClass.Angle)));
-			bool greenL = colL.Read () == (byte)Color.Green;
-			bool greenR = colR.Read () == (byte)Color.Green;
-			bool bb = ((colL.Read () == colR.Read ()) && (colL.Read () == (byte)Color.Black));
-
-			if (greenL)
-				return 0;
-			if (greenR)
-				return 1;
-
-			M.GoStraight (M.Speed, 0.3, true);
-
-			//Brain.Angles.Add (Math.Abs (Math.Abs (GetAngle ()) - Math.Abs (MainClass.Angle)));
-			greenL = colL.Read () == (byte)Color.Green;
-			greenR = colR.Read () == (byte)Color.Green;
-			bool bb2 = ((colL.Read () == colR.Read ()) && (colL.Read () == (byte)Color.White));
-
-			if (greenL)
-				return 0;
-			if (greenR)
-				return 1;
-
-			M.GoStraight ((sbyte)-M.Speed, 0.6, true);
-
-			//Brain.Angles.Add (Math.Abs (Math.Abs (GetAngle ()) - Math.Abs (MainClass.Angle)));
-			greenL = colL.Read () == (byte)Color.Green;
-			greenR = colR.Read () == (byte)Color.Green;
-			bool bb3 = ((colL.Read () == colR.Read ()) && (colL.Read () == (byte)Color.White));
-
-			if (greenL)
-				return 0;
-			if (greenR)
-				return 1;
-
-			M.GoStraight (M.Speed, 0.42, true);
-
-			if (bb && bb2 && bb3)
-				return -2;
-			return -1;
-
-		}
-
-		public int CheckGreen2 () {
-
-			SetSensorsMode (ColorMode.Color);
-			bool greenL, greenR, bb = false, bb2 = false, bb3 = false;
-
-			byte c1 = colL.Read ();
-			byte c2 = colR.Read ();
-			bb = (c1 == c2 && c1 == (byte)Color.Black);
-
-			//New cicle function
-			M.SetSpeed (M.Speed, M.Speed);
-			for (int i = 0; i < 10; i++) {
-				c1 = colL.Read ();
-				c2 = colR.Read ();
-				greenL = c1 == (byte)Color.Green;
-				greenR = c2 == (byte)Color.Green;
-				bb2 = (c1 == c2 && c1 == (byte)Color.White);
-				if (greenL) return 0;
-				if (greenR) return 1;
-				Thread.Sleep (10);
-			}
-			M.Brake ();
-
-			M.SetSpeed ((sbyte)-M.Speed, (sbyte)-M.Speed);
-			for (int i = 0; i < 20; i++) {
-				c1 = colL.Read ();
-				c2 = colR.Read ();
-				greenL = c1 == (byte)Color.Green;
-				greenR = c2 == (byte)Color.Green;
-				bb3 = (c1 == c2 && c1 == (byte)Color.White);
-				if (greenL) return 0;
-				if (greenR) return 1;
-				Thread.Sleep (10);
-			}
-			M.Brake ();
-
-			M.SetSpeed (M.Speed, M.Speed);
-			for (int i = 0; i < 15; i++) {
-				c1 = colL.Read ();
-				c2 = colR.Read ();
-				Thread.Sleep (10);
-			}
-			M.Brake ();
-
-			if (bb && bb2 && bb3)
-				return -2;
-			return -1;
 
 		}
 
