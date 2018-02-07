@@ -1,5 +1,4 @@
 ﻿using MonoBrickFirmware.Sensors;
-using System.Threading;
 
 namespace OmegaTeam {
 	public class S {
@@ -8,40 +7,27 @@ namespace OmegaTeam {
 		//################################################################################
 
 		const short OBSTACLE_DISTANCE = 7; // Distanza a cui si riconosce un ostacolo, in cm
-		public static sbyte [] WHITE = { 60, 50 }; //60 50
-		public static sbyte [] BLACK = { 28, 28 }; //28 28
-		public static sbyte [] BLACK_OBSTACLE = { 21, 21 }; //21 21
+		public static sbyte [] WHITE = { 50, 50 }; // Soglia con la quale si calcola la correzione
+		public static sbyte [] BLACK = { 28, 28 }; // Soglia sotto la quale un sensore viene ritenuto nero
+		public static sbyte [] BLACK_OBSTACLE = { 21, 21 };
 
 		//################################################################################
 		//################################################################################
 
-		public static MSSensorMUXBase colL;
-		public static MSSensorMUXBase colR;
+		public static MSSensorMUXBase colL = new MSSensorMUXBase(SensorPort.In4, MSSensorMUXPort.C1, ColorMode.Reflection); // Sensore di colore sinistro
+        public static MSSensorMUXBase colR = new MSSensorMUXBase(SensorPort.In4, MSSensorMUXPort.C2, ColorMode.Reflection); // Sensore di colore destro
 
-		public static MSSensorMUXBase gyro;
+		public static EV3UltrasonicSensor IR = new EV3UltrasonicSensor(SensorPort.In2, UltraSonicMode.Centimeter); // Sensore di distanza sinistro
+        public static EV3UltrasonicSensor IR2 = new EV3UltrasonicSensor(SensorPort.In3, UltraSonicMode.Centimeter); // Sensore di distanza destro
+        public static EV3UltrasonicSensor IR3 = new EV3UltrasonicSensor(SensorPort.In1, UltraSonicMode.Centimeter); // Sensore di distanza anteriore
 
-		public static EV3UltrasonicSensor IR;
-		public static EV3UltrasonicSensor IR2;
-		public static EV3UltrasonicSensor IR3;
-
-		public S () {
-
-			colL = new MSSensorMUXBase (SensorPort.In4, MSSensorMUXPort.C1, ColorMode.Reflection);
-			colR = new MSSensorMUXBase (SensorPort.In4, MSSensorMUXPort.C2, ColorMode.Reflection);
-
-			IR = new EV3UltrasonicSensor (SensorPort.In1, UltraSonicMode.Centimeter);
-			IR2 = new EV3UltrasonicSensor (SensorPort.In2, UltraSonicMode.Centimeter);
-			IR3 = new EV3UltrasonicSensor (SensorPort.In3, UltraSonicMode.Centimeter);
-
-		}
-
-		/// <summary>
-		/// Gets the distance value of a specified sensor.
-		/// </summary>
-		/// <returns>The distance in centimeters.</returns>
-		/// <param name="sensor">Sensor (1: left, 2: right, 3: center)</param>
-		public static int GetDist (sbyte sensor) {
-
+        /// <summary>
+        /// Gets the distance value of a specified sensor.
+        /// </summary>
+        /// <returns>The distance in centimeters.</returns>
+        /// <param name="sensor">Sensor (1: left, 2: right, 3: center)</param>
+        public static int GetDist (sbyte sensor) {
+                                                                                                                  
 			switch (sensor) {
 
 			case 1:
@@ -107,10 +93,6 @@ namespace OmegaTeam {
 
 			}
 
-		}
-
-		public static byte GetAngle () {
-			return gyro.Read ();
 		}
 
 		/// <summary>

@@ -4,29 +4,11 @@ using MonoBrickFirmware.Movement;
 namespace OmegaTeam {
 	public class M {
 
-		//################################################################################
-		//################################################################################
+		public static Motor motL = new Motor(MotorPort.OutB); // Motore sinistro
+        public static Motor motR = new Motor(MotorPort.OutA); // Motore destro
+        public static Motor motP = new Motor(MotorPort.OutC); // Motore pinza
 
-
-
-		//################################################################################
-		//################################################################################
-
-		public static Motor motL;
-		public static Motor motR;
-		public static Motor motP;
-
-		public static Vehicle V;
-
-		public M () {
-
-			motL = new Motor (MotorPort.OutA); // Motore sinistro
-			motR = new Motor (MotorPort.OutB); // Motore destro
-			motP = new Motor (MotorPort.OutC); // Motore pinza
-
-			V = new Vehicle (MotorPort.OutA, MotorPort.OutB); // Classe helper
-
-		}
+        public static Vehicle V = new Vehicle(MotorPort.OutA, MotorPort.OutB); // Classe helper
 
 		/// <summary>
 		/// Brakes motors.

@@ -1,5 +1,6 @@
 ﻿using System.Threading;
 using MonoBrickFirmware.UserInput;
+using MonoBrickFirmware.Display;
 
 namespace OmegaTeam {
 	class MainClass {
@@ -15,20 +16,17 @@ namespace OmegaTeam {
 				//LcdConsole.WriteLine (S.GetColor (0) + " " + S.GetColor (1));
 
 				Brain.LineFollower ();
-
+                
 				Buttons.EscapePressed += () => {
 					Brain.stop = true;
 				};
-
 			}
 
 			M.Brake ();
 
-			Brain.Rescue ();
-
-			Thread.Sleep (2000);
-
-			M.Off ();
+            //Brain.Rescue ();
+            
+            M.Off ();
 
 		}
 	}

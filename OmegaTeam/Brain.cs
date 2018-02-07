@@ -193,34 +193,55 @@ namespace OmegaTeam {
 
 			byte c1 = S.colL.Read();
 			byte c2 = S.colR.Read();
+            byte c3, c4;
 			bb = (c1 == c2 && c1 == (byte)Color.Black);
 
 			//New cicle function
 			M.SetSpeed(Speed, Speed);
-			for (int i = 0; i < 10; i++) { // Obrobrio, da riscrivere!!!
+			for (int i = 0; i < 6; i++) { // Obrobrio, da riscrivere!!!
 				c1 = S.colL.Read();
 				c2 = S.colR.Read();
+
 				greenL = c1 == (byte)Color.Green;
 				greenR = c2 == (byte)Color.Green;
+
 				bb2 = (c1 == c2 && c1 == (byte)Color.White);
-				if (greenL) return 0;
-				if (greenR) return 1;
+				
 				Thread.Sleep(10);
-			}
+
+                c3 = S.colL.Read();
+                c4 = S.colR.Read();
+
+                greenL = (c1 == c3) && greenL;
+                greenR = (c2 == c4) && greenR;
+
+                if (greenL) return 0;
+                if (greenR) return 1;
+            }
 			M.Brake();
 
 			M.SetSpeed((sbyte)-Speed, (sbyte)-Speed);
-			for (int i = 0; i < 20; i++) {
-				c1 = S.colL.Read();
-				c2 = S.colR.Read();
-				greenL = c1 == (byte)Color.Green;
-				greenR = c2 == (byte)Color.Green;
-				bb3 = (c1 == c2 && c1 == (byte)Color.White);
-				if (greenL) return 0;
-				if (greenR) return 1;
-				Thread.Sleep(10);
-			}
-			M.Brake();
+            for (int i = 0; i < 12; i++) {
+                c1 = S.colL.Read();
+                c2 = S.colR.Read();
+
+                greenL = c1 == (byte)Color.Green;
+                greenR = c2 == (byte)Color.Green;
+
+                bb3 = (c1 == c2 && c1 == (byte)Color.White);
+
+                Thread.Sleep(10);
+
+                c3 = S.colL.Read();
+                c4 = S.colR.Read();
+
+                greenL = (c1 == c3) && greenL;
+                greenR = (c2 == c4) && greenR;
+
+                if (greenL) return 0;
+                if (greenR) return 1;
+            }
+            M.Brake();
 
 			M.SetSpeed(Speed, Speed);
 			for (int i = 0; i < 15; i++) {
@@ -240,7 +261,7 @@ namespace OmegaTeam {
 
 			LcdConsole.WriteLine ("Inizio Rescue");
 
-			Thread.Sleep (2000);
+			Thread.Sleep (1000);
 
 			Salvataggio.RunRescue ();
 
