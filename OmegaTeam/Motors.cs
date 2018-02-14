@@ -8,7 +8,7 @@ namespace OmegaTeam {
         public static Motor motR = new Motor(MotorPort.OutA); // Motore destro
         public static Motor motP = new Motor(MotorPort.OutC); // Motore pinza
 
-        public static Vehicle V = new Vehicle(MotorPort.OutA, MotorPort.OutB); // Classe helper
+        public static Vehicle V = new Vehicle(MotorPort.OutB, MotorPort.OutA); // Classe helper
 
 		/// <summary>
 		/// Brakes motors.

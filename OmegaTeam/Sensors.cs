@@ -7,8 +7,8 @@ namespace OmegaTeam {
 		//################################################################################
 
 		const short OBSTACLE_DISTANCE = 7; // Distanza a cui si riconosce un ostacolo, in cm
-		public static sbyte [] WHITE = { 50, 50 }; // Soglia con la quale si calcola la correzione
-		public static sbyte [] BLACK = { 28, 28 }; // Soglia sotto la quale un sensore viene ritenuto nero
+		public static sbyte [] WHITE = { 54, 52 }; // Soglia con la quale si calcola la correzione
+		public static sbyte [] BLACK = { 30, 30 }; // Soglia sotto la quale un sensore viene ritenuto nero, prima 28 28
 		public static sbyte [] BLACK_OBSTACLE = { 21, 21 };
 
 		//################################################################################

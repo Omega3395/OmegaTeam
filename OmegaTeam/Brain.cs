@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading;
 
 using MonoBrickFirmware.Display;
@@ -133,15 +132,15 @@ namespace OmegaTeam {
 					M.SetSpeed (45, -15, 1, true);
 					break;
 
-				case -1: // Niente verde, vai avanti con correzione normale per pochi secondi
+				case -1: // Bumper
 					M.Brake ();
 					Print ("Niente");
 					S.SetSensorsMode (ColorMode.Reflection);
-					for (int i = 0; i < 8; i++)
+					for (int i = 0; i < 10; i++)
 						Turn (0.05);
 					break;
 
-				case -2: // Bumper
+				case -2: // NERO NERO
 					M.Brake ();
 					S.SetSensorsMode (ColorMode.Reflection);
 					Print ("NERO NERO");
